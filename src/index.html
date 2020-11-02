@@ -10,31 +10,31 @@
   </head>
   <body>
     <script src="sketch.js"></script>
-    TC Start:         <input type="number" id="totalCapitalStart"     step="500"  min="0" max="100000" value="0" onchange="setTotalCapitalStart(value)">
-    TC End            <input type="number" id="totalCapitalEnd"       step="500"  min="0" max="100000" value="100000" onchange="setTotalCapitalEnd(value)">
+    TC Start:         <input type="number" id="totalCapitalStart"     step="500"  min="0" max="100000" value="-50000" onchange="setTotalCapitalStart(value)">
+    TC End            <input type="number" id="totalCapitalEnd"       step="500"  min="0" max="100000" value="50000" onchange="setTotalCapitalEnd(value)">
     TC Increment      <input type="number" id="totalCapitalIncrement" step="500"  min="0" max="100000" value="500" onchange="setTotalCapitalIncrement(value)">
     <br/>
     Lev Start:        <input type="number" id="levarageStart"         step="0.01" min="0" max="10000" value="1" onchange="setLevarageStart(value)">
     Lev End           <input type="number" id="levarageEnd"           step="0.01" min="0" max="10000" value="1" onchange="setLevarageEnd(value)">
     Lev Increment     <input type="number" id="levarageIncrement"     step="0.01" min="0" max="10000" value="1" onchange="setLevarageIncrement(value)">
     <br/>
-    Exit Start:       <input type="number" id="exitStart"             step="0.01" min="-10000" max="10000" value="-1000" onchange="setExitStart(value)">
-    Exit End          <input type="number" id="exitEnd"               step="0.01" min="0" max="10000" value="1000"  onchange="setExitEnd(value)">
+    Exit Start:       <input type="number" id="exitStart"             step="0.01" min="-10000" max="10000" value="-200" onchange="setExitStart(value)">
+    Exit End          <input type="number" id="exitEnd"               step="0.01" min="0" max="10000" value="200"  onchange="setExitEnd(value)">
     Exit Increment    <input type="number" id="exitIncrement"         step="0.01" min="0" max="10000" value="5" onchange="setExitIncrement(value)">
     <br/>
-    FTX MOVE          <input type="text"   id="ftxMove" value="BTC-MOVE-1101">
+    FTX MOVE          <input type="text"   id="ftxMove" value="BTC-MOVE-1102">
     MOVE No Start:    <input type="number" id="moveNoStart"           step="0.01" min="0" max="10000" value="0"  onchange="setMoveNoStart(value)">
-    MOVE No End       <input type="number" id="moveNoEnd"             step="0.01" min="0" max="10000" value="1"   onchange="setMoveNoEnd(value)">
+    MOVE No End       <input type="number" id="moveNoEnd"             step="0.01" min="0" max="10000" value="5"   onchange="setMoveNoEnd(value)">
     MOVE No Increment <input type="number" id="moveNoIncrement"       step="0.01" min="0" max="10000" value="0.1" onchange="setMoveNoIncrement(value)">
     <br/>
-    CALL              <input type="text"   id="call" value="BTC-2NOV20-13750-C">
+    CALL              <input type="text"   id="call" value="BTC-3NOV20-13500-C">
     CALL No Start:    <input type="number" id="callNoStart"           step="0.01" min="0" max="10000" value="0"   onchange="setCallNoStart(value)">
-    CALL No End       <input type="number" id="callNoEnd"             step="0.01" min="0" max="10000" value="1"  onchange="setCallNoEnd(value)">
+    CALL No End       <input type="number" id="callNoEnd"             step="0.01" min="0" max="10000" value="5"  onchange="setCallNoEnd(value)">
     CALL No Increment <input type="number" id="callNoIncrement"       step="0.01" min="0" max="10000" value="0.1" onchange="setCallNoIncrement(value)">
     <br/>
-    PUT               <input type="text"   id="put" value="BTC-2NOV20-13750-P">
+    PUT               <input type="text"   id="put" value="BTC-3NOV20-13500-P">
     PUT No Start:     <input type="number" id="putNoStart"            step="0.01" min="0" max="10000" value="0"   onchange="setPutNoStart(value)">
-    PUT No End        <input type="number" id="putNoEnd"              step="0.01" min="0" max="10000" value="1"  onchange="setPutNoEnd(value)">
+    PUT No End        <input type="number" id="putNoEnd"              step="0.01" min="0" max="10000" value="5"  onchange="setPutNoEnd(value)">
     PUT No Increment  <input type="number" id="putNoIncrement"        step="0.01" min="0" max="10000" value="0.1" onchange="setPutNoIncrement(value)">
     <br/>
     <button id="Run" onclick="run()">Run</button>
@@ -44,28 +44,29 @@
     <table id="example" class="display" style="width:100%">
       <tbody>
       <tr>
+        <th style="horiz-align:right">Best Total Capital </th>
+        <th style="horiz-align:right">Best Levarage      </th>
+        <th style="horiz-align:right">Best Entry         </th>
         <th style="horiz-align:right">Best Move No       </th>
         <th style="horiz-align:right">Best Call No       </th>
         <th style="horiz-align:right">Best Put No        </th>
-        <th style="horiz-align:right">Best Total Capital </th>
-        <th style="horiz-align:right">Best Levarage      </th>
         <th style="horiz-align:right">Best Green Max     </th>
         <th style="horiz-align:right">Best Average       </th>
         <th style="horiz-align:right">Best Success       </th>
-        <th style="horiz-align:right">Best Entry         </th>
         <th style="horiz-align:right">Best Total Premium </th>
       </tr>
       <tr>
+        <td align="center" id="resultTotalCapital"></td>
+        <td align="center" id="resultLevarage"></td>
+        <td align="center" id="resultEntry"></td>
         <td align="center" id="resultMoveNo"></td>
         <td align="center" id="resultCallNo"></td>
         <td align="center" id="resultPutNo"></td>
-        <td align="center" id="resultTotalCapital"></td>
-        <td align="center" id="resultLevarage"></td>
         <td align="center" id="resultGreenMax"></td>
         <td align="center" id="resultAverage"></td>
         <td align="center" id="resultSuccess"></td>
-        <td align="center" id="resultEntry"></td>
         <td align="center" id="resultTotalPremium"></td>
+        <td align="center" id="resultTotalpnl"></td>
       </tr>
       </tbody>
     </table>

@@ -37,7 +37,7 @@ async function pullMovePrice() {
     let instrumentName = document.getElementById("ftxMove").value;
     var url = "https://ftx.com/api/futures/" + instrumentName + "/orderbook";
     let data = await (await fetch(url)).json();
-    let resultData = data.result['asks'][0][0];
+    let resultData = data.result['bids'][0][0];
     console.log("Move Price", resultData);
     movePrice = resultData;
 }

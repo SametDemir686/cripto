@@ -80,7 +80,7 @@ async function getBestValues() {
         levarage: levarageStart,
         greenMax: 0
     };
-    let exitSayisi = (exitEnd + exitStart) / exitIncrement + 1;
+    let exitSayisi = (exitEnd - exitStart) / exitIncrement + 1;
 
     for (let moveNo = moveNoStart; moveNo <= moveNoEnd; moveNo += moveNoIncrement) {
         for (let callNo = callNoStart; callNo <= callNoEnd; callNo += callNoIncrement) {
