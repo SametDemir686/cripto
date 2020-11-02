@@ -50,6 +50,22 @@ async function pullEntry() {
     entry = resultData;
 }
 
+async function pullCallRT_IV() {
+    let instrumentName = document.getElementById("call").value;
+    var url = "https://www.deribit.com/api/v2/public/get_order_book?instrument_name=" + instrumentName;
+    let data = await (await fetch(url)).json();
+    callRT_IV = data.result['mark_iv'];
+    console.log("Call Real Time Implied Volatility", callRT_IV);
+}
+
+async function pullPutRT_IV() {
+    let instrumentName = document.getElementById("put").value;
+    var url = "https://www.deribit.com/api/v2/public/get_order_book?instrument_name=" + instrumentName;
+    let data = await (await fetch(url)).json();
+    putRT_IV = data.result['mark_iv'];
+    console.log("Put Real Time Implied Volatility", putRT_IV);
+}
+
 async function pullJSON() {
     await pullEntry();
     await pullIndexPrice("public/get_index_price", "index_name=btc_usd", 'index_price');
@@ -57,4 +73,6 @@ async function pullJSON() {
     await pullPut();
     await pullMoveStrk();
     await pullMovePrice();
+    await pullCallRT_IV();
+    await pullPutRT_IV();
 }

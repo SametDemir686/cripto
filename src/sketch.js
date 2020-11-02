@@ -10,8 +10,17 @@ function windowResized() {
   	resizeCanvas(windowWidth, windowHeight);
 }
 
+function reset() {
+	let element = document.getElementById("pnlTotal");
+	var rowCount = element.rows.length;
+	for (var i = rowCount - 1; i > 0; i--) {
+		element.deleteRow(i);
+	}
+}
+
 async function run() {
-	await getBestValues();
+	reset();
+	console.log(calculateOption(13700, 13500, 0.483, 0, 49.2));
 }
 
 function setTotalCapitalStart(value) {

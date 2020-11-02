@@ -6,6 +6,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.7.1/addons/p5.sound.js"></script>
     <script src="./cripto.js"></script>
     <script src="./pullData.js"></script>
+    <script src="./calculateOption.js"></script>
     <link rel="stylesheet" type="text/css" href="style.css">
   </head>
   <body>
@@ -25,17 +26,17 @@
     FTX MOVE          <input type="text"   id="ftxMove" value="BTC-MOVE-1102">
     MOVE No Start:    <input type="number" id="moveNoStart"           step="0.01" min="0" max="10000" value="0"  onchange="setMoveNoStart(value)">
     MOVE No End       <input type="number" id="moveNoEnd"             step="0.01" min="0" max="10000" value="5"   onchange="setMoveNoEnd(value)">
-    MOVE No Increment <input type="number" id="moveNoIncrement"       step="0.01" min="0" max="10000" value="0.1" onchange="setMoveNoIncrement(value)">
+    MOVE No Increment <input type="number" id="moveNoIncrement"       step="0.01" min="0" max="10000" value="1" onchange="setMoveNoIncrement(value)">
     <br/>
     CALL              <input type="text"   id="call" value="BTC-3NOV20-13500-C">
     CALL No Start:    <input type="number" id="callNoStart"           step="0.01" min="0" max="10000" value="0"   onchange="setCallNoStart(value)">
     CALL No End       <input type="number" id="callNoEnd"             step="0.01" min="0" max="10000" value="5"  onchange="setCallNoEnd(value)">
-    CALL No Increment <input type="number" id="callNoIncrement"       step="0.01" min="0" max="10000" value="0.1" onchange="setCallNoIncrement(value)">
+    CALL No Increment <input type="number" id="callNoIncrement"       step="0.01" min="0" max="10000" value="1" onchange="setCallNoIncrement(value)">
     <br/>
     PUT               <input type="text"   id="put" value="BTC-3NOV20-13500-P">
     PUT No Start:     <input type="number" id="putNoStart"            step="0.01" min="0" max="10000" value="0"   onchange="setPutNoStart(value)">
     PUT No End        <input type="number" id="putNoEnd"              step="0.01" min="0" max="10000" value="5"  onchange="setPutNoEnd(value)">
-    PUT No Increment  <input type="number" id="putNoIncrement"        step="0.01" min="0" max="10000" value="0.1" onchange="setPutNoIncrement(value)">
+    PUT No Increment  <input type="number" id="putNoIncrement"        step="0.01" min="0" max="10000" value="1" onchange="setPutNoIncrement(value)">
     <br/>
     <button id="Run" onclick="run()">Run</button>
     <br/>
@@ -67,6 +68,19 @@
         <td align="center" id="resultSuccess"></td>
         <td align="center" id="resultTotalPremium"></td>
         <td align="center" id="resultTotalpnl"></td>
+      </tr>
+      </tbody>
+    </table>
+    <br/>
+    <br/>
+    <br/>
+    <br/>
+    <table id="pnlTotal" class="display" style="width:100%">
+      <tbody>
+      <tr>
+        <th align="left">Exit Price</th>
+        <th align="left">PNL Total  </th>
+        <th align="left">PNL Future </th>
       </tr>
       </tbody>
     </table>
