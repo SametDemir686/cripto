@@ -38,5 +38,6 @@ function calculateOption(exitPrice, callStrike, expiresIn, interestRate, callRT_
     let callPreFuture = Round6(exitPrice * NormDist(d1) - callStrike * Math.exp(-(interestRate * expiresIn)) * NormDist(d2));
     let putPreFuture = Round6(callStrike * Math.exp(-(interestRate * expiresIn)) * NormDist(-d2) - exitPrice * NormDist(-d1));
 
+    console.log({callPreFuture: callPreFuture, putPreFuture: putPreFuture});
     return {d1: d1, d2: d2, callPreFuture: callPreFuture, putPreFuture: putPreFuture}
 }

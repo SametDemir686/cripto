@@ -1,9 +1,13 @@
 let cnv;
 
 
-function setup() {
-  	cnv = createCanvas(windowWidth, windowHeight);
+async function setup() {
+	cnv = createCanvas(windowWidth, windowHeight);
 	noLoop();
+
+	var s = await pullInstrumentNames();
+	autocomplete(document.getElementById("call"), s);
+	autocomplete(document.getElementById("put"), s);
 }
 
 function windowResized() {

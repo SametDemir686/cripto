@@ -54,7 +54,7 @@ function pnlFuture(exitPrice, totalCapital, leverage) {
     return (exitPrice - entry) * (totalCapital * leverage / entry);
 }
 
-function calculateExpiresIn() {
+function calculateExpiresIn(timeDelay_HourBased) {
     let now = new Date();
     let then = new Date(
         now.getFullYear(),
@@ -63,7 +63,13 @@ function calculateExpiresIn() {
         0, 0, 0);
     let diffSinceMidNight = now.getTime() - then.getTime();
 
-    return (126000000 - diffSinceMidNight) / 86400000;
+    let noOfMillisecondsInSec = 1000;
+    let noOfMillisecondsInMin = noOfMillisecondsInSec * 60;
+    let noOfMillisecondsInHour = noOfMillisecondsInMin * 60;
+    let noOfMillisecondsInADay = noOfMillisecondsInHour * 24;
+    let timeFromMidNightToNextday11am = noOfMillisecondsInADay + 11 * noOfMillisecondsInHour;
+    let timeDelayInMilliseconds = timeDelay_HourBased * noOfMillisecondsInHour;
+    return (timeFromMidNightToNextday11am - diffSinceMidNight - timeDelayInMilliseconds) / noOfMillisecondsInADay;
 }
 
 async function getBestValues() {
@@ -88,8 +94,14 @@ async function getBestValues() {
     let exitStart = parseFloat(document.getElementById("exitStart").value);
     let exitEnd = parseFloat(document.getElementById("exitEnd").value);
     let exitIncrement = parseFloat(document.getElementById("exitIncrement").value);
+    let timeDelay = parseFloat(document.getElementById("timeDelay").value);
     interestRate = 0;
-    expiresIn = calculateExpiresIn();
+    expiresIn = calculateExpiresIn(timeDelay);
+
+    console.log("expiresIn:", expiresIn);
+    console.log("call:", (document.getElementById("call").value));
+    console.log("put:", (document.getElementById("put").value));
+
     let result = {
         moveNo: moveNoStart,
         callNo: callNoStart,
@@ -116,12 +128,34 @@ async function getBestValues() {
                                 average += pnlTotal / exitSayisi;
                             }
                         }
-                        if (green/exitSayisi >= threshold) {
+                        if (green / exitSayisi >= threshold) {
                             if (result.greenMax / exitSayisi < threshold || result.average < average) {
-                                result = {moveNo: moveNo, callNo: callNo, putNo: putNo, totalCapital: totalCapital, levarage: levarage, greenMax: green, average: average, success: "%" + (green / exitSayisi * 100).toFixed(2), entry: entry, totalPremium: putAsk * putNo + callAsk * callNo + movePrice * moveNo};
+                                result = {
+                                    moveNo: moveNo,
+                                    callNo: callNo,
+                                    putNo: putNo,
+                                    totalCapital: totalCapital,
+                                    levarage: levarage,
+                                    greenMax: green,
+                                    average: average,
+                                    success: "%" + (green / exitSayisi * 100).toFixed(2),
+                                    entry: entry,
+                                    totalPremium: putAsk * putNo + callAsk * callNo + movePrice * moveNo
+                                };
                             }
                         } else if (result.greenMax < green) {
-                            result = {moveNo: moveNo, callNo: callNo, putNo: putNo, totalCapital: totalCapital, levarage: levarage, greenMax: green, average: average, success: "%" + (green / exitSayisi * 100).toFixed(2), entry: entry, totalPremium: putAsk * putNo + callAsk * callNo + movePrice * moveNo};
+                            result = {
+                                moveNo: moveNo,
+                                callNo: callNo,
+                                putNo: putNo,
+                                totalCapital: totalCapital,
+                                levarage: levarage,
+                                greenMax: green,
+                                average: average,
+                                success: "%" + (green / exitSayisi * 100).toFixed(2),
+                                entry: entry,
+                                totalPremium: putAsk * putNo + callAsk * callNo + movePrice * moveNo
+                            };
                         }
                     }
                 }
@@ -152,22 +186,31 @@ async function getBestValues() {
         let pnlCallFuture = -(callAsk - calcOptionResult.callPreFuture) * result.callNo;
         let pnlPutFuture = -(putAsk - calcOptionResult.putPreFuture) * result.putNo;
         let pnlTotalFuture = pnlCallFuture + pnlPutFuture + pnlMoveResult;
-        insertToTable(pnlTotalHtmlElement, exitPrice, pnlTotal, pnlTotalFuture);
+        insertToTable(pnlTotalHtmlElement, exitPrice, pnlTotal, pnlTotalFuture, calcOptionResult.callPreFuture, calcOptionResult.putPreFuture);
     }
 }
 
-function insertCell(newRow, index, data) {
+function insertCell(newRow, index, data, colorful = false) {
     let newCell = newRow.insertCell(index);
+    if (colorful)
+        newCell.style.backgroundColor = data < 0 ? '#F00000' : '#00F000';
+    else
+        newCell.style.backgroundColor = '#9CE6F6';
+    newCell.style.fontSize = "20";
+    newCell.style.fontWeight = 'bold';
+    newCell.style.textAlign = 'center';
     let newText = document.createTextNode(data);
     newCell.appendChild(newText);
 }
 
-function insertToTable(tableRef, exitPrice, pnlTotal, pnlTotalFuture) {
+function insertToTable(tableRef, exitPrice, pnlTotal, pnlTotalFuture, callPreFuture, putPreFuture) {
     // Insert a row at the end of the table
     let newRow = tableRef.insertRow(-1);
 
     // Insert a cell in the row at index 0
     insertCell(newRow, 0, exitPrice.toFixed(2));
-    insertCell(newRow, 1, pnlTotal.toFixed(0));
-    insertCell(newRow, 2, pnlTotalFuture.toFixed(0));
+    insertCell(newRow, 1, pnlTotal.toFixed(0), true);
+    insertCell(newRow, 2, pnlTotalFuture.toFixed(0), true);
+    insertCell(newRow, 3, callPreFuture.toFixed(2));
+    insertCell(newRow, 4, putPreFuture.toFixed(2));
 }

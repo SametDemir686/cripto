@@ -7,67 +7,145 @@
     <script src="./cripto.js"></script>
     <script src="./pullData.js"></script>
     <script src="./calculateOption.js"></script>
+    <script src="./combobox/autocomplete.js"></script>
     <link rel="stylesheet" type="text/css" href="style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      /*the container must be positioned relative:*/
+      .autocomplete {
+        position: relative;
+        display: inline-block;
+      }
+
+      .autocomplete-items {
+        position: absolute;
+        border: 1px solid #d4d4d4;
+        border-bottom: none;
+        border-top: none;
+        z-index: 99;
+        /*position the autocomplete items to be the same width as the container:*/
+        top: 100%;
+        left: 0;
+        right: 0;
+      }
+
+      .autocomplete-items div {
+        padding: 10px;
+        cursor: pointer;
+        background-color: #fff;
+        border-bottom: 1px solid #d4d4d4;
+      }
+
+      /*when hovering an item:*/
+      .autocomplete-items div:hover {
+        background-color: #e9e9e9;
+      }
+
+      /*when navigating through the items using the arrow keys:*/
+      .autocomplete-active {
+        background-color: DodgerBlue !important;
+        color: #ffffff;
+      }
+    </style>
   </head>
   <body>
     <script src="sketch.js"></script>
-    TC Start:         <input type="number" id="totalCapitalStart"     step="500"  min="0" max="100000" value="-50000" onchange="setTotalCapitalStart(value)">
-    TC End            <input type="number" id="totalCapitalEnd"       step="500"  min="0" max="100000" value="50000" onchange="setTotalCapitalEnd(value)">
-    TC Increment      <input type="number" id="totalCapitalIncrement" step="500"  min="0" max="100000" value="500" onchange="setTotalCapitalIncrement(value)">
+    <div style="position: absolute; width: 10%; left: 5%;">TC Start:</div>
+    <input style="position: absolute; width: 10%; left: 10%;" type="number" id="totalCapitalStart"     step="500"  min="0" max="100000" value="-50000" onchange="setTotalCapitalStart(value)">
+    <div style="position: absolute; width: 10%; left: 30%;">TC End:</div>
+    <input style="position: absolute; width: 10%; left: 35%;" type="number" id="totalCapitalEnd"       step="500"  min="0" max="100000" value="50000" onchange="setTotalCapitalEnd(value)">
+    <div style="position: absolute; width: 10%; left: 55%;" >TC Increment:</div>
+    <input style="position: absolute; width: 10%; left: 60%;" type="number" id="totalCapitalIncrement" step="500"  min="0" max="100000" value="500" onchange="setTotalCapitalIncrement(value)">
     <br/>
-    Lev Start:        <input type="number" id="levarageStart"         step="0.01" min="0" max="10000" value="1" onchange="setLevarageStart(value)">
-    Lev End           <input type="number" id="levarageEnd"           step="0.01" min="0" max="10000" value="1" onchange="setLevarageEnd(value)">
-    Lev Increment     <input type="number" id="levarageIncrement"     step="0.01" min="0" max="10000" value="1" onchange="setLevarageIncrement(value)">
     <br/>
-    Exit Start:       <input type="number" id="exitStart"             step="0.01" min="-10000" max="10000" value="-200" onchange="setExitStart(value)">
-    Exit End          <input type="number" id="exitEnd"               step="0.01" min="0" max="10000" value="200"  onchange="setExitEnd(value)">
-    Exit Increment    <input type="number" id="exitIncrement"         step="0.01" min="0" max="10000" value="5" onchange="setExitIncrement(value)">
+    <div style="position: absolute; width: 10%; left: 5%;" >Lev Start:</div>
+    <input style="position: absolute; width: 10%; left: 10%;" type="number" id="levarageStart"         step="0.01" min="0" max="10000" value="1" onchange="setLevarageStart(value)">
+    <div style="position: absolute; width: 10%; left: 30%;" >Lev End:</div>
+    <input  style="position: absolute; width: 10%; left: 35%;" type="number" id="levarageEnd"           step="0.01" min="0" max="10000" value="1" onchange="setLevarageEnd(value)">
+    <div style="position: absolute; width: 10%; left: 55%;">Lev Increment:</div>
+    <input style="position: absolute; width: 10%; left: 60%;" type="number" id="levarageIncrement"     step="0.01" min="0" max="10000" value="1" onchange="setLevarageIncrement(value)">
     <br/>
-    FTX MOVE          <input type="text"   id="ftxMove" value="BTC-MOVE-1102">
-    MOVE No Start:    <input type="number" id="moveNoStart"           step="0.01" min="0" max="10000" value="0"  onchange="setMoveNoStart(value)">
-    MOVE No End       <input type="number" id="moveNoEnd"             step="0.01" min="0" max="10000" value="5"   onchange="setMoveNoEnd(value)">
-    MOVE No Increment <input type="number" id="moveNoIncrement"       step="0.01" min="0" max="10000" value="1" onchange="setMoveNoIncrement(value)">
     <br/>
-    CALL              <input type="text"   id="call" value="BTC-3NOV20-13500-C">
-    CALL No Start:    <input type="number" id="callNoStart"           step="0.01" min="0" max="10000" value="0"   onchange="setCallNoStart(value)">
-    CALL No End       <input type="number" id="callNoEnd"             step="0.01" min="0" max="10000" value="5"  onchange="setCallNoEnd(value)">
-    CALL No Increment <input type="number" id="callNoIncrement"       step="0.01" min="0" max="10000" value="1" onchange="setCallNoIncrement(value)">
+    <div style="position: absolute; width: 10%; left: 5%;" >Exit Start:  </div>
+    <input style="position: absolute; width: 10%; left: 10%;" type="number" id="exitStart"             step="0.01" min="-10000" max="10000" value="-200" onchange="setExitStart(value)">
+    <div style="position: absolute; width: 10%; left: 30%;">Exit End    </div>
+    <input style="position: absolute; width: 10%; left: 35%;" type="number" id="exitEnd"               step="0.01" min="0" max="10000" value="200"  onchange="setExitEnd(value)">
+    <div style="position: absolute; width: 10%; left: 55%;">Exit Increment </div>
+    <input style="position: absolute; width: 10%; left: 60%;" type="number" id="exitIncrement"         step="0.01" min="0" max="10000" value="5" onchange="setExitIncrement(value)">
     <br/>
-    PUT               <input type="text"   id="put" value="BTC-3NOV20-13500-P">
-    PUT No Start:     <input type="number" id="putNoStart"            step="0.01" min="0" max="10000" value="0"   onchange="setPutNoStart(value)">
-    PUT No End        <input type="number" id="putNoEnd"              step="0.01" min="0" max="10000" value="5"  onchange="setPutNoEnd(value)">
-    PUT No Increment  <input type="number" id="putNoIncrement"        step="0.01" min="0" max="10000" value="1" onchange="setPutNoIncrement(value)">
     <br/>
-    <button id="Run" onclick="run()">Run</button>
+    <div   style="position: absolute; width: 10%; left: 2%;"> FTX MOVE   </div>
+    <input style="position: absolute; width: 10%; left: 10%;"  type="text"   id="ftxMove" value="BTC-MOVE-1103">
+    <div   style="position: absolute; width: 10%; left: 25%;"> MOVE No Start: </div>
+    <input style="position: absolute; width: 5%; left: 33%;"  type="number" id="moveNoStart"           step="0.01" min="0" max="10000" value="0"  onchange="setMoveNoStart(value)">
+    <div   style="position: absolute; width: 10%; left: 48%;"> MOVE No End   </div>
+    <input style="position: absolute; width: 5%; left: 56%;"  type="number" id="moveNoEnd"             step="0.01" min="0" max="10000" value="5"   onchange="setMoveNoEnd(value)">
+    <div   style="position: absolute; width: 10%; left: 71%;"> MOVE No Increment</div>
+    <input style="position: absolute; width: 5%; left: 79%;"  type="number" id="moveNoIncrement"       step="0.01" min="0" max="10000" value="1" onchange="setMoveNoIncrement(value)">
+    <br/>
+    <br/>
+    <div   style="position: absolute; width: 10%; left: 2%;">CALL         </div>
+    <div class="autocomplete" style="position: absolute; width:10%; left: 10%">
+      <input id="call" type="text" name="myCountry" placeholder="Country">
+    </div>
+    <div   style="position: absolute; width: 10%; left: 25%;">CALL No Start:  </div>
+    <input style="position: absolute; width: 5%; left: 33%;"   type="number" id="callNoStart"           step="0.01" min="0" max="10000" value="0"   onchange="setCallNoStart(value)">
+    <div   style="position: absolute; width: 10%; left: 48%;">CALL No End    </div>
+    <input style="position: absolute; width: 5%; left: 56%;"  type="number" id="callNoEnd"             step="0.01" min="0" max="10000" value="5"  onchange="setCallNoEnd(value)">
+    <div   style="position: absolute; width: 10%; left: 71%;">CALL No Increment </div>
+    <input style="position: absolute; width: 5%; left: 79%;"  type="number" id="callNoIncrement"       step="0.01" min="0" max="10000" value="1" onchange="setCallNoIncrement(value)">
+    <br/>
+    <br/>
+    <div   style="position: absolute; width: 10%; left: 2%;">PUT           </div>
+    <div class="autocomplete" style="position: absolute; width:10%; left: 10%">
+      <input id="put" type="text" name="myCountry" placeholder="Country">
+    </div>
+    <div   style="position: absolute; width: 10%; left: 25%;">PUT No Start:   </div>
+    <input style="position: absolute; width: 5%; left: 33%;" type="number" id="putNoStart"            step="0.01" min="0" max="10000" value="0"   onchange="setPutNoStart(value)">
+    <div   style="position: absolute; width: 10%; left: 48%;">PUT No End      </div>
+    <input style="position: absolute; width: 5%; left: 56%;" type="number" id="putNoEnd"              step="0.01" min="0" max="10000" value="5"  onchange="setPutNoEnd(value)">
+    <div   style="position: absolute; width: 10%; left: 71%;">PUT No Increment  </div>
+    <input style="position: absolute; width: 5%; left: 79%;" type="number" id="putNoIncrement"        step="0.01" min="0" max="10000" value="1" onchange="setPutNoIncrement(value)">
+    <br/>
+    <br/>
+    <div style="position: absolute; width: 10%; left: 5%;">Time Delay     </div>
+    <input style="position: absolute; width: 5%; left: 10%;" type="number" id="timeDelay"             step="0.01" min="0" max="24"    value="0">
+    <br/>
+    <br/>
+    <button style="position: absolute; width: 15%; height:40px; left: 75%;" id="Run" onclick="run()">Run</button>
     <br/>
     <br/>
     <br/>
     <table id="example" class="display" style="width:100%">
       <tbody>
       <tr>
-        <th style="horiz-align:right">Best Total Capital </th>
-        <th style="horiz-align:right">Best Levarage      </th>
-        <th style="horiz-align:right">Best Entry         </th>
-        <th style="horiz-align:right">Best Move No       </th>
-        <th style="horiz-align:right">Best Call No       </th>
-        <th style="horiz-align:right">Best Put No        </th>
-        <th style="horiz-align:right">Best Green Max     </th>
-        <th style="horiz-align:right">Best Average       </th>
-        <th style="horiz-align:right">Best Success       </th>
-        <th style="horiz-align:right">Best Total Premium </th>
+        <th style="horiz-align:right; background-color: #F9AFD6; font-size: 20px">Best Total Capital </th>
+        <th style="horiz-align:right; background-color: #F9AFD6; font-size: 20px">Best Levarage      </th>
+        <th style="horiz-align:right; background-color: #F9AFD6; font-size: 20px">Best Entry         </th>
+        <th style="horiz-align:right; background-color: #F9AFD6; font-size: 20px">Best Move No       </th>
+        <th style="horiz-align:right; background-color: #F9AFD6; font-size: 20px">Best Call No       </th>
+        <th style="horiz-align:right; background-color: #F9AFD6; font-size: 20px">Best Put No        </th>
+        <th style="horiz-align:right; background-color: #F9AFD6; font-size: 20px">Best Green Max     </th>
+        <th style="horiz-align:right; background-color: #F9AFD6; font-size: 20px">Best Average       </th>
+        <th style="horiz-align:right; background-color: #F9AFD6; font-size: 20px">Best Success       </th>
+        <th style="horiz-align:right; background-color: #F9AFD6; font-size: 20px">Best Total Premium </th>
       </tr>
       <tr>
-        <td align="center" id="resultTotalCapital"></td>
-        <td align="center" id="resultLevarage"></td>
-        <td align="center" id="resultEntry"></td>
-        <td align="center" id="resultMoveNo"></td>
-        <td align="center" id="resultCallNo"></td>
-        <td align="center" id="resultPutNo"></td>
-        <td align="center" id="resultGreenMax"></td>
-        <td align="center" id="resultAverage"></td>
-        <td align="center" id="resultSuccess"></td>
-        <td align="center" id="resultTotalPremium"></td>
-        <td align="center" id="resultTotalpnl"></td>
+        <td align="center" style="background-color: #F9AFD6; font-size: 20px" id="resultTotalCapital"></td>
+        <td align="center" style="background-color: #F9AFD6; font-size: 20px" id="resultLevarage"></td>
+        <td align="center" style="background-color: #F9AFD6; font-size: 20px" id="resultEntry"></td>
+        <td align="center" style="background-color: #F9AFD6; font-size: 20px" id="resultMoveNo"></td>
+        <td align="center" style="background-color: #F9AFD6; font-size: 20px" id="resultCallNo"></td>
+        <td align="center" style="background-color: #F9AFD6; font-size: 20px" id="resultPutNo"></td>
+        <td align="center" style="background-color: #F9AFD6; font-size: 20px" id="resultGreenMax"></td>
+        <td align="center" style="background-color: #F9AFD6; font-size: 20px" id="resultAverage"></td>
+        <td align="center" style="background-color: #F9AFD6; font-size: 20px" id="resultSuccess"></td>
+        <td align="center" style="background-color: #F9AFD6; font-size: 20px" id="resultTotalPremium"></td>
+        <td align="center" style="background-color: #F9AFD6; font-size: 20px" id="resultTotalpnl"></td>
       </tr>
       </tbody>
     </table>
@@ -75,12 +153,14 @@
     <br/>
     <br/>
     <br/>
-    <table id="pnlTotal" class="display" style="width:100%">
+    <table id="pnlTotal" class="display" style="width:50%">
       <tbody>
       <tr>
-        <th align="left">Exit Price</th>
-        <th align="left">PNL Total  </th>
-        <th align="left">PNL Future </th>
+        <th align="center" style="background-color: #F9AFD6; font-size: 20px">Exit Price</th>
+        <th align="center" style="background-color: #F9AFD6; font-size: 20px">PNL Total  </th>
+        <th align="center" style="background-color: #F9AFD6; font-size: 20px">PNL Future </th>
+        <th align="center" style="background-color: #F9AFD6; font-size: 20px">Call Pre Future </th>
+        <th align="center" style="background-color: #F9AFD6; font-size: 20px">Put Pre Future </th>
       </tr>
       </tbody>
     </table>
