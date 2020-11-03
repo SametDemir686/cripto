@@ -20,7 +20,7 @@ function reset() {
 
 async function run() {
 	reset();
-	console.log(calculateOption(13700, 13500, 0.483, 0, 49.2));
+	await getBestValues();
 }
 
 function setTotalCapitalStart(value) {
