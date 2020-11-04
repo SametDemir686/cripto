@@ -4,7 +4,7 @@ The source file can be found in src folder.
 
 To run the animation code, open src/index.html in a browser.
 
-To run the experiment code, open src/sketch.gs and change line 8 as follows.
+To run the experiment code, open src/sketch.js and change line 8 as follows.
 	let experiment = true;
 And save the file. Then open src/index.html in a browser and see the output in browser console.
 
