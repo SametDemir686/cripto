@@ -192,7 +192,7 @@ function findLastRange(columnName, startIndex) {
 }
 
 function insertToTable(row, indexBtcDeribit, exitPrice, pnlTotal, pnlTotalFuture, callPreFuture, putPreFuture, pnlFutureResult, pnlMoveResult, pnlCallResult, pnlPutResult) {
-    writeDataTo(tableindexBtcDeribitColumn + row, indexBtcDeribit.toFixed(2));
+    writeDataTo(tableIndexBtcDeribitColumn + row, indexBtcDeribit.toFixed(2));
     writeDataTo(tableExitPriceColumn + row, exitPrice.toFixed(2));
     writeDataTo(tablePnlTotalColumn + row, pnlTotal.toFixed(0));
     writeDataTo(tablePnlTotalFutureColumn + row, pnlTotalFuture.toFixed(0));
