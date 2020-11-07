@@ -49,9 +49,11 @@ function writeBestValues(result) {
     writeDataTo(resultSuccessCell, result.success);
     writeDataTo(resultIndexBtcDeribitCell, result.indexBtcDeribit);
     writeDataTo(resultTotalPremiumCell, result.totalPremium);
+    writeDataTo(resultCallInstrumentCell, result.indexBtcDeribit);
+    writeDataTo(resultPutInstrumentCell, result.putInstrumentName);
 }
 
-function setBestValues(moveRange, callRange, putRange, capitalRange, green, average, exitSayisi, indexBtcDeribit, putAsk, callAsk, movePrice, callStrike, putStrike) {
+function setBestValues(result, moveRange, callRange, putRange, capitalRange, green, average, exitSayisi, indexBtcDeribit, putAsk, callAsk, movePrice, callStrike, putStrike, callInstrumentName, putInstrumentName) {
     return {
         moveRange: moveRange,
         callRange: callRange,
@@ -65,12 +67,14 @@ function setBestValues(moveRange, callRange, putRange, capitalRange, green, aver
         callStrike: callStrike,
         putStrike: putStrike,
         putAsk: putAsk,
-        callAsk: callAsk
+        callAsk: callAsk,
+        callInstrumentName: callInstrumentName,
+        putInstrumentName: putInstrumentName
     };
 }
 
-function bestValuesChanged(result, moveRange, callRange, putRange, capitalRange, green, average, exitSayisi, indexBtcDeribit, putAsk, callAsk, movePrice, callStrike, putStrike) {
-    result = setBestValues(result, moveRange, callRange, putRange, capitalRange, green, average, exitSayisi, indexBtcDeribit, putAsk, callAsk, movePrice, callStrike, putStrike);
+function bestValuesChanged(result, moveRange, callRange, putRange, capitalRange, green, average, exitSayisi, indexBtcDeribit, putAsk, callAsk, movePrice, callStrike, putStrike, callInstrumentName, putInstrumentName) {
+    result = setBestValues(result, moveRange, callRange, putRange, capitalRange, green, average, exitSayisi, indexBtcDeribit, putAsk, callAsk, movePrice, callStrike, putStrike, callInstrumentName, putInstrumentName);
     writeBestValues(result);
     return result;
 }
@@ -97,21 +101,28 @@ function getBestValues() {
     let indexBtcDeribit = getDataFrom(resultIndexBtcDeribitCell);
     let movePrice = getDataFrom(resultMovePriceCell);
     let moveStrikePrice = getDataFrom(resultMoveStrikePriceCell);
-    let call_IV = getDataFrom(resultCall_IVCell);
-    let put_IV = getDataFrom(resultPut_IVCell);
     let interestRate = 0;
     let expiresIn = calculateExpiresIn(timeDelay);
 
     let result = {
-        moveRange: moveRangeStart,
-        callRange: callRangeStart,
-        putRange: putRangeStart,
-        capitalRange: capitalRangeStart,
+        moveRange: "Unknown",
+        callRange: "Unknown",
+        putRange: "Unknown",
+        capitalRange: "Unknown",
         greenMax: 0,
         average: 0,
+        success: "Unknown",
+        indexBtcDeribit: "Unknown",
+        totalPremium: "Unknown",
+        callStrike: "Unknown",
+        putStrike: "Unknown",
+        putAsk: "Unknown",
+        callAsk: "Unknown",
+        callInstrumentName: "Unknown",
+        putInstrumentName: "Unknown"
     };
     let exitSayisi = (exitRangeEnd - exitRangeStart) / exitRangeIncrement + 1;
-    let threshold = 0;
+    let threshold = 0.85;
     let putLastRange = findLastRange(selectedPutInstrumentColumn, selectedPutInstrumentRow);
     let putInstrumentNames = SpreadsheetApp.getActiveSheet().getRange(selectedPutInstrumentColumn + selectedPutInstrumentRow + ":" + putLastRange).getValues()[0];
     let callLastRange = findLastRange(selectedCallInstrumentColumn, selectedCallInstrumentRow);
@@ -140,18 +151,22 @@ function getBestValues() {
                             }
                             if (green / exitSayisi >= threshold) {
                                 if (result.greenMax / exitSayisi < threshold || result.average < average) {
-                                    result = bestValuesChanged(result, moveRange, callRange, putRange, capitalRange, green, average, exitSayisi, indexBtcDeribit, putAsk, callAsk, movePrice, callStrike, putStrike);
+                                    result = bestValuesChanged(result, moveRange, callRange, putRange, capitalRange, green, average, exitSayisi, indexBtcDeribit, putAsk, callAsk, movePrice, callStrike, putStrike, callInstrumentName, putInstrumentName);
                                 }
                             } else if (result.greenMax < green) {
-                                result = bestValuesChanged(result, moveRange, callRange, putRange, capitalRange, green, average, exitSayisi, indexBtcDeribit, putAsk, callAsk, movePrice, callStrike, putStrike);
+                                result = bestValuesChanged(result, moveRange, callRange, putRange, capitalRange, green, average, exitSayisi, indexBtcDeribit, putAsk, callAsk, movePrice, callStrike, putStrike, callInstrumentName, putInstrumentName);
                             }
-
                         }
                     }
                 }
             }
         }
     }
+
+    pullCall_IV(result.callInstrumentName);
+    pullPut_IV(result.putInstrumentName);
+    let call_IV = getDataFrom(resultCall_IVCell);
+    let put_IV = getDataFrom(resultPut_IVCell);
 
     let row = tableRowStartIndex;
     for (let exitPrice = indexBtcDeribit + exitRangeStart; exitPrice <= indexBtcDeribit + exitRangeEnd; exitPrice += exitRangeIncrement) {
@@ -195,4 +210,19 @@ function insertToTable(row, indexBtcDeribit, exitPrice, pnlTotal, pnlTotalFuture
     writeDataTo(tablePnlMoveResultColumn + row, pnlMoveResult.toFixed(2));
     writeDataTo(tablePnlCallResultColumn + row, pnlCallResult.toFixed(2));
     writeDataTo(tablePnlPutResultColumn + row, pnlPutResult.toFixed(2));
+}
+
+function clearTable() {
+    for (let row = tableRowStartIndex; row < 100; row++) {
+        writeDataTo(tableIndexBtcDeribitColumn + row, "");
+        writeDataTo(tableExitPriceColumn + row, "");
+        writeDataTo(tablePnlTotalColumn + row, "");
+        writeDataTo(tablePnlTotalFutureColumn + row, "");
+        writeDataTo(tableCallPreFutureColumn + row, "");
+        writeDataTo(tablePutPreFutureColumn + row, "");
+        writeDataTo(tablePnlFutureResultColumn + row, "");
+        writeDataTo(tablePnlMoveResultColumn + row, "");
+        writeDataTo(tablePnlCallResultColumn + row, "");
+        writeDataTo(tablePnlPutResultColumn + row, "");
+    }
 }

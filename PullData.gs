@@ -1,8 +1,6 @@
 
 function pullJSON() {
     pullIndexPriceDeribitAndWrite();
-    pullCall_IV();
-    pullPut_IV();
     pullMoveStrikePriceFtx();
     pullMoveAskPriceFtx();
 }
@@ -29,16 +27,14 @@ function pullIndexPriceDeribitAndWrite() {
     writeDataTo(resultIndexBtcDeribitCell, data.result['index_price']);
 }
 
-function pullCall_IV() {
-    let instrumentName = getDataFrom(resultCallInstrumentCell);
-    var data = pullDataFrom("https://www.deribit.com/api/v2/public/get_order_book?instrument_name=" + instrumentName);
+function pullCall_IV(callInstrumentName) {
+    var data = pullDataFrom("https://www.deribit.com/api/v2/public/get_order_book?instrument_name=" + callInstrumentName);
     writeDataTo(resultCall_IVCell, data.result['mark_iv']);
 }
 
-function pullPut_IV() {
-    let instrumentName = getDataFrom(resultPutInstrumentCell);
-    var data = pullDataFrom("https://www.deribit.com/api/v2/public/get_order_book?instrument_name=" + instrumentName);
-    writeDataTo(resultCall_IVCell, data.result['mark_iv']);
+function pullPut_IV(putInstrumentName) {
+    var data = pullDataFrom("https://www.deribit.com/api/v2/public/get_order_book?instrument_name=" + putInstrumentName);
+    writeDataTo(resultPut_IVCell, data.result['mark_iv']);
 }
 
 function pullMoveStrikePriceFtx() {
