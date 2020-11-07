@@ -18,8 +18,8 @@ function pnlMove(exitPrice, moveRange, movePrice, moveStrikePrice) {
     return moveRange * (movePrice - Math.abs(moveStrikePrice - exitPrice));
 }
 
-function pnlFuture(exitPrice, capitalRange, leverage, indexBtcDeribit) {
-    return (exitPrice - indexBtcDeribit) * (capitalRange * leverage / indexBtcDeribit);
+function pnlFuture(exitPrice, capitalRange, indexBtcDeribit) {
+    return (exitPrice - indexBtcDeribit) * (capitalRange / indexBtcDeribit);
 }
 
 function calculateExpiresIn(timeDelay_HourBased) {
@@ -41,25 +41,22 @@ function calculateExpiresIn(timeDelay_HourBased) {
 }
 
 function writeBestValues(result) {
-    writeDataTo(moveRangeCell, result.moveRange);
-    writeDataTo(callRangeCell, result.callRange);
-    writeDataTo(putRangeCell, result.putRange);
-    writeDataTo(capitalRangeCell, result.capitalRange);
-    writeDataTo(levarageCell, result.levarage);
-    writeDataTo(greenMaxCell, result.greenMax);
-    writeDataTo(averageCell, result.average);
-    writeDataTo(successCell, result.success);
-    writeDataTo(indexBtcDeribitCell, result.indexBtcDeribit);
-    writeDataTo(totalPremiumCell, result.totalPremium);
+    writeDataTo(resultMoveNoCell, result.moveRange);
+    writeDataTo(resultCallNoCell, result.callRange);
+    writeDataTo(resultPutNoCell, result.putRange);
+    writeDataTo(resultCapitalNo, result.capitalRange);
+    writeDataTo(resultAverageCell, result.average);
+    writeDataTo(resultSuccessCell, result.success);
+    writeDataTo(resultIndexBtcDeribitCell, result.indexBtcDeribit);
+    writeDataTo(resultTotalPremiumCell, result.totalPremium);
 }
 
-function setBestValues(moveRange, callRange, putRange, capitalRange, levarage, green, average, exitSayisi, indexBtcDeribit, putAsk, callAsk, movePrice, callStrike, putStrike) {
+function setBestValues(moveRange, callRange, putRange, capitalRange, green, average, exitSayisi, indexBtcDeribit, putAsk, callAsk, movePrice, callStrike, putStrike) {
     return {
         moveRange: moveRange,
         callRange: callRange,
         putRange: putRange,
         capitalRange: capitalRange,
-        levarage: levarage,
         greenMax: green,
         average: average,
         success: "%" + (green / exitSayisi * 100).toFixed(2),
@@ -72,8 +69,8 @@ function setBestValues(moveRange, callRange, putRange, capitalRange, levarage, g
     };
 }
 
-function bestValuesChanged(result, moveRange, callRange, putRange, capitalRange, levarage, green, average, exitSayisi, indexBtcDeribit, putAsk, callAsk, movePrice, callStrike, putStrike) {
-    result = setBestValues(result, moveRange, callRange, putRange, capitalRange, levarage, green, average, exitSayisi, indexBtcDeribit, putAsk, callAsk, movePrice, callStrike, putStrike);
+function bestValuesChanged(result, moveRange, callRange, putRange, capitalRange, green, average, exitSayisi, indexBtcDeribit, putAsk, callAsk, movePrice, callStrike, putStrike) {
+    result = setBestValues(result, moveRange, callRange, putRange, capitalRange, green, average, exitSayisi, indexBtcDeribit, putAsk, callAsk, movePrice, callStrike, putStrike);
     writeBestValues(result);
     return result;
 }
@@ -84,9 +81,6 @@ function getBestValues() {
     let capitalRangeStart = getDataFrom(capitalRangeStartCell);
     let capitalRangeEnd = getDataFrom(capitalRangeEndCell);
     let capitalRangeIncrement = getDataFrom(capitalRangeIncrementCell);
-    let levarageStart = getDataFrom(levarageStartCell);
-    let levarageEnd = getDataFrom(levarageEndCell);
-    let levarageIncrement = getDataFrom(levarageIncrementCell);
     let putRangeStart = getDataFrom(putRangeStartCell);
     let putRangeEnd = getDataFrom(putRangeEndCell);
     let putRangeIncrement = getDataFrom(putRangeIncrementCell);
@@ -100,10 +94,10 @@ function getBestValues() {
     let exitRangeEnd = getDataFrom(exitRangeEndCell);
     let exitRangeIncrement = getDataFrom(exitRangeIncrementCell);
     let timeDelay = getDataFrom(timeDelayCell);
-    let indexBtcDeribit = getDataFrom(indexBtcDeribitCell);
-    let movePrice = getDataFrom(movePriceCell);
-    let moveStrikePrice = getDataFrom(moveStrikePriceCell);
-    let callRT_IV = getDataFrom(callRT_IVCell);
+    let indexBtcDeribit = getDataFrom(resultIndexBtcDeribitCell);
+    let movePrice = getDataFrom(resultMovePriceCell);
+    let moveStrikePrice = getDataFrom(resultMoveStrikePriceCell);
+    let callRT_IV = getDataFrom(resultCall_IVCell);
     let interestRate = 0;
     let expiresIn = calculateExpiresIn(timeDelay);
 
@@ -112,16 +106,15 @@ function getBestValues() {
         callRange: callRangeStart,
         putRange: putRangeStart,
         capitalRange: capitalRangeStart,
-        levarage: levarageStart,
         greenMax: 0,
         average: 0,
     };
     let exitSayisi = (exitRangeEnd - exitRangeStart) / exitRangeIncrement + 1;
     let threshold = 0;
     let putLastRange = findLastRange(selectedPutInstrumentColumn, selectedPutInstrumentRow);
-    let putInstrumentNames = SpreadsheetApp.getActiveSheet().getRange(selectedPutInstrumentColumn+selectedPutInstrumentRow+":"+putLastRange).getValues()[0];
+    let putInstrumentNames = SpreadsheetApp.getActiveSheet().getRange(selectedPutInstrumentColumn + selectedPutInstrumentRow + ":" + putLastRange).getValues()[0];
     let callLastRange = findLastRange(selectedCallInstrumentColumn, selectedCallInstrumentRow);
-    let callInstrumentNames = SpreadsheetApp.getActiveSheet().getRange(selectedCallInstrumentColumn+selectedCallInstrumentRow+":"+callLastRange).getValues()[0];
+    let callInstrumentNames = SpreadsheetApp.getActiveSheet().getRange(selectedCallInstrumentColumn + selectedCallInstrumentRow + ":" + callLastRange).getValues()[0];
 
     for (let i = 0; i < putInstrumentNames.length; i++) {
         let putInstrumentName = putInstrumentNames[i];
@@ -135,24 +128,23 @@ function getBestValues() {
                 for (let callRange = callRangeStart; callRange <= callRangeEnd; callRange += callRangeIncrement) {
                     for (let putRange = putRangeStart; putRange <= putRangeEnd; putRange += putRangeIncrement) {
                         for (let capitalRange = capitalRangeStart; capitalRange <= capitalRangeEnd; capitalRange += capitalRangeIncrement) {
-                            for (let levarage = levarageStart; levarage <= levarageEnd; levarage += levarageIncrement) {
-                                let green = 0;
-                                let average = 0;
-                                for (let exitPrice = indexBtcDeribit + exitRangeStart; exitPrice <= indexBtcDeribit + exitRangeEnd; exitPrice += exitRangeIncrement) {
-                                    let pnlTotal = pnlPut(exitPrice, putRange, putStrike, putAsk) + pnlCall(exitPrice, callRange, callStrike, callAsk) + pnlMove(exitPrice, moveRange, movePrice, moveStrikePrice) + pnlFuture(exitPrice, capitalRange, levarage, indexBtcDeribit);
-                                    if (pnlTotal > 0) {
-                                        green++;
-                                        average += pnlTotal / exitSayisi;
-                                    }
-                                }
-                                if (green / exitSayisi >= threshold) {
-                                    if (result.greenMax / exitSayisi < threshold || result.average < average) {
-                                        result = bestValuesChanged(result, moveRange, callRange, putRange, capitalRange, levarage, green, average, exitSayisi, indexBtcDeribit, putAsk, callAsk, movePrice, callStrike, putStrike);
-                                    }
-                                } else if (result.greenMax < green) {
-                                    result = bestValuesChanged(result, moveRange, callRange, putRange, capitalRange, levarage, green, average, exitSayisi, indexBtcDeribit, putAsk, callAsk, movePrice, callStrike, putStrike);
+                            let green = 0;
+                            let average = 0;
+                            for (let exitPrice = indexBtcDeribit + exitRangeStart; exitPrice <= indexBtcDeribit + exitRangeEnd; exitPrice += exitRangeIncrement) {
+                                let pnlTotal = pnlPut(exitPrice, putRange, putStrike, putAsk) + pnlCall(exitPrice, callRange, callStrike, callAsk) + pnlMove(exitPrice, moveRange, movePrice, moveStrikePrice) + pnlFuture(exitPrice, capitalRange, indexBtcDeribit);
+                                if (pnlTotal > 0) {
+                                    green++;
+                                    average += pnlTotal / exitSayisi;
                                 }
                             }
+                            if (green / exitSayisi >= threshold) {
+                                if (result.greenMax / exitSayisi < threshold || result.average < average) {
+                                    result = bestValuesChanged(result, moveRange, callRange, putRange, capitalRange, green, average, exitSayisi, indexBtcDeribit, putAsk, callAsk, movePrice, callStrike, putStrike);
+                                }
+                            } else if (result.greenMax < green) {
+                                result = bestValuesChanged(result, moveRange, callRange, putRange, capitalRange, green, average, exitSayisi, indexBtcDeribit, putAsk, callAsk, movePrice, callStrike, putStrike);
+                            }
+
                         }
                     }
                 }
@@ -165,7 +157,7 @@ function getBestValues() {
         let calcOptionResult = calculateOption(exitPrice, result.callStrike, expiresIn, interestRate, callRT_IV);
         let pnlPutResult = pnlPut(exitPrice, result.putRange, result.putStrike, result.putAsk);
         let pnlMoveResult = pnlMove(exitPrice, result.moveRange, movePrice, moveStrikePrice);
-        let pnlFutureResult = pnlFuture(exitPrice, result.capitalRange, result.levarage, indexBtcDeribit);
+        let pnlFutureResult = pnlFuture(exitPrice, result.capitalRange, indexBtcDeribit);
         let pnlCallResult = pnlCall(exitPrice, result.callRange, result.callStrike, result.callAsk);
         let pnlTotal = pnlPutResult + pnlCallResult + pnlMoveResult + pnlFutureResult;
         let pnlCallFuture = -(result.callAsk - calcOptionResult.callPreFuture) * result.callRange;

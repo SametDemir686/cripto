@@ -26,30 +26,25 @@ function getDataFrom(getFrom) {
 
 function pullIndexPriceDeribitAndWrite() {
     var data = pullDataFrom("https://www.deribit.com/api/v2/public/get_index_price?index_name=btc_usd");
-    writeDataTo(indexBtcDeribitCell, data.result['index_price']);
+    writeDataTo(resultIndexBtcDeribitCell, data.result['index_price']);
 }
 
 function pullMark_iv() {
     let instrumentName = getDataFrom(callStrikeCell);
     var data = pullDataFrom("https://www.deribit.com/api/v2/public/get_order_book?instrument_name=" + instrumentName);
-    writeDataTo(callRT_IVCell, data.result['mark_iv']);
+    writeDataTo(resultCall_IVCell, data.result['mark_iv']);
 }
 
 function pullMoveStrikePriceFtx() {
     let instrumentName = getDataFrom(moveInstrumentNameFtxCell);
     var data = pullDataFrom("https://ftx.com/api/futures/" + instrumentName + "/stats");
-    writeDataTo(moveStrikePriceCell, data.result['strikePrice']);
-}
-
-function pullIndexPriceFtx() {
-    var data = pullDataFrom("https://ftx.com/api/futures/BTC-PERP");
-    writeDataTo(indexBtcFtxCell, data.result['index']);
+    writeDataTo(resultMoveStrikePriceCell, data.result['strikePrice']);
 }
 
 function pullMoveAskPriceFtx() {
     let instrumentName = getDataFrom(moveInstrumentNameFtxCell);
     var data = pullDataFrom("https://ftx.com/api/futures/" + instrumentName + "/orderbook");
-    writeDataTo(movePriceCell, data.result['asks']);
+    writeDataTo(resultMovePriceCell, data.result['asks']);
 }
 
 
