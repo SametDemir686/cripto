@@ -97,7 +97,8 @@ function getBestValues() {
     let indexBtcDeribit = getDataFrom(resultIndexBtcDeribitCell);
     let movePrice = getDataFrom(resultMovePriceCell);
     let moveStrikePrice = getDataFrom(resultMoveStrikePriceCell);
-    let callRT_IV = getDataFrom(resultCall_IVCell);
+    let call_IV = getDataFrom(resultCall_IVCell);
+    let put_IV = getDataFrom(resultPut_IVCell);
     let interestRate = 0;
     let expiresIn = calculateExpiresIn(timeDelay);
 
@@ -154,7 +155,7 @@ function getBestValues() {
 
     let row = tableRowStartIndex;
     for (let exitPrice = indexBtcDeribit + exitRangeStart; exitPrice <= indexBtcDeribit + exitRangeEnd; exitPrice += exitRangeIncrement) {
-        let calcOptionResult = calculateOption(exitPrice, result.callStrike, expiresIn, interestRate, callRT_IV);
+        let calcOptionResult = calculateOption(exitPrice, result.callStrike, expiresIn, interestRate, call_IV, put_IV);
         let pnlPutResult = pnlPut(exitPrice, result.putRange, result.putStrike, result.putAsk);
         let pnlMoveResult = pnlMove(exitPrice, result.moveRange, movePrice, moveStrikePrice);
         let pnlFutureResult = pnlFuture(exitPrice, result.capitalRange, indexBtcDeribit);

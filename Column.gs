@@ -20,6 +20,8 @@ const putRangeIncrementCell = 'F4';
 const timeDelayCell = 'G2';
 const moveInstrumentNameFtxCell = 'I2';
 
+const resultCallInstrumentCell = 'B50';
+const resultPutInstrumentCell = 'B51';
 const resultCall_IVCell = 'C50';
 const resultPut_IVCell = 'C51';
 const resultMoveNoCell = 'F50';

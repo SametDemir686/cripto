@@ -26,18 +26,33 @@ function NormDist(x) {
     return t;
 }
 
-function calculateOption(exitPrice, callStrike, expiresIn, interestRate, callRT_IV) {
+function calculateCallPreFuture(exitPrice, callStrike, expiresIn, interestRate, call_IV) {
     var S = exitPrice;
     var X = callStrike;
     var T = expiresIn / 365;
     var Rf = interestRate / 100;
-    var sigma = callRT_IV / 100;
+    var sigma = call_IV / 100;
 
     let d1 = Round6((Math.log(S / X) + (Rf + Math.pow(sigma, 2) / 2) * T) / (sigma * Math.sqrt(T)));
     let d2 = Round6(d1 - (sigma * Math.sqrt(T)));
-    let callPreFuture = Round6(exitPrice * NormDist(d1) - callStrike * Math.exp(-(interestRate * expiresIn)) * NormDist(d2));
-    let putPreFuture = Round6(callStrike * Math.exp(-(interestRate * expiresIn)) * NormDist(-d2) - exitPrice * NormDist(-d1));
+    return Round6(exitPrice * NormDist(d1) - callStrike * Math.exp(-(interestRate * expiresIn)) * NormDist(d2))
+}
 
-    console.log({callPreFuture: callPreFuture, putPreFuture: putPreFuture});
-    return {d1: d1, d2: d2, callPreFuture: callPreFuture, putPreFuture: putPreFuture}
+function calculatePutPreFuture(exitPrice, callStrike, expiresIn, interestRate, put_IV) {
+    var S = exitPrice;
+    var X = callStrike;
+    var T = expiresIn / 365;
+    var Rf = interestRate / 100;
+    var sigma = put_IV / 100;
+
+    let d1 = Round6((Math.log(S / X) + (Rf + Math.pow(sigma, 2) / 2) * T) / (sigma * Math.sqrt(T)));
+    let d2 = Round6(d1 - (sigma * Math.sqrt(T)));
+    return Round6(callStrike * Math.exp(-(interestRate * expiresIn)) * NormDist(-d2) - exitPrice * NormDist(-d1))
+}
+
+function calculateOption(exitPrice, callStrike, expiresIn, interestRate, call_IV, put_IV) {
+    return {
+        callPreFuture: calculateCallPreFuture(exitPrice, callStrike, expiresIn, interestRate, call_IV),
+        putPreFuture: calculatePutPreFuture(exitPrice, callStrike, expiresIn, interestRate, put_IV)
+    }
 }
