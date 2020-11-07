@@ -49,7 +49,7 @@ function writeBestValues(result) {
     writeDataTo(resultSuccessCell, result.success);
     writeDataTo(resultIndexBtcDeribitCell, result.indexBtcDeribit);
     writeDataTo(resultTotalPremiumCell, result.totalPremium);
-    writeDataTo(resultCallInstrumentCell, result.indexBtcDeribit);
+    writeDataTo(resultCallInstrumentCell, result.callInstrumentName);
     writeDataTo(resultPutInstrumentCell, result.putInstrumentName);
 }
 
