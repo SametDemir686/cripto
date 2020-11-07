@@ -1,25 +1,25 @@
-function pnlPut(exitPrice, putNo, putStrike, putAsk) {
+function pnlPut(exitPrice, putRange, putStrike, putAsk) {
     if (exitPrice - putStrike >= 0) {
-        return -putAsk * putNo;
+        return -putAsk * putRange;
     } else {
-        return putStrike * putNo - exitPrice * putNo - putAsk * putNo;
+        return putStrike * putRange - exitPrice * putRange - putAsk * putRange;
     }
 }
 
-function pnlCall(exitPrice, callNo, callStrike, callAsk) {
+function pnlCall(exitPrice, callRange, callStrike, callAsk) {
     if (exitPrice - callStrike >= 0) {
-        return exitPrice * callNo - callStrike * callNo - callAsk * callNo;
+        return exitPrice * callRange - callStrike * callRange - callAsk * callRange;
     } else {
-        return -callAsk * callNo;
+        return -callAsk * callRange;
     }
 }
 
-function pnlMove(exitPrice, moveNo, movePrice, moveStrikePrice) {
-    return moveNo * (movePrice - Math.abs(moveStrikePrice - exitPrice));
+function pnlMove(exitPrice, moveRange, movePrice, moveStrikePrice) {
+    return moveRange * (movePrice - Math.abs(moveStrikePrice - exitPrice));
 }
 
-function pnlFuture(exitPrice, totalCapital, leverage, entry) {
-    return (exitPrice - entry) * (totalCapital * leverage / entry);
+function pnlFuture(exitPrice, capitalRange, leverage, entry) {
+    return (exitPrice - entry) * (capitalRange * leverage / entry);
 }
 
 function calculateExpiresIn(timeDelay_HourBased) {
@@ -41,10 +41,10 @@ function calculateExpiresIn(timeDelay_HourBased) {
 }
 
 function writeBestValues(result) {
-    writeDataTo(moveNoCell, result.moveNo);
-    writeDataTo(callNoCell, result.callNo);
-    writeDataTo(putNoCell, result.putNo);
-    writeDataTo(totalCapitalCell, result.totalCapital);
+    writeDataTo(moveRangeCell, result.moveRange);
+    writeDataTo(callRangeCell, result.callRange);
+    writeDataTo(putRangeCell, result.putRange);
+    writeDataTo(capitalRangeCell, result.capitalRange);
     writeDataTo(levarageCell, result.levarage);
     writeDataTo(greenMaxCell, result.greenMax);
     writeDataTo(averageCell, result.average);
@@ -53,18 +53,18 @@ function writeBestValues(result) {
     writeDataTo(totalPremiumCell, result.totalPremium);
 }
 
-function setBestValues(moveNo, callNo, putNo, totalCapital, levarage, green, average, exitSayisi, entry, putAsk, callAsk, movePrice, callStrike, putStrike) {
+function setBestValues(moveRange, callRange, putRange, capitalRange, levarage, green, average, exitSayisi, entry, putAsk, callAsk, movePrice, callStrike, putStrike) {
     return {
-        moveNo: moveNo,
-        callNo: callNo,
-        putNo: putNo,
-        totalCapital: totalCapital,
+        moveRange: moveRange,
+        callRange: callRange,
+        putRange: putRange,
+        capitalRange: capitalRange,
         levarage: levarage,
         greenMax: green,
         average: average,
         success: "%" + (green / exitSayisi * 100).toFixed(2),
         entry: entry,
-        totalPremium: putAsk * putNo + callAsk * callNo + movePrice * moveNo,
+        totalPremium: putAsk * putRange + callAsk * callRange + movePrice * moveRange,
         callStrike: callStrike,
         putStrike: putStrike,
         putAsk: putAsk,
@@ -72,8 +72,8 @@ function setBestValues(moveNo, callNo, putNo, totalCapital, levarage, green, ave
     };
 }
 
-function bestValuesChanged(result, moveNo, callNo, putNo, totalCapital, levarage, green, average, exitSayisi, entry, putAsk, callAsk, movePrice, callStrike, putStrike) {
-    result = setBestValues(result, moveNo, callNo, putNo, totalCapital, levarage, green, average, exitSayisi, entry, putAsk, callAsk, movePrice, callStrike, putStrike);
+function bestValuesChanged(result, moveRange, callRange, putRange, capitalRange, levarage, green, average, exitSayisi, entry, putAsk, callAsk, movePrice, callStrike, putStrike) {
+    result = setBestValues(result, moveRange, callRange, putRange, capitalRange, levarage, green, average, exitSayisi, entry, putAsk, callAsk, movePrice, callStrike, putStrike);
     writeBestValues(result);
     return result;
 }
@@ -81,24 +81,24 @@ function bestValuesChanged(result, moveNo, callNo, putNo, totalCapital, levarage
 function getBestValues() {
     pullJSON();
     clearTable();
-    let totalCapitalStart = getDataFrom(totalCapitalStartCell);
-    let totalCapitalEnd = getDataFrom(totalCapitalEndCell);
-    let totalCapitalIncrement = getDataFrom(totalCapitalIncrementCell);
+    let capitalRangeStart = getDataFrom(capitalRangeStartCell);
+    let capitalRangeEnd = getDataFrom(capitalRangeEndCell);
+    let capitalRangeIncrement = getDataFrom(capitalRangeIncrementCell);
     let levarageStart = getDataFrom(levarageStartCell);
     let levarageEnd = getDataFrom(levarageEndCell);
     let levarageIncrement = getDataFrom(levarageIncrementCell);
-    let putNoStart = getDataFrom(putNoStartCell);
-    let putNoEnd = getDataFrom(putNoEndCell);
-    let putNoIncrement = getDataFrom(putNoIncrementCell);
-    let callNoStart = getDataFrom(callNoStartCell);
-    let callNoEnd = getDataFrom(callNoEndCell);
-    let callNoIncrement = getDataFrom(callNoIncrementCell);
-    let moveNoStart = getDataFrom(moveNoStartCell);
-    let moveNoEnd = getDataFrom(moveNoEndCell);
-    let moveNoIncrement = getDataFrom(moveNoIncrementCell);
-    let exitStart = getDataFrom(exitStartCell);
-    let exitEnd = getDataFrom(exitEndCell);
-    let exitIncrement = getDataFrom(exitIncrementCell);
+    let putRangeStart = getDataFrom(putRangeStartCell);
+    let putRangeEnd = getDataFrom(putRangeEndCell);
+    let putRangeIncrement = getDataFrom(putRangeIncrementCell);
+    let callRangeStart = getDataFrom(callRangeStartCell);
+    let callRangeEnd = getDataFrom(callRangeEndCell);
+    let callRangeIncrement = getDataFrom(callRangeIncrementCell);
+    let moveRangeStart = getDataFrom(moveRangeStartCell);
+    let moveRangeEnd = getDataFrom(moveRangeEndCell);
+    let moveRangeIncrement = getDataFrom(moveRangeIncrementCell);
+    let exitRangeStart = getDataFrom(exitRangeStartCell);
+    let exitRangeEnd = getDataFrom(exitRangeEndCell);
+    let exitRangeIncrement = getDataFrom(exitRangeIncrementCell);
     let timeDelay = getDataFrom(timeDelayCell);
     let entry = getDataFrom(entryCell);
     let movePrice = getDataFrom(movePriceCell);
@@ -108,15 +108,15 @@ function getBestValues() {
     let expiresIn = calculateExpiresIn(timeDelay);
 
     let result = {
-        moveNo: moveNoStart,
-        callNo: callNoStart,
-        putNo: putNoStart,
-        totalCapital: totalCapitalStart,
+        moveRange: moveRangeStart,
+        callRange: callRangeStart,
+        putRange: putRangeStart,
+        capitalRange: capitalRangeStart,
         levarage: levarageStart,
         greenMax: 0,
         average: 0,
     };
-    let exitSayisi = (exitEnd - exitStart) / exitIncrement + 1;
+    let exitSayisi = (exitRangeEnd - exitRangeStart) / exitRangeIncrement + 1;
     let threshold = 0;
     let putLastRange = findLastRange(selectedPutInstrumentColumn, selectedPutInstrumentRow);
     let putInstrumentNames = SpreadsheetApp.getActiveSheet().getRange(selectedPutInstrumentColumn+selectedPutInstrumentRow+":"+putLastRange).getValues()[0];
@@ -131,15 +131,15 @@ function getBestValues() {
             let callInstrumentName = callInstrumentNames[j];
             let callStrike = callInstrumentName.split("-")[2];
             let callAsk = pullAskPriceDeribit(callInstrumentName, entry);
-            for (let moveNo = moveNoStart; moveNo <= moveNoEnd; moveNo += moveNoIncrement) {
-                for (let callNo = callNoStart; callNo <= callNoEnd; callNo += callNoIncrement) {
-                    for (let putNo = putNoStart; putNo <= putNoEnd; putNo += putNoIncrement) {
-                        for (let totalCapital = totalCapitalStart; totalCapital <= totalCapitalEnd; totalCapital += totalCapitalIncrement) {
+            for (let moveRange = moveRangeStart; moveRange <= moveRangeEnd; moveRange += moveRangeIncrement) {
+                for (let callRange = callRangeStart; callRange <= callRangeEnd; callRange += callRangeIncrement) {
+                    for (let putRange = putRangeStart; putRange <= putRangeEnd; putRange += putRangeIncrement) {
+                        for (let capitalRange = capitalRangeStart; capitalRange <= capitalRangeEnd; capitalRange += capitalRangeIncrement) {
                             for (let levarage = levarageStart; levarage <= levarageEnd; levarage += levarageIncrement) {
                                 let green = 0;
                                 let average = 0;
-                                for (let exitPrice = entry + exitStart; exitPrice <= entry + exitEnd; exitPrice += exitIncrement) {
-                                    let pnlTotal = pnlPut(exitPrice, putNo, putStrike, putAsk) + pnlCall(exitPrice, callNo, callStrike, callAsk) + pnlMove(exitPrice, moveNo, movePrice, moveStrikePrice) + pnlFuture(exitPrice, totalCapital, levarage, entry);
+                                for (let exitPrice = entry + exitRangeStart; exitPrice <= entry + exitRangeEnd; exitPrice += exitRangeIncrement) {
+                                    let pnlTotal = pnlPut(exitPrice, putRange, putStrike, putAsk) + pnlCall(exitPrice, callRange, callStrike, callAsk) + pnlMove(exitPrice, moveRange, movePrice, moveStrikePrice) + pnlFuture(exitPrice, capitalRange, levarage, entry);
                                     if (pnlTotal > 0) {
                                         green++;
                                         average += pnlTotal / exitSayisi;
@@ -147,10 +147,10 @@ function getBestValues() {
                                 }
                                 if (green / exitSayisi >= threshold) {
                                     if (result.greenMax / exitSayisi < threshold || result.average < average) {
-                                        result = bestValuesChanged(result, moveNo, callNo, putNo, totalCapital, levarage, green, average, exitSayisi, entry, putAsk, callAsk, movePrice, callStrike, putStrike);
+                                        result = bestValuesChanged(result, moveRange, callRange, putRange, capitalRange, levarage, green, average, exitSayisi, entry, putAsk, callAsk, movePrice, callStrike, putStrike);
                                     }
                                 } else if (result.greenMax < green) {
-                                    result = bestValuesChanged(result, moveNo, callNo, putNo, totalCapital, levarage, green, average, exitSayisi, entry, putAsk, callAsk, movePrice, callStrike, putStrike);
+                                    result = bestValuesChanged(result, moveRange, callRange, putRange, capitalRange, levarage, green, average, exitSayisi, entry, putAsk, callAsk, movePrice, callStrike, putStrike);
                                 }
                             }
                         }
@@ -161,15 +161,15 @@ function getBestValues() {
     }
 
     let row = tableRowStartIndex;
-    for (let exitPrice = entry + exitStart; exitPrice <= entry + exitEnd; exitPrice += exitIncrement) {
+    for (let exitPrice = entry + exitRangeStart; exitPrice <= entry + exitRangeEnd; exitPrice += exitRangeIncrement) {
         let calcOptionResult = calculateOption(exitPrice, result.callStrike, expiresIn, interestRate, callRT_IV);
-        let pnlPutResult = pnlPut(exitPrice, result.putNo, result.putStrike, result.putAsk);
-        let pnlMoveResult = pnlMove(exitPrice, result.moveNo, movePrice, moveStrikePrice);
-        let pnlFutureResult = pnlFuture(exitPrice, result.totalCapital, result.levarage, entry);
-        let pnlCallResult = pnlCall(exitPrice, result.callNo, result.callStrike, result.callAsk);
+        let pnlPutResult = pnlPut(exitPrice, result.putRange, result.putStrike, result.putAsk);
+        let pnlMoveResult = pnlMove(exitPrice, result.moveRange, movePrice, moveStrikePrice);
+        let pnlFutureResult = pnlFuture(exitPrice, result.capitalRange, result.levarage, entry);
+        let pnlCallResult = pnlCall(exitPrice, result.callRange, result.callStrike, result.callAsk);
         let pnlTotal = pnlPutResult + pnlCallResult + pnlMoveResult + pnlFutureResult;
-        let pnlCallFuture = -(result.callAsk - calcOptionResult.callPreFuture) * result.callNo;
-        let pnlPutFuture = -(result.putAsk - calcOptionResult.putPreFuture) * result.putNo;
+        let pnlCallFuture = -(result.callAsk - calcOptionResult.callPreFuture) * result.callRange;
+        let pnlPutFuture = -(result.putAsk - calcOptionResult.putPreFuture) * result.putRange;
         let pnlTotalFuture = pnlCallFuture + pnlPutFuture + pnlMoveResult;
         insertToTable(row++, entry, exitPrice, pnlTotal, pnlTotalFuture, calcOptionResult.callPreFuture, calcOptionResult.putPreFuture, pnlFutureResult, pnlMoveResult, pnlCallResult, pnlPutResult);
     }
