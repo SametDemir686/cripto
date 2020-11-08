@@ -1,5 +1,6 @@
 const callStrikeCell = 'K2';
 const putStrikeCell = 'K3';
+const instrumentNameRangeCell = 'K4';
 
 const capitalRangeStartCell = 'B2';
 const capitalRangeEndCell = 'B3';
@@ -18,6 +19,7 @@ const putRangeEndCell = 'F3';
 const putRangeIncrementCell = 'F4';
 
 const timeDelayCell = 'G2';
+const balanceCell = "H2";
 const moveInstrumentNameFtxCell = 'I2';
 
 const resultCallInstrumentCell = 'B50';
@@ -36,6 +38,7 @@ const resultCallAskPriceCell = 'B53';
 const resultCallAskSizeCell = 'C53';
 const resultPutAskPriceCell = 'D53';
 const resultPutAskSizeCell = 'E53';
+const resultLiq = 'F53';
 const resultIndexBtcDeribitCell = 'K53';
 const resultMovePriceCell = 'I53';
 const resultMoveStrikePriceCell = 'H53';
@@ -49,8 +52,8 @@ const tablePnlCallResultColumn = "D";
 const tablePnlPutResultColumn = "E";
 const tablePnlMoveResultColumn = "F";
 const tablePnlTotalColumn = "G";
-const tableCallPreFutureColumn = "H";
-const tablePutPreFutureColumn = "I";
+const tablePnlCallFutureColumn = "H";
+const tablePnlPutFutureColumn = "I";
 const tablePnlTotalFutureColumn = "J";
 
 const selectedCallInstrumentColumn = 'M';

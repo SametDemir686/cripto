@@ -53,8 +53,8 @@ function writeBestValues(result) {
     writeDataTo(resultPutInstrumentCell, result.putInstrumentName);
 }
 
-function setBestValues(result, moveRange, callRange, putRange, capitalRange, green, average, exitSayisi, indexBtcDeribit, putAsk, callAsk, movePrice, callStrike, putStrike, callInstrumentName, putInstrumentName) {
-    return {
+function bestValuesChanged(moveRange, callRange, putRange, capitalRange, green, average, exitSayisi, indexBtcDeribit, putAsk, callAsk, movePrice, callStrike, putStrike, callInstrumentName, putInstrumentName) {
+    let result = {
         moveRange: moveRange,
         callRange: callRange,
         putRange: putRange,
@@ -71,12 +71,30 @@ function setBestValues(result, moveRange, callRange, putRange, capitalRange, gre
         callInstrumentName: callInstrumentName,
         putInstrumentName: putInstrumentName
     };
-}
-
-function bestValuesChanged(result, moveRange, callRange, putRange, capitalRange, green, average, exitSayisi, indexBtcDeribit, putAsk, callAsk, movePrice, callStrike, putStrike, callInstrumentName, putInstrumentName) {
-    result = setBestValues(result, moveRange, callRange, putRange, capitalRange, green, average, exitSayisi, indexBtcDeribit, putAsk, callAsk, movePrice, callStrike, putStrike, callInstrumentName, putInstrumentName);
     writeBestValues(result);
     return result;
+}
+
+function writeLiqRisk(result, indexBtcDeribit, exitRangeStart, exitRangeEnd, exitRangeIncrement, exitSayisi) {
+    let balance = getDataFrom(balanceCell);
+    let leverage = Math.abs(result.capitalRange / balance);
+    let liq = result.indexBtcDeribit - result.indexBtcDeribit * (100 / (leverage + leverage / 16) / 100);
+    let count = 0;
+    if (result.capitalRange < 0) {
+        for (let exitPrice = indexBtcDeribit + exitRangeStart; exitPrice <= indexBtcDeribit + exitRangeEnd; exitPrice += exitRangeIncrement) {
+            if (exitPrice < liq) {
+                count++;
+            }
+        }
+    } else if (result.capitalRange > 0) {
+        for (let exitPrice = indexBtcDeribit + exitRangeStart; exitPrice <= indexBtcDeribit + exitRangeEnd; exitPrice += exitRangeIncrement) {
+            if (exitPrice > liq) {
+                count++;
+            }
+        }
+    }
+
+    writeDataTo(resultLiqRiskCell, "%" + (count / exitSayisi * 100))
 }
 
 function getBestValues() {
@@ -111,6 +129,7 @@ function getBestValues() {
         capitalRange: "Unknown",
         greenMax: 0,
         average: 0,
+        max: 0,
         success: "Unknown",
         indexBtcDeribit: "Unknown",
         totalPremium: "Unknown",
@@ -122,18 +141,17 @@ function getBestValues() {
         putInstrumentName: "Unknown"
     };
     let exitSayisi = (exitRangeEnd - exitRangeStart) / exitRangeIncrement + 1;
-    let threshold = 0.85;
     let putLastRange = findLastRange(selectedPutInstrumentColumn, selectedPutInstrumentRow);
-    let putInstrumentNames = SpreadsheetApp.getActiveSheet().getRange(selectedPutInstrumentColumn + selectedPutInstrumentRow + ":" + putLastRange).getValues()[0];
+    let putInstrumentNames = SpreadsheetApp.getActiveSheet().getRange(selectedPutInstrumentColumn + selectedPutInstrumentRow + ":" + putLastRange).getValues();
     let callLastRange = findLastRange(selectedCallInstrumentColumn, selectedCallInstrumentRow);
-    let callInstrumentNames = SpreadsheetApp.getActiveSheet().getRange(selectedCallInstrumentColumn + selectedCallInstrumentRow + ":" + callLastRange).getValues()[0];
+    let callInstrumentNames = SpreadsheetApp.getActiveSheet().getRange(selectedCallInstrumentColumn + selectedCallInstrumentRow + ":" + callLastRange).getValues();
 
     for (let i = 0; i < putInstrumentNames.length; i++) {
-        let putInstrumentName = putInstrumentNames[i];
+        let putInstrumentName = putInstrumentNames[i][0];
         let putStrike = putInstrumentName.split("-")[2];
         let putAsk = pullAskPriceDeribit(putInstrumentName, indexBtcDeribit);
         for (let j = 0; j < callInstrumentNames.length; j++) {
-            let callInstrumentName = callInstrumentNames[j];
+            let callInstrumentName = callInstrumentNames[j][0];
             let callStrike = callInstrumentName.split("-")[2];
             let callAsk = pullAskPriceDeribit(callInstrumentName, indexBtcDeribit);
             for (let moveRange = moveRangeStart; moveRange <= moveRangeEnd; moveRange += moveRangeIncrement) {
@@ -149,12 +167,8 @@ function getBestValues() {
                                     average += pnlTotal / exitSayisi;
                                 }
                             }
-                            if (green / exitSayisi >= threshold) {
-                                if (result.greenMax / exitSayisi < threshold || result.average < average) {
-                                    result = bestValuesChanged(result, moveRange, callRange, putRange, capitalRange, green, average, exitSayisi, indexBtcDeribit, putAsk, callAsk, movePrice, callStrike, putStrike, callInstrumentName, putInstrumentName);
-                                }
-                            } else if (result.greenMax < green) {
-                                result = bestValuesChanged(result, moveRange, callRange, putRange, capitalRange, green, average, exitSayisi, indexBtcDeribit, putAsk, callAsk, movePrice, callStrike, putStrike, callInstrumentName, putInstrumentName);
+                            if (green > result.greenMax) {
+                                result = bestValuesChanged(moveRange, callRange, putRange, capitalRange, green, average, exitSayisi, indexBtcDeribit, putAsk, callAsk, movePrice, callStrike, putStrike, callInstrumentName, putInstrumentName);
                             }
                         }
                     }
@@ -167,8 +181,8 @@ function getBestValues() {
     pullPut_IV(result.putInstrumentName);
     let call_IV = getDataFrom(resultCall_IVCell);
     let put_IV = getDataFrom(resultPut_IVCell);
-
     let row = tableRowStartIndex;
+
     for (let exitPrice = indexBtcDeribit + exitRangeStart; exitPrice <= indexBtcDeribit + exitRangeEnd; exitPrice += exitRangeIncrement) {
         let calcOptionResult = calculateOption(exitPrice, result.callStrike, expiresIn, interestRate, call_IV, put_IV);
         let pnlPutResult = pnlPut(exitPrice, result.putRange, result.putStrike, result.putAsk);
@@ -179,8 +193,48 @@ function getBestValues() {
         let pnlCallFuture = -(result.callAsk - calcOptionResult.callPreFuture) * result.callRange;
         let pnlPutFuture = -(result.putAsk - calcOptionResult.putPreFuture) * result.putRange;
         let pnlTotalFuture = pnlCallFuture + pnlPutFuture + pnlMoveResult;
-        insertToTable(row++, indexBtcDeribit, exitPrice, pnlTotal, pnlTotalFuture, calcOptionResult.callPreFuture, calcOptionResult.putPreFuture, pnlFutureResult, pnlMoveResult, pnlCallResult, pnlPutResult);
+        insertToTable(row++, indexBtcDeribit, exitPrice, pnlTotal, pnlTotalFuture, pnlCallFuture, pnlPutFuture, pnlFutureResult, pnlMoveResult, pnlCallResult, pnlPutResult);
     }
+
+    writeLiqRisk(result, indexBtcDeribit, exitRangeStart, exitRangeEnd, exitRangeIncrement, exitSayisi);
+}
+
+
+function test() {
+    let threshold = 1;
+    let result = {
+        greenMax: 0,
+        averageMax: 0
+    };
+    let data = [
+        {green: 2, average: 128.7297729, call: "BTC-8NOV20-15000-P", put: "BTC-8NOV20-15000-C"},
+        {green: 2, average: 68.02417144, call: "BTC-8NOV20-15000-P", put: "BTC-8NOV20-15000-C"},
+        {green: 1, average: 7.409285, call: "BTC-8NOV20-15000-P", put: "BTC-8NOV20-15000-C"},
+        {green: 2, average: 35.58917144, call: "BTC-8NOV20-15000-P", put: "BTC-8NOV20-15000-C"},
+        {green: 2, average: 96.29477288, call: "BTC-8NOV20-15000-P", put: "BTC-8NOV20-15000-C"},
+        {green: 2, average: 143.4611679, call: "BTC-8NOV20-15000-P", put: "BTC-8NOV20-15000-C"}
+    ];
+    for (let i = 0; i < data.length; i++) {
+        let datum = data[i];
+        let green = datum.green;
+        let average = datum.average;
+
+        if (green >= threshold) {
+            if (average > result.averageMax) {
+                result = {greenMax: datum.green, averageMax: datum.average}
+            }
+        } else {
+            if (green > result.greenMax) {
+                result = {greenMax: datum.green, averageMax: datum.average}
+            }
+        }
+
+    }
+
+    writeDataTo('P95', result.greenMax);
+    writeDataTo('Q95', result.averageMax);
+    writeDataTo('R95', result.call);
+    writeDataTo('S95', result.put);
 }
 
 function pullAskPriceDeribit(instrumentName, indexBtcDeribit) {
@@ -199,30 +253,30 @@ function findLastRange(columnName, startIndex) {
     return columnName + ct;
 }
 
-function insertToTable(row, indexBtcDeribit, exitPrice, pnlTotal, pnlTotalFuture, callPreFuture, putPreFuture, pnlFutureResult, pnlMoveResult, pnlCallResult, pnlPutResult) {
+function insertToTable(row, indexBtcDeribit, exitPrice, pnlTotal, pnlTotalFuture, pnlCallFuture, pnlPutFuture, pnlFutureResult, pnlMoveResult, pnlCallResult, pnlPutResult) {
     writeDataTo(tableIndexBtcDeribitColumn + row, indexBtcDeribit.toFixed(2));
     writeDataTo(tableExitPriceColumn + row, exitPrice.toFixed(2));
-    writeDataTo(tablePnlTotalColumn + row, pnlTotal.toFixed(0));
-    writeDataTo(tablePnlTotalFutureColumn + row, pnlTotalFuture.toFixed(0));
-    writeDataTo(tableCallPreFutureColumn + row, callPreFuture.toFixed(2));
-    writeDataTo(tablePutPreFutureColumn + row, putPreFuture.toFixed(2));
     writeDataTo(tablePnlFutureResultColumn + row, pnlFutureResult.toFixed(2));
-    writeDataTo(tablePnlMoveResultColumn + row, pnlMoveResult.toFixed(2));
     writeDataTo(tablePnlCallResultColumn + row, pnlCallResult.toFixed(2));
     writeDataTo(tablePnlPutResultColumn + row, pnlPutResult.toFixed(2));
+    writeDataTo(tablePnlMoveResultColumn + row, pnlMoveResult.toFixed(2));
+    writeDataTo(tablePnlTotalColumn + row, pnlTotal.toFixed(0));
+    writeDataTo(tablePnlCallFutureColumn + row, pnlCallFuture.toFixed(2));
+    writeDataTo(tablePnlPutFutureColumn + row, pnlPutFuture.toFixed(2));
+    writeDataTo(tablePnlTotalFutureColumn + row, pnlTotalFuture.toFixed(0));
 }
 
 function clearTable() {
-    for (let row = tableRowStartIndex; row < 100; row++) {
+    for (let row = tableRowStartIndex; row < 300; row++) {
         writeDataTo(tableIndexBtcDeribitColumn + row, "");
         writeDataTo(tableExitPriceColumn + row, "");
-        writeDataTo(tablePnlTotalColumn + row, "");
-        writeDataTo(tablePnlTotalFutureColumn + row, "");
-        writeDataTo(tableCallPreFutureColumn + row, "");
-        writeDataTo(tablePutPreFutureColumn + row, "");
         writeDataTo(tablePnlFutureResultColumn + row, "");
-        writeDataTo(tablePnlMoveResultColumn + row, "");
         writeDataTo(tablePnlCallResultColumn + row, "");
         writeDataTo(tablePnlPutResultColumn + row, "");
+        writeDataTo(tablePnlMoveResultColumn + row, "");
+        writeDataTo(tablePnlTotalColumn + row, "");
+        writeDataTo(tablePnlCallFutureColumn + row, "");
+        writeDataTo(tablePnlPutFutureColumn + row, "");
+        writeDataTo(tablePnlTotalFutureColumn + row, "");
     }
 }
