@@ -164,11 +164,13 @@ function getBestValues() {
                                 let pnlTotal = pnlPut(exitPrice, putRange, putStrike, putAsk) + pnlCall(exitPrice, callRange, callStrike, callAsk) + pnlMove(exitPrice, moveRange, movePrice, moveStrikePrice) + pnlFuture(exitPrice, capitalRange, indexBtcDeribit);
                                 if (pnlTotal > 0) {
                                     green++;
-                                    average += pnlTotal / exitSayisi;
                                 }
+                                average += pnlTotal / exitSayisi;
                             }
-                            if (green > result.greenMax) {
+                            let max = green*average;
+                            if (max > result.max) {
                                 result = bestValuesChanged(moveRange, callRange, putRange, capitalRange, green, average, exitSayisi, indexBtcDeribit, putAsk, callAsk, movePrice, callStrike, putStrike, callInstrumentName, putInstrumentName);
+                                result.max = max;
                             }
                         }
                     }
