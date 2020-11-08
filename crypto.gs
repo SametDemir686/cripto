@@ -1,4 +1,4 @@
-function pnlPut(exitPrice, putRange, putStrike, putAsk) {
+function pnlPutWithoutFee(exitPrice, putStrike, putAsk, putRange) {
     if (exitPrice - putStrike >= 0) {
         return -putAsk * putRange;
     } else {
@@ -6,7 +6,21 @@ function pnlPut(exitPrice, putRange, putStrike, putAsk) {
     }
 }
 
-function pnlCall(exitPrice, callRange, callStrike, callAsk) {
+function pnlPut(exitPrice, putRange, putStrike, putAsk, index) {
+    let entryFee = putRange * index * 0.03 / 100;
+    let exitFee = putRange * exitPrice * 0.015 / 100;
+    let totalFee = entryFee + exitFee;
+    return pnlPutWithoutFee(exitPrice, putStrike, putAsk, putRange) - totalFee;
+}
+
+function pnlCall(exitPrice, callRange, callStrike, callAsk, index) {
+    let entryFee = callRange * index * 0.03 / 100;
+    let exitFee = callRange * exitPrice * 0.015 / 100;
+    let totalFee = entryFee + exitFee;
+    return pnlCallWithoutFee(exitPrice, callStrike, callAsk, callRange) - totalFee;
+}
+
+function pnlCallWithoutFee(exitPrice, callRange, callStrike, callAsk) {
     if (exitPrice - callStrike >= 0) {
         return exitPrice * callRange - callStrike * callRange - callAsk * callRange;
     } else {
@@ -14,12 +28,18 @@ function pnlCall(exitPrice, callRange, callStrike, callAsk) {
     }
 }
 
-function pnlMove(exitPrice, moveRange, movePrice, moveStrikePrice) {
-    return moveRange * (movePrice - Math.abs(moveStrikePrice - exitPrice));
+function pnlMove(exitPrice, moveRange, movePrice, moveStrikePrice, index) {
+    let pnlMove = moveRange * (movePrice - Math.abs(moveStrikePrice - exitPrice));
+    let fee = moveRange * index * 2 * 0.07 / 100;
+    return pnlMove - fee;
 }
 
 function pnlFuture(exitPrice, capitalRange, indexBtcDeribit) {
-    return (exitPrice - indexBtcDeribit) * (capitalRange / indexBtcDeribit);
+    let pnlFuture = (exitPrice - indexBtcDeribit) * (capitalRange / indexBtcDeribit);
+    let entryFee = capitalRange * 0.1 / 100;
+    let exitFee = capitalRange * 0.1 / 100;
+    let totalFee = entryFee + exitFee;
+    return pnlFuture - totalFee;
 }
 
 function calculateExpiresIn(timeDelay_HourBased) {
@@ -77,7 +97,7 @@ function bestValuesChanged(moveRange, callRange, putRange, capitalRange, green, 
 
 function writeLiqRisk(result, indexBtcDeribit, exitRangeStart, exitRangeEnd, exitRangeIncrement, exitSayisi) {
     let balance = getDataFrom(balanceCell);
-    let leverage = Math.abs(result.capitalRange / balance);
+    let leverage = result.capitalRange / balance;
     let liq = result.indexBtcDeribit - result.indexBtcDeribit * (100 / (leverage + leverage / 16) / 100);
     let count = 0;
     if (result.capitalRange < 0) {
@@ -161,13 +181,13 @@ function getBestValues() {
                             let green = 0;
                             let average = 0;
                             for (let exitPrice = indexBtcDeribit + exitRangeStart; exitPrice <= indexBtcDeribit + exitRangeEnd; exitPrice += exitRangeIncrement) {
-                                let pnlTotal = pnlPut(exitPrice, putRange, putStrike, putAsk) + pnlCall(exitPrice, callRange, callStrike, callAsk) + pnlMove(exitPrice, moveRange, movePrice, moveStrikePrice) + pnlFuture(exitPrice, capitalRange, indexBtcDeribit);
+                                let pnlTotal = pnlPut(exitPrice, putRange, putStrike, putAsk, indexBtcDeribit) + pnlCall(exitPrice, callRange, callStrike, callAsk, indexBtcDeribit) + pnlMove(exitPrice, moveRange, movePrice, moveStrikePrice, indexBtcDeribit) + pnlFuture(exitPrice, capitalRange, indexBtcDeribit);
                                 if (pnlTotal > 0) {
                                     green++;
                                 }
                                 average += pnlTotal / exitSayisi;
                             }
-                            let max = green*average;
+                            let max = average;//*green;
                             if (max > result.max) {
                                 result = bestValuesChanged(moveRange, callRange, putRange, capitalRange, green, average, exitSayisi, indexBtcDeribit, putAsk, callAsk, movePrice, callStrike, putStrike, callInstrumentName, putInstrumentName);
                                 result.max = max;
@@ -187,18 +207,30 @@ function getBestValues() {
 
     for (let exitPrice = indexBtcDeribit + exitRangeStart; exitPrice <= indexBtcDeribit + exitRangeEnd; exitPrice += exitRangeIncrement) {
         let calcOptionResult = calculateOption(exitPrice, result.callStrike, expiresIn, interestRate, call_IV, put_IV);
-        let pnlPutResult = pnlPut(exitPrice, result.putRange, result.putStrike, result.putAsk);
-        let pnlMoveResult = pnlMove(exitPrice, result.moveRange, movePrice, moveStrikePrice);
-        let pnlFutureResult = pnlFuture(exitPrice, result.capitalRange, indexBtcDeribit);
-        let pnlCallResult = pnlCall(exitPrice, result.callRange, result.callStrike, result.callAsk);
+        let pnlPutResult = pnlPut(exitPrice, result.putRange, result.putStrike, result.putAsk, result.indexBtcDeribit);
+        let pnlMoveResult = pnlMove(exitPrice, result.moveRange, movePrice, moveStrikePrice, result.indexBtcDeribit);
+        let pnlFutureResult = pnlFuture(exitPrice, result.capitalRange, result.indexBtcDeribit);
+        let pnlCallResult = pnlCall(exitPrice, result.callRange, result.callStrike, result.callAsk, result.indexBtcDeribit);
         let pnlTotal = pnlPutResult + pnlCallResult + pnlMoveResult + pnlFutureResult;
-        let pnlCallFuture = -(result.callAsk - calcOptionResult.callPreFuture) * result.callRange;
-        let pnlPutFuture = -(result.putAsk - calcOptionResult.putPreFuture) * result.putRange;
+        let pnlCallFuture = calculatePnlCallFuture(result, calcOptionResult);
+        let pnlPutFuture = calculatePnlPutFuture(result, calcOptionResult);
         let pnlTotalFuture = pnlCallFuture + pnlPutFuture + pnlMoveResult;
         insertToTable(row++, indexBtcDeribit, exitPrice, pnlTotal, pnlTotalFuture, pnlCallFuture, pnlPutFuture, pnlFutureResult, pnlMoveResult, pnlCallResult, pnlPutResult);
     }
 
     writeLiqRisk(result, indexBtcDeribit, exitRangeStart, exitRangeEnd, exitRangeIncrement, exitSayisi);
+}
+
+function calculatePnlCallFuture(result, calcOptionResult) {
+    let pnlCallFuture = -(result.callAsk - calcOptionResult.callPreFuture) * result.callRange;
+    let totalFee = result.callRange * result.indexBtcDeribit * 2 * 0.03 / 100;
+    return pnlCallFuture - totalFee;
+}
+
+function calculatePnlPutFuture(result, calcOptionResult) {
+    let pnlCallFuture = -(result.putAsk - calcOptionResult.putPreFuture) * result.putRange;
+    let totalFee = result.putRange * result.indexBtcDeribit * 2 * 0.03 / 100;
+    return pnlCallFuture - totalFee;
 }
 
 
