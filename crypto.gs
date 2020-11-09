@@ -1,21 +1,44 @@
 function pnlPut(exitPrice, putRange, putStrike, putAsk) {
-    if (exitPrice - putStrike >= 0) {
-        return -putAsk * putRange;
-    } else {
-        return putStrike * putRange - exitPrice * putRange - putAsk * putRange;
+    if (putRange >= 0) {
+        if (exitPrice - putStrike >= 0) {
+            return -putAsk * putRange;
+        } else {
+            return putStrike * putRange - exitPrice * putRange - putAsk * putRange;
+        }
+    }
+    if (putRange < 0) {
+        if (exitPrice - putStrike < 0) {
+            return -(putAsk * putRange - putStrike * putRange + exitPrice * putRange);
+        } else {
+            return -putAsk * putRange;
+        }
     }
 }
 
+
 function pnlCall(exitPrice, callRange, callStrike, callAsk) {
-    if (exitPrice - callStrike >= 0) {
-        return exitPrice * callRange - callStrike * callRange - callAsk * callRange;
-    } else {
-        return -callAsk * callRange;
+    if (callRange >= 0) {
+        if (exitPrice - callStrike >= 0) {
+            return exitPrice * callRange - callStrike * callRange - callAsk * callRange;
+        } else {
+            return -callAsk * callRange;
+        }
+    }
+    if (callRange < 0) {
+        if (exitPrice - callStrike < 0) {
+            return -callAsk * callRange;
+        } else {
+            return -(callAsk * callRange - exitPrice * callRange + callStrike * callRange);
+        }
     }
 }
 
 function pnlMove(exitPrice, moveRange, movePrice, moveStrikePrice) {
-    return moveRange * (movePrice - Math.abs(moveStrikePrice - exitPrice));
+    if (moveRange >= 0) {
+        return moveRange * (-movePrice + Math.abs(moveStrikePrice - exitPrice));
+    } else {
+        return -moveRange * (movePrice - Math.abs(moveStrikePrice - exitPrice));
+    }
 }
 
 function pnlFuture(exitPrice, capitalRange, indexBtcDeribit) {
@@ -154,16 +177,14 @@ function takeIntegralFrom(p, m, n) {
 }
 
 function calculateArea(p1, p2) {
-    if(p1.x===p2.x)return 0;
+    if (p1.x === p2.x) return 0;
     let m = (p1.y - p2.y) / (p1.x - p2.x);
     let n = (p1.x * p2.y - p1.y * p2.x) / (p1.x - p2.x);
-    return - takeIntegralFrom(p1, m, n) + takeIntegralFrom(p2, m, n);
+    return -takeIntegralFrom(p1, m, n) + takeIntegralFrom(p2, m, n);
 }
 
-console.log(calculateArea(getPoint(-100, f), getPoint(-100, f)));
-
 function f(x) {
-    return 3*x-50;
+    return 3 * x - 50;
 }
 
 function getPoint(x, f) {
@@ -202,7 +223,7 @@ function getBestValues() {
         capitalRange: "Unknown",
         greenMax: 0,
         average: 0,
-        max: 0,
+        max: -10000000,
         success: "Unknown",
         indexBtcDeribit: "Unknown",
         totalPremium: "Unknown",
@@ -250,7 +271,7 @@ function getBestValues() {
                                 average += calculateArea(pnlTotalsArray[i], pnlTotalsArray[i + 1]) / exitSayisi;
                             }
 
-                            let max = green*average;
+                            let max = green * average;
                             if (max > result.max) {
                                 result = bestValuesChanged(moveRange, callRange, putRange, capitalRange, green, average, exitSayisi, indexBtcDeribit, putAsk, callAsk, movePrice, callStrike, putStrike, callInstrumentName, putInstrumentName);
                                 result.max = max;
