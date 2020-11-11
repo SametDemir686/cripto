@@ -1,44 +1,22 @@
 function pnlPut(exitPrice, putRange, putStrike, putAsk) {
-    if (putRange >= 0) {
-        if (exitPrice - putStrike >= 0) {
-            return -putAsk * putRange;
-        } else {
-            return putStrike * putRange - exitPrice * putRange - putAsk * putRange;
-        }
-    }
-    if (putRange < 0) {
-        if (exitPrice - putStrike < 0) {
-            return -(putAsk * putRange - putStrike * putRange + exitPrice * putRange);
-        } else {
-            return -putAsk * putRange;
-        }
+    if (exitPrice - putStrike >= 0) {
+        return -putAsk * putRange;
+    } else {
+        return putStrike * putRange - exitPrice * putRange - putAsk * putRange;
     }
 }
 
 
 function pnlCall(exitPrice, callRange, callStrike, callAsk) {
-    if (callRange >= 0) {
-        if (exitPrice - callStrike >= 0) {
-            return exitPrice * callRange - callStrike * callRange - callAsk * callRange;
-        } else {
-            return -callAsk * callRange;
-        }
-    }
-    if (callRange < 0) {
-        if (exitPrice - callStrike < 0) {
-            return -callAsk * callRange;
-        } else {
-            return -(callAsk * callRange - exitPrice * callRange + callStrike * callRange);
-        }
+    if (exitPrice - callStrike >= 0) {
+        return exitPrice * callRange - callStrike * callRange - callAsk * callRange;
+    } else {
+        return -callAsk * callRange;
     }
 }
 
 function pnlMove(exitPrice, moveRange, movePrice, moveStrikePrice) {
-    if (moveRange >= 0) {
-        return moveRange * (-movePrice + Math.abs(moveStrikePrice - exitPrice));
-    } else {
-        return -moveRange * (movePrice - Math.abs(moveStrikePrice - exitPrice));
-    }
+    return moveRange * (-movePrice + Math.abs(moveStrikePrice - exitPrice));
 }
 
 function pnlFuture(exitPrice, capitalRange, indexBtcDeribit) {
@@ -98,10 +76,11 @@ function bestValuesChanged(moveRange, callRange, putRange, capitalRange, green, 
     return result;
 }
 
-function writeLiqRisk(result, indexBtcDeribit, exitRangeStart, exitRangeEnd, exitRangeIncrement, exitSayisi) {
+function writeLiqRisk(result, indexBtcDeribit, exitRangeStart, exitRangeEnd, exitRangeIncrement) {
+    let exitSayisi = (exitRangeEnd-exitRangeStart)/exitRangeIncrement+1;
     let balance = getDataFrom(balanceCell);
     let leverage = result.capitalRange / balance;
-    let liq = result.indexBtcDeribit - result.indexBtcDeribit * (100 / (leverage + leverage / 16) / 100);
+    let liq = result.indexBtcDeribit * (1 - (16 / (leverage * 17)));
     let count = 0;
     if (result.capitalRange < 0) {
         for (let exitPrice = indexBtcDeribit + exitRangeStart; exitPrice <= indexBtcDeribit + exitRangeEnd; exitPrice += exitRangeIncrement) {
@@ -117,7 +96,7 @@ function writeLiqRisk(result, indexBtcDeribit, exitRangeStart, exitRangeEnd, exi
         }
     }
 
-    writeDataTo(resultLiqRiskCell, "%" + (count / exitSayisi * 100))
+    writeDataTo(resultLiqRiskCell, "%" + (count / exitSayisi * 100).toFixed(2))
 }
 
 function calculatePnlTotal(exitPrice, indexBtcDeribit, exitRangeStart, putRange, putStrike, putAsk, callRange, callStrike, callAsk, moveRange, movePrice, moveStrikePrice, capitalRange) {
@@ -191,9 +170,20 @@ function getPoint(x, f) {
     return {x: x, y: f(x)};
 }
 
+function getMax(green, average, threshold, exitInterval, boost) {
+    if (green / exitInterval >= threshold) {
+        return boost * exitInterval * average;
+    } else {
+        return green * average;
+    }
+}
+
 function getBestValues() {
+    writeDataTo(statusCell, "Pulling Data from Internet");
     pullJSON();
+    writeDataTo(statusCell, "Clearing Table");
     clearTable();
+    writeDataTo(statusCell, "Getting Initial Values");
     let capitalRangeStart = getDataFrom(capitalRangeStartCell);
     let capitalRangeEnd = getDataFrom(capitalRangeEndCell);
     let capitalRangeIncrement = getDataFrom(capitalRangeIncrementCell);
@@ -234,12 +224,15 @@ function getBestValues() {
         callInstrumentName: "Unknown",
         putInstrumentName: "Unknown"
     };
-    let exitSayisi = exitRangeEnd - exitRangeStart;
+    let threshold = getDataFrom(thresholdCell);
+    let boost = getDataFrom(boostCell);
+    let exitInterval = exitRangeEnd - exitRangeStart;
     let putLastRange = findLastRange(selectedPutInstrumentColumn, selectedPutInstrumentRow);
     let putInstrumentNames = SpreadsheetApp.getActiveSheet().getRange(selectedPutInstrumentColumn + selectedPutInstrumentRow + ":" + putLastRange).getValues();
     let callLastRange = findLastRange(selectedCallInstrumentColumn, selectedCallInstrumentRow);
     let callInstrumentNames = SpreadsheetApp.getActiveSheet().getRange(selectedCallInstrumentColumn + selectedCallInstrumentRow + ":" + callLastRange).getValues();
 
+    writeDataTo(statusCell, "Calculating Best Values");
     for (let i = 0; i < putInstrumentNames.length; i++) {
         let putInstrumentName = putInstrumentNames[i][0];
         let putStrike = putInstrumentName.split("-")[2];
@@ -268,12 +261,12 @@ function getBestValues() {
 
                             for (let i = 0; i < pnlTotalsArray.length - 1; i++) {
                                 green += calculateGreen(pnlTotalsArray[i], pnlTotalsArray[i + 1]);
-                                average += calculateArea(pnlTotalsArray[i], pnlTotalsArray[i + 1]) / exitSayisi;
+                                average += calculateArea(pnlTotalsArray[i], pnlTotalsArray[i + 1]) / exitInterval;
                             }
 
-                            let max = green * average;
+                            let max = getMax(green, average, threshold, exitInterval, boost);
                             if (max > result.max) {
-                                result = bestValuesChanged(moveRange, callRange, putRange, capitalRange, green, average, exitSayisi, indexBtcDeribit, putAsk, callAsk, movePrice, callStrike, putStrike, callInstrumentName, putInstrumentName);
+                                result = bestValuesChanged(moveRange, callRange, putRange, capitalRange, green, average, exitInterval, indexBtcDeribit, putAsk, callAsk, movePrice, callStrike, putStrike, callInstrumentName, putInstrumentName);
                                 result.max = max;
                             }
                         }
@@ -283,12 +276,14 @@ function getBestValues() {
         }
     }
 
+    writeDataTo(statusCell, "Calculating IV values");
     pullCall_IV(result.callInstrumentName);
     pullPut_IV(result.putInstrumentName);
     let call_IV = getDataFrom(resultCall_IVCell);
     let put_IV = getDataFrom(resultPut_IVCell);
-    let row = tableRowStartIndex;
 
+    writeDataTo(statusCell, "Writing best values into table");
+    let row = tableRowStartIndex;
     for (let exitPrice = indexBtcDeribit + exitRangeStart; exitPrice <= indexBtcDeribit + exitRangeEnd; exitPrice += exitRangeIncrement) {
         let calcOptionResult = calculateOption(exitPrice, result.callStrike, expiresIn, interestRate, call_IV, put_IV);
         let pnlPutResult = pnlPut(exitPrice, result.putRange, result.putStrike, result.putAsk);
@@ -302,44 +297,9 @@ function getBestValues() {
         insertToTable(row++, indexBtcDeribit, exitPrice, pnlTotal, pnlTotalFuture, pnlCallFuture, pnlPutFuture, pnlFutureResult, pnlMoveResult, pnlCallResult, pnlPutResult);
     }
 
-    writeLiqRisk(result, indexBtcDeribit, exitRangeStart, exitRangeEnd, exitRangeIncrement, exitSayisi);
-}
-
-function test() {
-    let threshold = 1;
-    let result = {
-        greenMax: 0,
-        averageMax: 0
-    };
-    let data = [
-        {green: 2, average: 128.7297729, call: "BTC-8NOV20-15000-P", put: "BTC-8NOV20-15000-C"},
-        {green: 2, average: 68.02417144, call: "BTC-8NOV20-15000-P", put: "BTC-8NOV20-15000-C"},
-        {green: 1, average: 7.409285, call: "BTC-8NOV20-15000-P", put: "BTC-8NOV20-15000-C"},
-        {green: 2, average: 35.58917144, call: "BTC-8NOV20-15000-P", put: "BTC-8NOV20-15000-C"},
-        {green: 2, average: 96.29477288, call: "BTC-8NOV20-15000-P", put: "BTC-8NOV20-15000-C"},
-        {green: 2, average: 143.4611679, call: "BTC-8NOV20-15000-P", put: "BTC-8NOV20-15000-C"}
-    ];
-    for (let i = 0; i < data.length; i++) {
-        let datum = data[i];
-        let green = datum.green;
-        let average = datum.average;
-
-        if (green >= threshold) {
-            if (average > result.averageMax) {
-                result = {greenMax: datum.green, averageMax: datum.average}
-            }
-        } else {
-            if (green > result.greenMax) {
-                result = {greenMax: datum.green, averageMax: datum.average}
-            }
-        }
-
-    }
-
-    writeDataTo('P95', result.greenMax);
-    writeDataTo('Q95', result.averageMax);
-    writeDataTo('R95', result.call);
-    writeDataTo('S95', result.put);
+    writeDataTo(statusCell, "Calculating Liq Risk");
+    writeLiqRisk(result, indexBtcDeribit, exitRangeStart, exitRangeEnd, exitRangeIncrement, exitInterval);
+    writeDataTo(statusCell, "Done");
 }
 
 function pullAskPriceDeribit(instrumentName, indexBtcDeribit) {

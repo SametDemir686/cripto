@@ -2,6 +2,9 @@ const callStrikeCell = 'K2';
 const putStrikeCell = 'K3';
 const instrumentNameRangeCell = 'K4';
 
+const thresholdCell = 'J6';
+const boostCell = 'K6';
+
 const capitalRangeStartCell = 'B2';
 const capitalRangeEndCell = 'B3';
 const capitalRangeIncrementCell = 'B4';
@@ -56,7 +59,9 @@ const tablePnlCallFutureColumn = "H";
 const tablePnlPutFutureColumn = "I";
 const tablePnlTotalFutureColumn = "J";
 
-const selectedCallInstrumentColumn = 'M';
+const selectedCallInstrumentColumn = 'L';
 const selectedCallInstrumentRow = '2';
-const selectedPutInstrumentColumn = 'N';
+const selectedPutInstrumentColumn = 'M';
 const selectedPutInstrumentRow = '2';
+
+const statusCell = 'I6';
