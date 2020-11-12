@@ -52,6 +52,8 @@ function writeBestValues(result) {
     writeDataTo(resultTotalPremiumCell, result.totalPremium);
     writeDataTo(resultCallInstrumentCell, result.callInstrumentName);
     writeDataTo(resultPutInstrumentCell, result.putInstrumentName);
+    writeDataTo(resultCallAskCell, result.callAsk);
+    writeDataTo(resultPutAskCell, result.putAsk);
 }
 
 function bestValuesChanged(moveRange, callRange, putRange, capitalRange, green, average, exitSayisi, indexBtcDeribit, putAsk, callAsk, movePrice, callStrike, putStrike, callInstrumentName, putInstrumentName) {
@@ -77,7 +79,7 @@ function bestValuesChanged(moveRange, callRange, putRange, capitalRange, green, 
 }
 
 function writeLiqRisk(result, indexBtcDeribit, exitRangeStart, exitRangeEnd, exitRangeIncrement) {
-    let exitSayisi = (exitRangeEnd-exitRangeStart)/exitRangeIncrement+1;
+    let exitSayisi = (exitRangeEnd - exitRangeStart) / exitRangeIncrement + 1;
     let balance = getDataFrom(balanceCell);
     let leverage = result.capitalRange / balance;
     let liq = result.indexBtcDeribit * (1 - (16 / (leverage * 17)));
@@ -178,6 +180,14 @@ function getMax(green, average, threshold, exitInterval, boost) {
     }
 }
 
+function map(instrumentNames) {
+    let result = [];
+    for (let instrumentName of instrumentNames) {
+        result.push(instrumentName[0]);
+    }
+    return result;
+}
+
 function getBestValues() {
     writeDataTo(statusCell, "Pulling Data from Internet");
     pullJSON();
@@ -231,16 +241,19 @@ function getBestValues() {
     let putInstrumentNames = SpreadsheetApp.getActiveSheet().getRange(selectedPutInstrumentColumn + selectedPutInstrumentRow + ":" + putLastRange).getValues();
     let callLastRange = findLastRange(selectedCallInstrumentColumn, selectedCallInstrumentRow);
     let callInstrumentNames = SpreadsheetApp.getActiveSheet().getRange(selectedCallInstrumentColumn + selectedCallInstrumentRow + ":" + callLastRange).getValues();
+    let putAsks = pullAskPricesDeribit(map(putInstrumentNames), indexBtcDeribit);
+    let callAsks = pullAskPricesDeribit(map(callInstrumentNames), indexBtcDeribit);
 
     writeDataTo(statusCell, "Calculating Best Values");
+    getDataFrom("B4");
     for (let i = 0; i < putInstrumentNames.length; i++) {
         let putInstrumentName = putInstrumentNames[i][0];
         let putStrike = putInstrumentName.split("-")[2];
-        let putAsk = pullAskPriceDeribit(putInstrumentName, indexBtcDeribit);
+        let putAsk = putAsks[i];
         for (let j = 0; j < callInstrumentNames.length; j++) {
             let callInstrumentName = callInstrumentNames[j][0];
             let callStrike = callInstrumentName.split("-")[2];
-            let callAsk = pullAskPriceDeribit(callInstrumentName, indexBtcDeribit);
+            let callAsk = callAsks[j];
             for (let moveRange = moveRangeStart; moveRange <= moveRangeEnd; moveRange += moveRangeIncrement) {
                 for (let callRange = callRangeStart; callRange <= callRangeEnd; callRange += callRangeIncrement) {
                     for (let putRange = putRangeStart; putRange <= putRangeEnd; putRange += putRangeIncrement) {
@@ -305,6 +318,14 @@ function getBestValues() {
 function pullAskPriceDeribit(instrumentName, indexBtcDeribit) {
     var data = pullDataFrom("https://www.deribit.com/api/v2/public/get_order_book?instrument_name=" + instrumentName);
     return indexBtcDeribit * data.result['asks'][0][0];
+}
+
+function pullAskPricesDeribit(instrumentNames, indexBtcDeribit) {
+    let result = [];
+    for (let instrumentName of instrumentNames) {
+        result.push(pullAskPriceDeribit(instrumentName, indexBtcDeribit));
+    }
+    return result;
 }
 
 function findLastRange(columnName, startIndex) {
