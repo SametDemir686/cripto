@@ -27,8 +27,8 @@ const moveInstrumentNameFtxCell = 'I2';
 
 const resultCallInstrumentCell = 'B50';
 const resultPutInstrumentCell = 'B51';
-const resultCallAskCell = 'B53';
-const resultPutAskCell = 'D53';
+const resultCallAskCell = 'H55';
+const resultPutAskCell = 'I55';
 const resultCall_IVCell = 'C50';
 const resultPut_IVCell = 'C51';
 const resultMoveNoCell = 'F50';
@@ -40,13 +40,13 @@ const resultSuccessCell = "J50";
 const resultTotalPremiumCell = "H50";
 
 const resultCallAskPriceCell = 'B53';
-const resultCallAskSizeCell = 'C53';
-const resultPutAskPriceCell = 'D53';
+const resultCallAskSizeCell = 'J55';
+const resultPutAskPriceCell = 'K55';
 const resultPutAskSizeCell = 'E53';
 const resultLiq = 'F53';
 const resultIndexBtcDeribitCell = 'K53';
-const resultMovePriceCell = 'I53';
-const resultMoveStrikePriceCell = 'H53';
+const resultMovePriceCell = 'K55';
+const resultMoveStrikePriceCell = 'J55';
 const resultLiqRiskCell = 'G53';
 
 const tableRowStartIndex = 95;
