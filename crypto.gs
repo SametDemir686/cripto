@@ -66,7 +66,7 @@ function bestValuesChanged(moveRange, callRange, putRange, capitalRange, green, 
         average: average,
         success: "%" + (green / exitSayisi * 100).toFixed(2),
         indexBtcDeribit: indexBtcDeribit,
-        totalPremium: Math.abs(putAsk * putRange) +Math.abs(callAsk * callRange) + Math.abs(movePrice * moveRange),
+        totalPremium: Math.abs(putAsk * putRange) + Math.abs(callAsk * callRange) + Math.abs(movePrice * moveRange),
         callStrike: callStrike,
         putStrike: putStrike,
         putAsk: putAsk,
@@ -188,6 +188,14 @@ function map(instrumentNames) {
     return result;
 }
 
+function calculateMaintenanceMarginCall(indexBtcDeribit, calcOptionResult) {
+    return 0.075 * indexBtcDeribit + calcOptionResult.callPreFuture;
+}
+
+function calculateMaintenanceMarginPut(indexBtcDeribit, calcOptionResult) {
+    return Math.max(0.075, 0.075 * calcOptionResult.putPreFuture) + calcOptionResult.putPreFuture;
+}
+
 function getBestValues() {
     writeDataTo(statusCell, "Pulling Data from Internet");
     getDataFrom("B4");
@@ -300,6 +308,8 @@ function getBestValues() {
     writeDataTo(statusCell, "Writing best values into table");
     getDataFrom("B4");
     let row = tableRowStartIndex;
+    let maxMaintenanceMarginCall = 0;
+    let maxMaintenanceMarginPut = 0;
     for (let exitPrice = indexBtcDeribit + exitRangeStart; exitPrice <= indexBtcDeribit + exitRangeEnd; exitPrice += exitRangeIncrement) {
         let calcOptionResult = calculateOption(exitPrice, result.callStrike, expiresIn, interestRate, call_IV, put_IV);
         let pnlPutResult = pnlPut(exitPrice, result.putRange, result.putStrike, result.putAsk);
@@ -310,9 +320,14 @@ function getBestValues() {
         let pnlCallFuture = -(result.callAsk - calcOptionResult.callPreFuture) * result.callRange;
         let pnlPutFuture = -(result.putAsk - calcOptionResult.putPreFuture) * result.putRange;
         let pnlTotalFuture = pnlCallFuture + pnlPutFuture + pnlMoveResult;
+        let maintenanceMarginCall = result.callRange >= 0 ? 0 : calculateMaintenanceMarginCall(indexBtcDeribit, calcOptionResult) * Math.abs(result.callRange);
+        let maintenanceMarginPut = result.putRange >= 0 ? 0 : calculateMaintenanceMarginPut(indexBtcDeribit, calcOptionResult) * Math.abs(result.putRange);
+        if (maxMaintenanceMarginCall < maintenanceMarginCall) maxMaintenanceMarginCall = maintenanceMarginCall;
+        if (maxMaintenanceMarginPut < maintenanceMarginPut) maxMaintenanceMarginPut = maintenanceMarginPut;
         insertToTable(row++, indexBtcDeribit, exitPrice, pnlTotal, pnlTotalFuture, pnlCallFuture, pnlPutFuture, pnlFutureResult, pnlMoveResult, pnlCallResult, pnlPutResult);
     }
-
+    writeDataTo(maintenanceMarginCallCell, maxMaintenanceMarginCall);
+    writeDataTo(maintenanceMarginPutCell, maxMaintenanceMarginPut);
     writeDataTo(statusCell, "Calculating Liq Risk");
     getDataFrom("B4");
     writeLiqRisk(result, indexBtcDeribit, exitRangeStart, exitRangeEnd, exitRangeIncrement, exitInterval);
@@ -364,14 +379,14 @@ function clearTable() {
     for (let i = tableRowStartIndex; i <= lastRow; i++) {
         clear.push([""]);
     }
-    SpreadsheetApp.getActiveSheet().getRange(tableIndexBtcDeribitColumn+tableRowStartIndex + ":" + tableIndexBtcDeribitColumn + (clear.length + tableRowStartIndex - 1)).setValues(clear);
-    SpreadsheetApp.getActiveSheet().getRange(tableExitPriceColumn+tableRowStartIndex + ":" + tableExitPriceColumn + (clear.length + tableRowStartIndex - 1)).setValues(clear);
-    SpreadsheetApp.getActiveSheet().getRange(tablePnlFutureResultColumn+tableRowStartIndex + ":" + tablePnlFutureResultColumn + (clear.length + tableRowStartIndex - 1)).setValues(clear);
-    SpreadsheetApp.getActiveSheet().getRange(tablePnlCallResultColumn+tableRowStartIndex + ":" + tablePnlCallResultColumn + (clear.length + tableRowStartIndex - 1)).setValues(clear);
-    SpreadsheetApp.getActiveSheet().getRange(tablePnlPutResultColumn+tableRowStartIndex + ":" + tablePnlPutResultColumn + (clear.length + tableRowStartIndex - 1)).setValues(clear);
-    SpreadsheetApp.getActiveSheet().getRange(tablePnlMoveResultColumn+tableRowStartIndex + ":" + tablePnlMoveResultColumn + (clear.length + tableRowStartIndex - 1)).setValues(clear);
-    SpreadsheetApp.getActiveSheet().getRange(tablePnlTotalColumn+tableRowStartIndex + ":" + tablePnlTotalColumn + (clear.length + tableRowStartIndex - 1)).setValues(clear);
-    SpreadsheetApp.getActiveSheet().getRange(tablePnlCallFutureColumn+tableRowStartIndex + ":" + tablePnlCallFutureColumn + (clear.length + tableRowStartIndex - 1)).setValues(clear);
-    SpreadsheetApp.getActiveSheet().getRange(tablePnlPutFutureColumn+tableRowStartIndex + ":" + tablePnlPutFutureColumn + (clear.length + tableRowStartIndex - 1)).setValues(clear);
-    SpreadsheetApp.getActiveSheet().getRange(tablePnlTotalFutureColumn+tableRowStartIndex + ":" + tablePnlTotalFutureColumn + (clear.length + tableRowStartIndex - 1)).setValues(clear);
+    SpreadsheetApp.getActiveSheet().getRange(tableIndexBtcDeribitColumn + tableRowStartIndex + ":" + tableIndexBtcDeribitColumn + (clear.length + tableRowStartIndex - 1)).setValues(clear);
+    SpreadsheetApp.getActiveSheet().getRange(tableExitPriceColumn + tableRowStartIndex + ":" + tableExitPriceColumn + (clear.length + tableRowStartIndex - 1)).setValues(clear);
+    SpreadsheetApp.getActiveSheet().getRange(tablePnlFutureResultColumn + tableRowStartIndex + ":" + tablePnlFutureResultColumn + (clear.length + tableRowStartIndex - 1)).setValues(clear);
+    SpreadsheetApp.getActiveSheet().getRange(tablePnlCallResultColumn + tableRowStartIndex + ":" + tablePnlCallResultColumn + (clear.length + tableRowStartIndex - 1)).setValues(clear);
+    SpreadsheetApp.getActiveSheet().getRange(tablePnlPutResultColumn + tableRowStartIndex + ":" + tablePnlPutResultColumn + (clear.length + tableRowStartIndex - 1)).setValues(clear);
+    SpreadsheetApp.getActiveSheet().getRange(tablePnlMoveResultColumn + tableRowStartIndex + ":" + tablePnlMoveResultColumn + (clear.length + tableRowStartIndex - 1)).setValues(clear);
+    SpreadsheetApp.getActiveSheet().getRange(tablePnlTotalColumn + tableRowStartIndex + ":" + tablePnlTotalColumn + (clear.length + tableRowStartIndex - 1)).setValues(clear);
+    SpreadsheetApp.getActiveSheet().getRange(tablePnlCallFutureColumn + tableRowStartIndex + ":" + tablePnlCallFutureColumn + (clear.length + tableRowStartIndex - 1)).setValues(clear);
+    SpreadsheetApp.getActiveSheet().getRange(tablePnlPutFutureColumn + tableRowStartIndex + ":" + tablePnlPutFutureColumn + (clear.length + tableRowStartIndex - 1)).setValues(clear);
+    SpreadsheetApp.getActiveSheet().getRange(tablePnlTotalFutureColumn + tableRowStartIndex + ":" + tablePnlTotalFutureColumn + (clear.length + tableRowStartIndex - 1)).setValues(clear);
 }

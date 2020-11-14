@@ -39,11 +39,8 @@ const resultAverageCell = "K50";
 const resultSuccessCell = "J50";
 const resultTotalPremiumCell = "H50";
 
-const resultCallAskPriceCell = 'B53';
-const resultCallAskSizeCell = 'J55';
-const resultPutAskPriceCell = 'K55';
-const resultPutAskSizeCell = 'E53';
-const resultLiq = 'F53';
+const maintenanceMarginCallCell = "D53";
+const maintenanceMarginPutCell = "E53";
 const resultIndexBtcDeribitCell = 'K53';
 const resultMovePriceCell = 'K55';
 const resultMoveStrikePriceCell = 'J55';
