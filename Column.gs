@@ -19,12 +19,13 @@ const callRangeEndCell = 'E3';
 const callRangeIncrementCell = 'E4';
 const putRangeStartCell = 'F2';
 const putRangeEndCell = 'F3';
-const putRangeIncrementCell = 'F4';
+const maxTotalFundsInvestedCell = 'A57';
 
+const putRangeIncrementCell = 'F4';
 const timeDelayCell = 'G2';
 const balanceCell = "H2";
-const moveInstrumentNameFtxCell = 'I2';
 
+const moveInstrumentNameFtxCell = 'I2';
 const resultCallInstrumentCell = 'B50';
 const resultPutInstrumentCell = 'B51';
 const resultCallAskCell = 'H55';
@@ -38,13 +39,18 @@ const resultCapitalNo = "G50";
 const resultAverageCell = "K50";
 const resultSuccessCell = "J50";
 const resultTotalPremiumCell = "H50";
-
+const resultMaxReturnPercentageCell = "C55";
+const resultMinReturnPercentageCell = "B55";
+const resultAverageReturnPercentageCell = "D55";
+const resultTotalFundsInvestedCell = "A55";
 const maintenanceMarginCallCell = "D53";
 const maintenanceMarginPutCell = "E53";
 const resultIndexBtcDeribitCell = 'K53';
 const resultMovePriceCell = 'K55';
 const resultMoveStrikePriceCell = 'J55';
 const resultLiqRiskCell = 'G53';
+const resultInitialMarginCallCell = 'D52';
+const resultInitialMarginPutCell = 'E52';
 
 const tableRowStartIndex = 95;
 const tableIndexBtcDeribitColumn = 'A';

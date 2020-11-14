@@ -6,7 +6,6 @@ function pnlPut(exitPrice, putRange, putStrike, putAsk) {
     }
 }
 
-
 function pnlCall(exitPrice, callRange, callStrike, callAsk) {
     if (exitPrice - callStrike >= 0) {
         return exitPrice * callRange - callStrike * callRange - callAsk * callRange;
@@ -42,6 +41,8 @@ function calculateExpiresIn(timeDelay_HourBased) {
 }
 
 function writeBestValues(result) {
+    writeDataTo(statusCell, "Writing Best Values");
+    getDataFrom("B4");
     writeDataTo(resultMoveNoCell, result.moveRange);
     writeDataTo(resultCallNoCell, result.callRange);
     writeDataTo(resultPutNoCell, result.putRange);
@@ -54,10 +55,16 @@ function writeBestValues(result) {
     writeDataTo(resultPutInstrumentCell, result.putInstrumentName);
     writeDataTo(resultCallAskCell, result.callAsk);
     writeDataTo(resultPutAskCell, result.putAsk);
+    writeDataTo(resultMaxReturnPercentageCell, result.maxReturnPercentage);
+    writeDataTo(resultMinReturnPercentageCell, result.minReturnPercentage);
+    writeDataTo(resultAverageReturnPercentageCell, result.averageReturnPercentage);
+    writeDataTo(resultTotalFundsInvestedCell, result.totalFundsInvested);
+    writeDataTo(resultInitialMarginCallCell, result.initialMarginCall);
+    writeDataTo(resultInitialMarginPutCell, result.initialMarginPut);
 }
 
-function bestValuesChanged(moveRange, callRange, putRange, capitalRange, green, average, exitSayisi, indexBtcDeribit, putAsk, callAsk, movePrice, callStrike, putStrike, callInstrumentName, putInstrumentName) {
-    let result = {
+function bestValuesChanged(moveRange, callRange, putRange, capitalRange, green, average, exitSayisi, indexBtcDeribit, putAsk, callAsk, movePrice, callStrike, putStrike, callInstrumentName, putInstrumentName, maxReturnPercentage, minReturnPercentage, averageReturnPercentage, totalFundsInvested, initialMarginCall, initialMarginPut) {
+    return {
         moveRange: moveRange,
         callRange: callRange,
         putRange: putRange,
@@ -66,16 +73,20 @@ function bestValuesChanged(moveRange, callRange, putRange, capitalRange, green, 
         average: average,
         success: "%" + (green / exitSayisi * 100).toFixed(2),
         indexBtcDeribit: indexBtcDeribit,
-        totalPremium: Math.abs(putAsk * putRange) + Math.abs(callAsk * callRange) + Math.abs(movePrice * moveRange),
+        totalPremium: calculateTotalPremium(putAsk, putRange, callAsk, callRange, movePrice, moveRange),
         callStrike: callStrike,
         putStrike: putStrike,
         putAsk: putAsk,
         callAsk: callAsk,
         callInstrumentName: callInstrumentName,
-        putInstrumentName: putInstrumentName
+        putInstrumentName: putInstrumentName,
+        maxReturnPercentage: maxReturnPercentage,
+        minReturnPercentage: minReturnPercentage,
+        averageReturnPercentage: averageReturnPercentage,
+        totalFundsInvested: totalFundsInvested,
+        initialMarginCall: initialMarginCall,
+        initialMarginPut: initialMarginPut
     };
-    writeBestValues(result);
-    return result;
 }
 
 function writeLiqRisk(result, indexBtcDeribit, exitRangeStart, exitRangeEnd, exitRangeIncrement) {
@@ -113,6 +124,10 @@ function pnlTotals(exitPrice, indexBtcDeribit, exitRangeStart, putRange, putStri
         x: exitPrice,
         y: calculatePnlTotal(exitPrice, indexBtcDeribit, exitRangeStart, putRange, putStrike, putAsk, callRange, callStrike, callAsk, moveRange, movePrice, moveStrikePrice, capitalRange)
     };
+}
+
+for (let capitalRange = -10000; capitalRange < 10000; capitalRange += 50) {
+    console.log(calculatePnlTotal(16000, 15929, 200, -1, 16000, 150, 1, 16000, 150, 0, 0, 370, capitalRange));
 }
 
 function get_intersection(p0, p1, p2, p3) {
@@ -172,14 +187,6 @@ function getPoint(x, f) {
     return {x: x, y: f(x)};
 }
 
-function getMax(green, average, threshold, exitInterval, boost) {
-    if (green / exitInterval >= threshold) {
-        return boost * exitInterval * average;
-    } else {
-        return green * average;
-    }
-}
-
 function map(instrumentNames) {
     let result = [];
     for (let instrumentName of instrumentNames) {
@@ -196,7 +203,33 @@ function calculateMaintenanceMarginPut(indexBtcDeribit, calcOptionResult) {
     return Math.max(0.075, 0.075 * calcOptionResult.putPreFuture) + calcOptionResult.putPreFuture;
 }
 
+function calculateTotalPremium(putAsk, putRange, callAsk, callRange, movePrice, moveRange) {
+    return Math.abs(putAsk * putRange) + Math.abs(callAsk * callRange) + Math.abs(movePrice * moveRange);
+}
+
+function calculateInitialMarginCall(indexBtcDeribit, callStrike, callRange, callAskPrice) {
+    if (callRange < 0) {
+        let xxxx = callStrike > indexBtcDeribit
+            ? Math.max(0.15 - ((callStrike - indexBtcDeribit) / indexBtcDeribit), 0.1) + (callAskPrice / indexBtcDeribit)
+            : 0.15 + (callAskPrice / indexBtcDeribit);
+        return xxxx * indexBtcDeribit * Math.abs(callRange) - callAskPrice * Math.abs(callRange);
+    }
+    return 0;
+
+}
+
+function calculateInitialMarginPut(indexBtcDeribit, putStrike, putRange, putAskPrice) {
+    if (putRange < 0) {
+        let x = putStrike < indexBtcDeribit
+            ? Math.max(0.15 - (indexBtcDeribit - putStrike) / indexBtcDeribit, 0.1, 0.075 * (putAskPrice / indexBtcDeribit))
+            : Math.max(0.15, 0.075 * (putAskPrice / indexBtcDeribit));
+        return (x + (putAskPrice / indexBtcDeribit)) * indexBtcDeribit * Math.abs(putRange) - putAskPrice * Math.abs(putRange);
+    }
+    return 0;
+}
+
 function getBestValues() {
+    let startTime = new Date();
     writeDataTo(statusCell, "Pulling Data from Internet");
     getDataFrom("B4");
     pullJSON();
@@ -223,9 +256,11 @@ function getBestValues() {
     let indexBtcDeribit = getDataFrom(resultIndexBtcDeribitCell);
     let movePrice = getDataFrom(resultMovePriceCell);
     let moveStrikePrice = getDataFrom(resultMoveStrikePriceCell);
+    let balanceFuture = getDataFrom(balanceCell);
+    let maxTotalFundsInvested = getDataFrom(maxTotalFundsInvestedCell);
     let interestRate = 0;
-    let expiresIn = calculateExpiresIn(timeDelay);
 
+    let expiresIn = calculateExpiresIn(timeDelay);
     let result = {
         moveRange: "Unknown",
         callRange: "Unknown",
@@ -247,6 +282,7 @@ function getBestValues() {
     let threshold = getDataFrom(thresholdCell);
     let boost = getDataFrom(boostCell);
     let exitInterval = exitRangeEnd - exitRangeStart;
+    let exitSayisi = exitInterval / exitRangeIncrement + 1;
     let putLastRange = findLastRange(selectedPutInstrumentColumn, selectedPutInstrumentRow);
     let putInstrumentNames = SpreadsheetApp.getActiveSheet().getRange(selectedPutInstrumentColumn + selectedPutInstrumentRow + ":" + putLastRange).getValues();
     let callLastRange = findLastRange(selectedCallInstrumentColumn, selectedCallInstrumentRow);
@@ -266,7 +302,11 @@ function getBestValues() {
             let callAsk = callAsks[j];
             for (let moveRange = moveRangeStart; moveRange <= moveRangeEnd; moveRange += moveRangeIncrement) {
                 for (let callRange = callRangeStart; callRange <= callRangeEnd; callRange += callRangeIncrement) {
+                    let initialMarginCall = calculateInitialMarginCall(indexBtcDeribit, callStrike, callRange, callAsk);
                     for (let putRange = putRangeStart; putRange <= putRangeEnd; putRange += putRangeIncrement) {
+                        let totalPremium = calculateTotalPremium(putAsk, putRange, callAsk, callRange, movePrice, moveRange);
+                        let initialMarginPut = calculateInitialMarginPut(indexBtcDeribit, putStrike, putRange, putAsk);
+                        let totalFundsInvested = balanceFuture + totalPremium + initialMarginCall + initialMarginPut;
                         for (let capitalRange = capitalRangeStart; capitalRange <= capitalRangeEnd; capitalRange += capitalRangeIncrement) {
                             let green = 0;
                             let average = 0;
@@ -286,10 +326,18 @@ function getBestValues() {
                                 green += calculateGreen(pnlTotalsArray[i], pnlTotalsArray[i + 1]);
                                 average += calculateArea(pnlTotalsArray[i], pnlTotalsArray[i + 1]) / exitInterval;
                             }
+                            let maxReturnPercentage = -100;
+                            let minReturnPercentage = 100;
+                            for (let i = 0; i < pnlTotalsArray.length; i++) {
+                                let _returnPercentage = pnlTotalsArray[i].y / totalFundsInvested * 100;
+                                if (maxReturnPercentage < _returnPercentage) maxReturnPercentage = _returnPercentage;
+                                if (minReturnPercentage > _returnPercentage) minReturnPercentage = _returnPercentage;
+                            }
+                            let averageReturnPercentage = average / totalFundsInvested * 100;
 
-                            let max = getMax(green, average, threshold, exitInterval, boost);
+                            let max = getMax(minReturnPercentage, averageReturnPercentage, boost, threshold, totalFundsInvested, maxTotalFundsInvested);
                             if (max > result.max) {
-                                result = bestValuesChanged(moveRange, callRange, putRange, capitalRange, green, average, exitInterval, indexBtcDeribit, putAsk, callAsk, movePrice, callStrike, putStrike, callInstrumentName, putInstrumentName);
+                                result = bestValuesChanged(moveRange, callRange, putRange, capitalRange, green, average, exitInterval, indexBtcDeribit, putAsk, callAsk, movePrice, callStrike, putStrike, callInstrumentName, putInstrumentName, maxReturnPercentage, minReturnPercentage, averageReturnPercentage, totalFundsInvested, initialMarginCall, initialMarginPut);
                                 result.max = max;
                             }
                         }
@@ -299,11 +347,13 @@ function getBestValues() {
         }
     }
 
+    writeBestValues(result);
     writeDataTo(statusCell, "Calculating IV values");
-    pullCall_IV(result.callInstrumentName);
-    pullPut_IV(result.putInstrumentName);
-    let call_IV = getDataFrom(resultCall_IVCell);
-    let put_IV = getDataFrom(resultPut_IVCell);
+    getDataFrom("B4");
+    let call_IV = parseFloat(pullCall_IV(result.callInstrumentName));
+    let put_IV = parseFloat(pullPut_IV(result.putInstrumentName));
+    writeDataTo(resultPut_IVCell, put_IV);
+    writeDataTo(resultCall_IVCell, call_IV);
 
     writeDataTo(statusCell, "Writing best values into table");
     getDataFrom("B4");
@@ -332,8 +382,45 @@ function getBestValues() {
     getDataFrom("B4");
     writeLiqRisk(result, indexBtcDeribit, exitRangeStart, exitRangeEnd, exitRangeIncrement, exitInterval);
     getDataFrom("B4");
-    writeDataTo(statusCell, "Done");
+    let elapsedTime = (new Date() - startTime) / 1000;
+    writeDataTo(statusCell, "Done in " + elapsedTime + " seconds");
 }
+
+function getMax(minReturnPercentage, averageReturnPercentage, boost, threshold, totalFundsInvested, maxTotalFundsInvested) {
+    if (totalFundsInvested > maxTotalFundsInvested) {
+        return 0;
+    } else if (minReturnPercentage >= threshold) {
+        return boost * averageReturnPercentage;
+    } else {
+        return averageReturnPercentage;
+    }
+}
+
+let boost = 1.5;
+let threshold = -10;
+let sample = [
+    {minReturnPercentage: 0, averageReturnPercentage: 5},
+    {minReturnPercentage: -5, averageReturnPercentage: 8},
+    {minReturnPercentage: -3, averageReturnPercentage: 15},
+    {minReturnPercentage: -8, averageReturnPercentage: 20},
+    {minReturnPercentage: -15, averageReturnPercentage: 6},
+    {minReturnPercentage: -23, averageReturnPercentage: -19},
+    {minReturnPercentage: -20, averageReturnPercentage: 0},
+    {minReturnPercentage: -1, averageReturnPercentage: 6},
+    {minReturnPercentage: -6, averageReturnPercentage: 17},
+];
+
+let max = -10000;
+let maxs = 0;
+for (let i = 0; i < sample.length; i++) {
+    let sampleElement = sample[i];
+    let maxValue = getMax(sampleElement.minReturnPercentage, sampleElement.averageReturnPercentage, boost, threshold);
+    if (max < maxValue) {
+        maxs = sample[i];
+        max = maxValue;
+    }
+}
+console.log(maxs);
 
 function pullAskPriceDeribit(instrumentName, indexBtcDeribit) {
     var data = pullDataFrom("https://www.deribit.com/api/v2/public/get_order_book?instrument_name=" + instrumentName);
