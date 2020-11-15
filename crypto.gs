@@ -29,8 +29,8 @@ function calculateExpiresIn(timeDelay_HourBased, instrumentDateString) {
 
     let end = new Date(instrumentDateString);
     end.setHours(10);
-    let start = new Date() - timeDelayInMilliseconds;
-    return (end - start) / noOfMillisecondsInADay;
+    let endStart = (end - new Date() - timeDelayInMilliseconds);
+    return endStart / noOfMillisecondsInADay;
 }
 
 function writeBestValues(result) {
