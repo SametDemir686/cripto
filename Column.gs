@@ -70,3 +70,5 @@ const selectedPutInstrumentColumn = 'M';
 const selectedPutInstrumentRow = '2';
 
 const statusCell = 'I6';
+const resultCallSizeCell = 'D51';
+const resultPutSizeCell = 'E51';

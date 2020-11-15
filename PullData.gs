@@ -46,4 +46,8 @@ function pullMoveAskPriceFtx() {
     writeDataTo(resultMovePriceCell, data.result['asks']);
 }
 
+function pullAskSizeDeribit(instrumentName, indexBtcDeribit) {
+    var data = pullDataFrom("https://www.deribit.com/api/v2/public/get_order_book?instrument_name=" + instrumentName);
+    return indexBtcDeribit * data.result['asks'][0][1];
+}
 

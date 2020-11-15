@@ -310,10 +310,14 @@ function getBestValues() {
 
                             let pnlTotalsArray = [
                                 pnlTotals(indexBtcDeribit + exitRangeStart, indexBtcDeribit, exitRangeStart, putRange, putStrike, putAsk, callRange, callStrike, callAsk, moveRange, movePrice, moveStrikePrice, capitalRange),
-                                pnlTotals(indexBtcDeribit + exitRangeEnd, indexBtcDeribit, exitRangeStart, putRange, putStrike, putAsk, callRange, callStrike, callAsk, moveRange, movePrice, moveStrikePrice, capitalRange),
-                                pnlTotals(parseInt(putStrike), indexBtcDeribit, exitRangeStart, putRange, putStrike, putAsk, callRange, callStrike, callAsk, moveRange, movePrice, moveStrikePrice, capitalRange),
-                                pnlTotals(parseInt(callStrike), indexBtcDeribit, exitRangeStart, putRange, putStrike, putAsk, callRange, callStrike, callAsk, moveRange, movePrice, moveStrikePrice, capitalRange)
+                                pnlTotals(indexBtcDeribit + exitRangeEnd, indexBtcDeribit, exitRangeStart, putRange, putStrike, putAsk, callRange, callStrike, callAsk, moveRange, movePrice, moveStrikePrice, capitalRange)
                             ];
+                            if (parseInt(putStrike) > indexBtcDeribit + exitRangeStart && parseInt(putStrike) < indexBtcDeribit + exitRangeEnd) {
+                                pnlTotalsArray.push(pnlTotals(parseInt(putStrike), indexBtcDeribit, exitRangeStart, putRange, putStrike, putAsk, callRange, callStrike, callAsk, moveRange, movePrice, moveStrikePrice, capitalRange));
+                            }
+                            if (parseInt(callStrike) > indexBtcDeribit + exitRangeStart && parseInt(callStrike) < indexBtcDeribit + exitRangeEnd) {
+                                pnlTotalsArray.push(pnlTotals(parseInt(callStrike), indexBtcDeribit, exitRangeStart, putRange, putStrike, putAsk, callRange, callStrike, callAsk, moveRange, movePrice, moveStrikePrice, capitalRange));
+                            }
 
                             pnlTotalsArray.sort(function (a, b) {
                                 return a.x - b.x
@@ -369,8 +373,8 @@ function getBestValues() {
         let pnlFutureResult = pnlFuture(exitPrice, result.capitalRange, indexBtcDeribit);
         let pnlCallResult = pnlCall(exitPrice, result.callRange, result.callStrike, result.callAsk);
         let pnlTotal = pnlPutResult + pnlCallResult + pnlMoveResult + pnlFutureResult;
-        let pnlCallFuture = -(result.callAsk - callPreFuture) * result.callRange;
-        let pnlPutFuture = -(result.putAsk - putPreFuture) * result.putRange;
+        let pnlCallFuture = (callPreFuture - result.callAsk) * Math.abs(result.callRange);
+        let pnlPutFuture = (putPreFuture - result.putAsk) * Math.abs(result.putRange);
         let pnlTotalFuture = pnlCallFuture + pnlPutFuture + pnlMoveResult;
         let maintenanceMarginCall = result.callRange >= 0 ? 0 : calculateMaintenanceMarginCall(indexBtcDeribit, callPreFuture) * Math.abs(result.callRange);
         let maintenanceMarginPut = result.putRange >= 0 ? 0 : calculateMaintenanceMarginPut(indexBtcDeribit, putPreFuture) * Math.abs(result.putRange);
@@ -380,10 +384,12 @@ function getBestValues() {
     }
     writeDataTo(maintenanceMarginCallCell, maxMaintenanceMarginCall);
     writeDataTo(maintenanceMarginPutCell, maxMaintenanceMarginPut);
-    writeDataTo(statusCell, "Calculating Liq Risk");
+    writeDataTo(resultPutSizeCell, pullAskSizeDeribit(result.putInstrumentName, indexBtcDeribit));
+    writeDataTo(resultCallSizeCell, pullAskSizeDeribit(result.callInstrumentName, indexBtcDeribit));
     getDataFrom("B4");
-    writeLiqRisk(result, indexBtcDeribit, exitRangeStart, exitRangeEnd, exitRangeIncrement, exitInterval);
-    getDataFrom("B4");
+    // writeDataTo(statusCell, "Calculating Liq Risk");
+    // writeLiqRisk(result, indexBtcDeribit, exitRangeStart, exitRangeEnd, exitRangeIncrement, exitInterval);
+    // getDataFrom("B4");
     let elapsedTime = (new Date() - startTime) / 1000;
     writeDataTo(statusCell, "Done in " + elapsedTime + " seconds");
 }
