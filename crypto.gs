@@ -119,42 +119,51 @@ function pnlTotals(exitPrice, indexBtcDeribit, exitRangeStart, putRange, putStri
     };
 }
 
-function get_intersection(p0, p1, p2, p3) {
-    let s1_x = p1.x - p0.x;
-    let s1_y = p1.y - p0.y;
-    let s2_x = p3.x - p2.x;
-    let s2_y = p3.y - p2.y;
-
-    let s = (-s1_y * (p0.x - p2.x) + s1_x * (p0.y - p2.y)) / (-s2_x * s1_y + s1_x * s2_y);
-    let t = (s2_x * (p0.y - p2.y) - s2_y * (p0.x - p2.x)) / (-s2_x * s1_y + s1_x * s2_y);
-
-    if (s >= 0 && s <= 1 && t >= 0 && t <= 1)
-        return {x: p0.x + (t * s1_x), y: p0.y + (t * s1_y)};
-    else
-        return null;
-}
-
 function calculateGreen(p1, p2) {
-    let intersection = get_intersection(p1, p2, {x: p1.x, y: 0}, {x: p2.x, y: 0});
-    if (intersection == null) {
-        if (p1.y >= 0) {
-            return Math.abs(p2.x - p1.x);
-        } else {
-            return 0;
-        }
+    if (p1.y >= 0 && p2.y >= 0) {
+        return Math.abs(p1.x - p2.x);
+    } else if (p1.y < 0 && p2.y >= 0) {
+        return Math.abs(p1.x - p2.x) * Math.abs(p2.y) / (Math.abs(p1.y - p2.y));
+    } else if (p1.y >= 0 && p2.y < 0) {
+        return Math.abs(p1.x - p2.x) * Math.abs(p1.y) / (Math.abs(p1.y - p2.y));
     } else {
-        if (p1.y >= 0) {
-            return Math.abs(p1.x - intersection.x);
-        } else {
-            return Math.abs(p2.x - intersection.x);
-        }
+        return 0;
     }
 }
 
 function testCalculateGreen() {
-    let p1 = {x: 15, y: 20};
-    let p2 = {x: 25, y: 10};
-    console.log(calculateGreen(p1, p2));
+    console.log(calculateGreen({x: -20, y: -10}, {x: -10, y: 10}) === 5);
+    console.log(calculateGreen({x: -20, y: -20}, {x: 10, y: 10}) === 10);
+    console.log(calculateGreen({x: 10, y: -10}, {x: 30, y: 10}) === 10);
+
+    console.log(calculateGreen({x: -20, y: 10}, {x: -10, y: -10}) === 5);
+    console.log(calculateGreen({x: -20, y: 20}, {x: 10, y: -10}) === 20);
+    console.log(calculateGreen({x: 10, y: 10}, {x: 30, y: -10}) === 10);
+
+    console.log(calculateGreen({x: -20, y: -10}, {x: -10, y: -10}) === 0);
+    console.log(calculateGreen({x: -20, y: -20}, {x: 10, y: -10}) === 0);
+    console.log(calculateGreen({x: 10, y: -10}, {x: 30, y: -10}) === 0);
+
+    console.log(calculateGreen({x: -20, y: 10}, {x: -10, y: 10}) === 10);
+    console.log(calculateGreen({x: -20, y: 20}, {x: 10, y: 10}) === 30);
+    console.log(calculateGreen({x: 10, y: 10}, {x: 30, y: 10}) === 20);
+
+    console.log(calculateGreen({x: 30, y: 10}, {x: 30, y: 10}) === 0);
+    console.log(calculateGreen({x: 30, y: -10}, {x: 30, y: -10}) === 0);
+    console.log(calculateGreen({x: -30, y: 10}, {x: -30, y: 10}) === 0);
+    console.log(calculateGreen({x: -30, y: -10}, {x: -30, y: -10}) === 0);
+
+    console.log(calculateGreen({x: 30, y: 10}, {x: 30, y: 0}) === 0);
+    console.log(calculateGreen({x: -30, y: 10}, {x: -30, y: 0}) === 0);
+
+    console.log(calculateGreen({x: -20, y: 0}, {x: 60, y: -10}) === 0);
+    console.log(calculateGreen({x: -20, y: -10}, {x: 60, y: 0}) === 0);
+    console.log(calculateGreen({x: 20, y: -10}, {x: 60, y: 0}) === 0);
+    console.log(calculateGreen({x: 20, y: 0}, {x: 60, y: -10}) === 0);
+    console.log(calculateGreen({x: -20, y: 0}, {x: 60, y: 10}) === 80);
+    console.log(calculateGreen({x: -20, y: 10}, {x: 60, y: 0}) === 80);
+    console.log(calculateGreen({x: 20, y: 10}, {x: 60, y: 0}) === 40);
+    console.log(calculateGreen({x: 20, y: 0}, {x: 60, y: 10}) === 40);
 }
 
 function takeIntegralFrom(p, m, n) {
@@ -165,7 +174,7 @@ function calculateArea(p1, p2) {
     if (p1.x === p2.x) return 0;
     let m = (p1.y - p2.y) / (p1.x - p2.x);
     let n = (p1.x * p2.y - p1.y * p2.x) / (p1.x - p2.x);
-    return -takeIntegralFrom(p1, m, n) + takeIntegralFrom(p2, m, n);
+    return takeIntegralFrom(p2, m, n) - takeIntegralFrom(p1, m, n);
 }
 
 function f(x) {
@@ -314,6 +323,7 @@ function getBestValues() {
                                 green += calculateGreen(pnlTotalsArray[i], pnlTotalsArray[i + 1]);
                                 average += calculateArea(pnlTotalsArray[i], pnlTotalsArray[i + 1]) / exitInterval;
                             }
+                            let averageReturnPercentage = average / totalFundsInvested * 100;
                             let maxReturnPercentage = -100;
                             let minReturnPercentage = 100;
                             for (let i = 0; i < pnlTotalsArray.length; i++) {
@@ -321,7 +331,6 @@ function getBestValues() {
                                 if (maxReturnPercentage < _returnPercentage) maxReturnPercentage = _returnPercentage;
                                 if (minReturnPercentage > _returnPercentage) minReturnPercentage = _returnPercentage;
                             }
-                            let averageReturnPercentage = average / totalFundsInvested * 100;
 
                             let max = getMax(minReturnPercentage, averageReturnPercentage, boost, threshold, totalFundsInvested, maxTotalFundsInvested);
                             if (max > result.max) {
