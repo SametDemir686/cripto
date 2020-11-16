@@ -439,10 +439,10 @@ function insertToTable(row, indexBtcDeribit, exitPrice, pnlTotal, pnlTotalFuture
     writeDataTo(tablePnlCallFutureColumn + row, pnlCallFuture.toFixed(2));
     writeDataTo(tablePnlPutFutureColumn + row, pnlPutFuture.toFixed(2));
     writeDataTo(tablePnlTotalFutureColumn + row, pnlTotalFuture.toFixed(0));
-    writeDataTo('N' + row, maintenanceMarginCall.toFixed(0));
-    writeDataTo('O' + row, maintenanceMarginPut.toFixed(0));
-    writeDataTo('P' + row, callPreFuture.toFixed(0));
-    writeDataTo('Q' + row, putPreFuture.toFixed(0));
+    // writeDataTo('N' + row, maintenanceMarginCall.toFixed(0));
+    // writeDataTo('O' + row, maintenanceMarginPut.toFixed(0));
+    // writeDataTo('P' + row, callPreFuture.toFixed(0));
+    // writeDataTo('Q' + row, putPreFuture.toFixed(0));
 }
 
 function clearTable() {
