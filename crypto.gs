@@ -226,6 +226,51 @@ function calculateInitialMarginPut(indexBtcDeribit, putStrike, putRange, putAskP
     return 0;
 }
 
+function calculateValues(pnlTotalsArray, exitInterval, totalFundsInvested) {
+    let green = 0;
+    let average = 0;
+    for (let i = 0; i < pnlTotalsArray.length - 1; i++) {
+        green += calculateGreen(pnlTotalsArray[i], pnlTotalsArray[i + 1]);
+        average += calculateArea(pnlTotalsArray[i], pnlTotalsArray[i + 1]) / exitInterval;
+    }
+    let averageReturnPercentage = average / totalFundsInvested * 100;
+    let maxReturnPercentage = -100;
+    let minReturnPercentage = 100;
+    for (let i = 0; i < pnlTotalsArray.length; i++) {
+        let _returnPercentage = pnlTotalsArray[i].y / totalFundsInvested * 100;
+        if (maxReturnPercentage < _returnPercentage) maxReturnPercentage = _returnPercentage;
+        if (minReturnPercentage > _returnPercentage) minReturnPercentage = _returnPercentage;
+    }
+    return {green, average, averageReturnPercentage, maxReturnPercentage, minReturnPercentage};
+}
+
+function getPnlTotals(indexBtcDeribit, exitRangeStart, exitRangeEnd, putRange, putStrike, putAsk, callRange, callStrike, callAsk, moveRange, movePrice, moveStrikePrice, capitalRange) {
+    let pnlTotalsArray = [
+        pnlTotals(indexBtcDeribit + exitRangeStart, indexBtcDeribit, exitRangeStart, putRange, putStrike, putAsk, callRange, callStrike, callAsk, moveRange, movePrice, moveStrikePrice, capitalRange),
+        pnlTotals(indexBtcDeribit + exitRangeEnd, indexBtcDeribit, exitRangeStart, putRange, putStrike, putAsk, callRange, callStrike, callAsk, moveRange, movePrice, moveStrikePrice, capitalRange)
+    ];
+
+    if (parseInt(putStrike) > indexBtcDeribit + exitRangeStart && parseInt(putStrike) < indexBtcDeribit + exitRangeEnd) {
+        pnlTotalsArray.push(pnlTotals(parseInt(putStrike), indexBtcDeribit, exitRangeStart, putRange, putStrike, putAsk, callRange, callStrike, callAsk, moveRange, movePrice, moveStrikePrice, capitalRange));
+    }
+    if (parseInt(callStrike) > indexBtcDeribit + exitRangeStart && parseInt(callStrike) < indexBtcDeribit + exitRangeEnd) {
+        pnlTotalsArray.push(pnlTotals(parseInt(callStrike), indexBtcDeribit, exitRangeStart, putRange, putStrike, putAsk, callRange, callStrike, callAsk, moveRange, movePrice, moveStrikePrice, capitalRange));
+    }
+    pnlTotalsArray.sort(function (a, b) {
+        return a.x - b.x
+    });
+    return pnlTotalsArray;
+}
+
+function writeResult2(indexBtcDeribit, exitRangeStart2, exitRangeEnd2, result, movePrice, moveStrikePrice) {
+    let exitInterval = exitRangeEnd2 - exitRangeStart2;
+    let pnlTotalsArray = getPnlTotals(indexBtcDeribit, exitRangeStart2, exitRangeEnd2, result.putRange, result.putStrike, result.putAsk, result.callRange, result.callStrike, result.callAsk, result.moveRange, movePrice, moveStrikePrice, result.capitalRange);
+    let {averageReturnPercentage, maxReturnPercentage, minReturnPercentage} = calculateValues(pnlTotalsArray, exitInterval, result.totalFundsInvested);
+    writeDataTo(minReturnPercentage2Cell, minReturnPercentage);
+    writeDataTo(maxReturnPercentage2Cell, maxReturnPercentage);
+    writeDataTo(averageReturnPercentage2Cell, averageReturnPercentage);
+}
+
 function getBestValues() {
     let startTime = new Date();
     writeDataTo(statusCell, "Pulling Data from Internet");
@@ -250,6 +295,8 @@ function getBestValues() {
     let exitRangeStart = getDataFrom(exitRangeStartCell);
     let exitRangeEnd = getDataFrom(exitRangeEndCell);
     let exitRangeIncrement = getDataFrom(exitRangeIncrementCell);
+    let exitRangeEnd2 = getDataFrom(exitRangeEnd2Cell);
+    let exitRangeStart2 = getDataFrom(exitRangeStart2Cell);
     let timeDelay = getDataFrom(timeDelayCell);
     let indexBtcDeribit = getDataFrom(resultIndexBtcDeribitCell);
     let movePrice = getDataFrom(resultMovePriceCell);
@@ -305,36 +352,9 @@ function getBestValues() {
                         let initialMarginPut = calculateInitialMarginPut(indexBtcDeribit, putStrike, putRange, putAsk);
                         let totalFundsInvested = balanceFuture + totalPremium + initialMarginCall + initialMarginPut;
                         for (let capitalRange = capitalRangeStart; capitalRange <= capitalRangeEnd; capitalRange += capitalRangeIncrement) {
-                            let green = 0;
-                            let average = 0;
+                            let pnlTotalsArray = getPnlTotals(indexBtcDeribit, exitRangeStart, exitRangeEnd, putRange, putStrike, putAsk, callRange, callStrike, callAsk, moveRange, movePrice, moveStrikePrice, capitalRange);
 
-                            let pnlTotalsArray = [
-                                pnlTotals(indexBtcDeribit + exitRangeStart, indexBtcDeribit, exitRangeStart, putRange, putStrike, putAsk, callRange, callStrike, callAsk, moveRange, movePrice, moveStrikePrice, capitalRange),
-                                pnlTotals(indexBtcDeribit + exitRangeEnd, indexBtcDeribit, exitRangeStart, putRange, putStrike, putAsk, callRange, callStrike, callAsk, moveRange, movePrice, moveStrikePrice, capitalRange)
-                            ];
-                            if (parseInt(putStrike) > indexBtcDeribit + exitRangeStart && parseInt(putStrike) < indexBtcDeribit + exitRangeEnd) {
-                                pnlTotalsArray.push(pnlTotals(parseInt(putStrike), indexBtcDeribit, exitRangeStart, putRange, putStrike, putAsk, callRange, callStrike, callAsk, moveRange, movePrice, moveStrikePrice, capitalRange));
-                            }
-                            if (parseInt(callStrike) > indexBtcDeribit + exitRangeStart && parseInt(callStrike) < indexBtcDeribit + exitRangeEnd) {
-                                pnlTotalsArray.push(pnlTotals(parseInt(callStrike), indexBtcDeribit, exitRangeStart, putRange, putStrike, putAsk, callRange, callStrike, callAsk, moveRange, movePrice, moveStrikePrice, capitalRange));
-                            }
-
-                            pnlTotalsArray.sort(function (a, b) {
-                                return a.x - b.x
-                            });
-
-                            for (let i = 0; i < pnlTotalsArray.length - 1; i++) {
-                                green += calculateGreen(pnlTotalsArray[i], pnlTotalsArray[i + 1]);
-                                average += calculateArea(pnlTotalsArray[i], pnlTotalsArray[i + 1]) / exitInterval;
-                            }
-                            let averageReturnPercentage = average / totalFundsInvested * 100;
-                            let maxReturnPercentage = -100;
-                            let minReturnPercentage = 100;
-                            for (let i = 0; i < pnlTotalsArray.length; i++) {
-                                let _returnPercentage = pnlTotalsArray[i].y / totalFundsInvested * 100;
-                                if (maxReturnPercentage < _returnPercentage) maxReturnPercentage = _returnPercentage;
-                                if (minReturnPercentage > _returnPercentage) minReturnPercentage = _returnPercentage;
-                            }
+                            let {green, average, averageReturnPercentage, maxReturnPercentage, minReturnPercentage} = calculateValues(pnlTotalsArray, exitInterval, totalFundsInvested);
 
                             let max = getMax(minReturnPercentage, averageReturnPercentage, boost, threshold, totalFundsInvested, maxTotalFundsInvested);
                             if (max > result.max) {
@@ -349,6 +369,7 @@ function getBestValues() {
     }
 
     writeBestValues(result);
+    writeResult2(indexBtcDeribit, exitRangeStart2, exitRangeEnd2, result, movePrice, moveStrikePrice);
     writeDataTo(statusCell, "Calculating IV values");
     getDataFrom("B4");
     let call_IV = parseFloat(pullCall_IV(result.callInstrumentName));
