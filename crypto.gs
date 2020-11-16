@@ -262,13 +262,27 @@ function getPnlTotals(indexBtcDeribit, exitRangeStart, exitRangeEnd, putRange, p
     return pnlTotalsArray;
 }
 
-function writeResult2(indexBtcDeribit, exitRangeStart2, exitRangeEnd2, result, movePrice, moveStrikePrice) {
+function writeResult2(indexBtcDeribit, exitRangeStart2, exitRangeEnd2, exitRangeIncrement2, result, movePrice, moveStrikePrice, interestRate) {
     let exitInterval = exitRangeEnd2 - exitRangeStart2;
     let pnlTotalsArray = getPnlTotals(indexBtcDeribit, exitRangeStart2, exitRangeEnd2, result.putRange, result.putStrike, result.putAsk, result.callRange, result.callStrike, result.callAsk, result.moveRange, movePrice, moveStrikePrice, result.capitalRange);
     let {averageReturnPercentage, maxReturnPercentage, minReturnPercentage} = calculateValues(pnlTotalsArray, exitInterval, result.totalFundsInvested);
+    let maxMaintenanceMarginCall = 0;
+    let maxMaintenanceMarginPut = 0;
+    let call_IV = parseFloat(pullCall_IV(result.callInstrumentName));
+    let put_IV = parseFloat(pullPut_IV(result.putInstrumentName));
+    for (let exitPrice = indexBtcDeribit + exitRangeStart2; exitPrice <= indexBtcDeribit + exitRangeEnd2; exitPrice += exitRangeIncrement2) {
+        let callPreFuture = calculateCallPreFuture(exitPrice, result.callStrike, expiresInCall, interestRate, call_IV);
+        let putPreFuture = calculatePutPreFuture(exitPrice, result.putStrike, expiresInPut, interestRate, put_IV);
+        let maintenanceMarginCall = result.callRange >= 0 ? 0 : calculateMaintenanceMarginCall(indexBtcDeribit, callPreFuture) * Math.abs(result.callRange);
+        let maintenanceMarginPut = result.putRange >= 0 ? 0 : calculateMaintenanceMarginPut(indexBtcDeribit, putPreFuture) * Math.abs(result.putRange);
+        if (maxMaintenanceMarginCall < maintenanceMarginCall) maxMaintenanceMarginCall = maintenanceMarginCall;
+        if (maxMaintenanceMarginPut < maintenanceMarginPut) maxMaintenanceMarginPut = maintenanceMarginPut;
+    }
     writeDataTo(minReturnPercentage2Cell, minReturnPercentage);
     writeDataTo(maxReturnPercentage2Cell, maxReturnPercentage);
     writeDataTo(averageReturnPercentage2Cell, averageReturnPercentage);
+    writeDataTo(maintenanceMarginMaxCall2Cell, maxMaintenanceMarginCall);
+    writeDataTo(maintenanceMarginMaxPut2Cell, maxMaintenanceMarginPut);
 }
 
 function getBestValues() {
@@ -297,6 +311,7 @@ function getBestValues() {
     let exitRangeIncrement = getDataFrom(exitRangeIncrementCell);
     let exitRangeEnd2 = getDataFrom(exitRangeEnd2Cell);
     let exitRangeStart2 = getDataFrom(exitRangeStart2Cell);
+    let exitRangeIncrement2 = getDataFrom(exitRangeIncrement2Cell);
     let timeDelay = getDataFrom(timeDelayCell);
     let indexBtcDeribit = getDataFrom(resultIndexBtcDeribitCell);
     let movePrice = getDataFrom(resultMovePriceCell);
@@ -369,7 +384,7 @@ function getBestValues() {
     }
 
     writeBestValues(result);
-    writeResult2(indexBtcDeribit, exitRangeStart2, exitRangeEnd2, result, movePrice, moveStrikePrice);
+    writeResult2(indexBtcDeribit, exitRangeStart2, exitRangeEnd2, exitRangeIncrement2, result, movePrice, moveStrikePrice, interestRate);
     writeDataTo(statusCell, "Calculating IV values");
     getDataFrom("B4");
     let call_IV = parseFloat(pullCall_IV(result.callInstrumentName));
