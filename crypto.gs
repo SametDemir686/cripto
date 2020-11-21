@@ -506,4 +506,3 @@ function clearTable() {
 }
 
 
-// https://www.deribit.com/api/v2/private/buy?amount=10&instrument_name=BTC-PERPETUAL&label=limit%20order&post_only=false&price=18500&reject_post_only=false&time_in_force=good_til_cancelled&type=limit
