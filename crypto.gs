@@ -262,7 +262,7 @@ function getPnlTotals(indexBtcDeribit, exitRangeStart, exitRangeEnd, putRange, p
     return pnlTotalsArray;
 }
 
-function writeResult2(indexBtcDeribit, exitRangeStart2, exitRangeEnd2, exitRangeIncrement2, result, movePrice, moveStrikePrice, interestRate) {
+function writeResult2(indexBtcDeribit, exitRangeStart2, exitRangeEnd2, exitRangeIncrement2, result, movePrice, moveStrikePrice, interestRate, expiresInCall, expiresInPut) {
     let exitInterval = exitRangeEnd2 - exitRangeStart2;
     let pnlTotalsArray = getPnlTotals(indexBtcDeribit, exitRangeStart2, exitRangeEnd2, result.putRange, result.putStrike, result.putAsk, result.callRange, result.callStrike, result.callAsk, result.moveRange, movePrice, moveStrikePrice, result.capitalRange);
     let {averageReturnPercentage, maxReturnPercentage, minReturnPercentage} = calculateValues(pnlTotalsArray, exitInterval, result.totalFundsInvested);
@@ -383,8 +383,13 @@ function getBestValues() {
         }
     }
 
+    let putDate = result.putInstrumentName.split('-')[1];
+    let callDate = result.callInstrumentName.split('-')[1];
+    let expiresInCall = calculateExpiresIn(timeDelay, callDate);
+    let expiresInPut = calculateExpiresIn(timeDelay, putDate);
+
     writeBestValues(result);
-    writeResult2(indexBtcDeribit, exitRangeStart2, exitRangeEnd2, exitRangeIncrement2, result, movePrice, moveStrikePrice, interestRate);
+    writeResult2(indexBtcDeribit, exitRangeStart2, exitRangeEnd2, exitRangeIncrement2, result, movePrice, moveStrikePrice, interestRate, expiresInCall, expiresInPut);
     writeDataTo(statusCell, "Calculating IV values");
     getDataFrom("B4");
     let call_IV = parseFloat(pullCall_IV(result.callInstrumentName));
@@ -397,10 +402,6 @@ function getBestValues() {
     let row = tableRowStartIndex;
     let maxMaintenanceMarginCall = 0;
     let maxMaintenanceMarginPut = 0;
-    let putDate = result.putInstrumentName.split('-')[1];
-    let callDate = result.callInstrumentName.split('-')[1];
-    let expiresInCall = calculateExpiresIn(timeDelay, callDate);
-    let expiresInPut = calculateExpiresIn(timeDelay, putDate);
     for (let exitPrice = indexBtcDeribit + exitRangeStart; exitPrice <= indexBtcDeribit + exitRangeEnd; exitPrice += exitRangeIncrement) {
         let callPreFuture = calculateCallPreFuture(exitPrice, result.callStrike, expiresInCall, interestRate, call_IV);
         let putPreFuture = calculatePutPreFuture(exitPrice, result.putStrike, expiresInPut, interestRate, put_IV);
