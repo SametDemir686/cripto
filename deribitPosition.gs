@@ -1,3 +1,15 @@
+function openPosition() {
+    openPositionIfCellNotEmpty(buyCallInstrumentNameCell, buyCall);
+    openPositionIfCellNotEmpty(buyPutInstrumentNameCell, buyPut);
+    openPositionIfCellNotEmpty(sellCallInstrumentNameCell, sellCall);
+    openPositionIfCellNotEmpty(sellPutInstrumentNameCell, sellPut);
+}
+
+function openPositionIfCellNotEmpty(cell, openFunction) {
+    if (getDataFrom(cell))
+        openFunction();
+}
+
 function buyCall() {
     let options = getOptionsFromSheet(buyCallInstrumentNameCell, buyCallAmountCell, buyCallTypeCell, buyCallLabelCell, buyCallPriceCell, buyCallTimeInForceCell, buyCallMaxShowCell, buyCallPostOnlyCell, buyCallRejectPostOnlyCell, buyCallReduceOnlyCell, buyCallStopPriceCell, buyCallTriggerCell, buyCallAdvancedCell, buyCallMmpCell);
     buy(options);
