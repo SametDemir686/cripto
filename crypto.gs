@@ -292,7 +292,7 @@ function getBestValues() {
     pullJSON();
     writeDataTo(statusCell, "Clearing Table");
     getDataFrom("B4");
-    clearTable();
+    // clearTable();
     writeDataTo(statusCell, "Getting Initial Values");
     let capitalRangeStart = getDataFrom(capitalRangeStartCell);
     let capitalRangeEnd = getDataFrom(capitalRangeEndCell);
@@ -406,23 +406,23 @@ function getBestValues() {
     let row = tableRowStartIndex;
     let maxMaintenanceMarginCall = 0;
     let maxMaintenanceMarginPut = 0;
-    for (let exitPrice = indexBtcDeribit + exitRangeStart; exitPrice <= indexBtcDeribit + exitRangeEnd; exitPrice += exitRangeIncrement) {
-        let callPreFuture = calculateCallPreFuture(exitPrice, result.callStrike, expiresInCall, interestRate, call_IV);
-        let putPreFuture = calculatePutPreFuture(exitPrice, result.putStrike, expiresInPut, interestRate, put_IV);
-        let pnlPutResult = pnlPut(exitPrice, result.putRange, result.putStrike, result.putAsk);
-        let pnlMoveResult = pnlMove(exitPrice, result.moveRange, movePrice, moveStrikePrice);
-        let pnlFutureResult = pnlFuture(exitPrice, result.capitalRange, indexBtcDeribit);
-        let pnlCallResult = pnlCall(exitPrice, result.callRange, result.callStrike, result.callAsk);
-        let pnlTotal = pnlPutResult + pnlCallResult + pnlMoveResult + pnlFutureResult;
-        let pnlCallFuture = (callPreFuture - result.callAsk) * result.callRange;
-        let pnlPutFuture = (putPreFuture - result.putAsk) * result.putRange;
-        let pnlTotalFuture = pnlCallFuture + pnlPutFuture + pnlMoveResult;
-        let maintenanceMarginCall = result.callRange >= 0 ? 0 : calculateMaintenanceMarginCall(indexBtcDeribit, callPreFuture) * Math.abs(result.callRange);
-        let maintenanceMarginPut = result.putRange >= 0 ? 0 : calculateMaintenanceMarginPut(indexBtcDeribit, putPreFuture) * Math.abs(result.putRange);
-        if (maxMaintenanceMarginCall < maintenanceMarginCall) maxMaintenanceMarginCall = maintenanceMarginCall;
-        if (maxMaintenanceMarginPut < maintenanceMarginPut) maxMaintenanceMarginPut = maintenanceMarginPut;
-        insertToTable(row++, indexBtcDeribit, exitPrice, pnlTotal, pnlTotalFuture, pnlCallFuture, pnlPutFuture, pnlFutureResult, pnlMoveResult, pnlCallResult, pnlPutResult, maintenanceMarginCall, maintenanceMarginPut, callPreFuture, putPreFuture);
-    }
+    // for (let exitPrice = indexBtcDeribit + exitRangeStart; exitPrice <= indexBtcDeribit + exitRangeEnd; exitPrice += exitRangeIncrement) {
+    //     let callPreFuture = calculateCallPreFuture(exitPrice, result.callStrike, expiresInCall, interestRate, call_IV);
+    //     let putPreFuture = calculatePutPreFuture(exitPrice, result.putStrike, expiresInPut, interestRate, put_IV);
+    //     let pnlPutResult = pnlPut(exitPrice, result.putRange, result.putStrike, result.putAsk);
+    //     let pnlMoveResult = pnlMove(exitPrice, result.moveRange, movePrice, moveStrikePrice);
+    //     let pnlFutureResult = pnlFuture(exitPrice, result.capitalRange, indexBtcDeribit);
+    //     let pnlCallResult = pnlCall(exitPrice, result.callRange, result.callStrike, result.callAsk);
+    //     let pnlTotal = pnlPutResult + pnlCallResult + pnlMoveResult + pnlFutureResult;
+    //     let pnlCallFuture = (callPreFuture - result.callAsk) * result.callRange;
+    //     let pnlPutFuture = (putPreFuture - result.putAsk) * result.putRange;
+    //     let pnlTotalFuture = pnlCallFuture + pnlPutFuture + pnlMoveResult;
+    //     let maintenanceMarginCall = result.callRange >= 0 ? 0 : calculateMaintenanceMarginCall(indexBtcDeribit, callPreFuture) * Math.abs(result.callRange);
+    //     let maintenanceMarginPut = result.putRange >= 0 ? 0 : calculateMaintenanceMarginPut(indexBtcDeribit, putPreFuture) * Math.abs(result.putRange);
+    //     if (maxMaintenanceMarginCall < maintenanceMarginCall) maxMaintenanceMarginCall = maintenanceMarginCall;
+    //     if (maxMaintenanceMarginPut < maintenanceMarginPut) maxMaintenanceMarginPut = maintenanceMarginPut;
+    //     insertToTable(row++, indexBtcDeribit, exitPrice, pnlTotal, pnlTotalFuture, pnlCallFuture, pnlPutFuture, pnlFutureResult, pnlMoveResult, pnlCallResult, pnlPutResult, maintenanceMarginCall, maintenanceMarginPut, callPreFuture, putPreFuture);
+    // }
     writeDataTo(maintenanceMarginCallCell, maxMaintenanceMarginCall);
     writeDataTo(maintenanceMarginPutCell, maxMaintenanceMarginPut);
     writeDataTo(resultPutSizeCell, pullAskSizeDeribit(result.putInstrumentName, indexBtcDeribit));

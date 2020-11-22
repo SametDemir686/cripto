@@ -1,32 +1,59 @@
 function openPosition() {
-    openPositionIfCellNotEmpty(buyCallInstrumentNameCell, buyCall);
-    openPositionIfCellNotEmpty(buyPutInstrumentNameCell, buyPut);
-    openPositionIfCellNotEmpty(sellCallInstrumentNameCell, sellCall);
-    openPositionIfCellNotEmpty(sellPutInstrumentNameCell, sellPut);
+    runIfCellNotEmpty(openBuyCallInstrumentNameCell, openBuyCall);
+    runIfCellNotEmpty(openBuyPutInstrumentNameCell, openBuyPut);
+    runIfCellNotEmpty(openSellCallInstrumentNameCell, openSellCall);
+    runIfCellNotEmpty(openSellPutInstrumentNameCell, openSellPut);
 }
 
-function openPositionIfCellNotEmpty(cell, openFunction) {
+function closePosition() {
+    runIfCellNotEmpty(closeBuyCallInstrumentNameCell, closeBuyCall);
+    runIfCellNotEmpty(closeBuyPutInstrumentNameCell, closeBuyPut);
+    runIfCellNotEmpty(closeSellCallInstrumentNameCell, closeSellCall);
+    runIfCellNotEmpty(closeSellPutInstrumentNameCell, closeSellPut);
+}
+
+function runIfCellNotEmpty(cell, openFunction) {
     if (getDataFrom(cell))
         openFunction();
 }
 
-function buyCall() {
-    let options = getOptionsFromSheet(buyCallInstrumentNameCell, buyCallAmountCell, buyCallTypeCell, buyCallLabelCell, buyCallPriceCell, buyCallTimeInForceCell, buyCallMaxShowCell, buyCallPostOnlyCell, buyCallRejectPostOnlyCell, buyCallReduceOnlyCell, buyCallStopPriceCell, buyCallTriggerCell, buyCallAdvancedCell, buyCallMmpCell);
+function openBuyCall() {
+    let options = getOptionsFromSheet(openBuyCallInstrumentNameCell, openBuyCallAmountCell, openBuyCallTypeCell, openBuyCallLabelCell, openBuyCallPriceCell, openBuyCallTimeInForceCell, openBuyCallMaxShowCell, openBuyCallPostOnlyCell, openBuyCallRejectPostOnlyCell, openBuyCallReduceOnlyCell, openBuyCallStopPriceCell, openBuyCallTriggerCell, openBuyCallAdvancedCell, openBuyCallMmpCell);
     buy(options);
 }
 
-function buyPut() {
-    let options = getOptionsFromSheet(buyPutInstrumentNameCell, buyPutAmountCell, buyPutTypeCell, buyPutLabelCell, buyPutPriceCell, buyPutTimeInForceCell, buyPutMaxShowCell, buyPutPostOnlyCell, buyPutRejectPostOnlyCell, buyPutReduceOnlyCell, buyPutStopPriceCell, buyPutTriggerCell, buyPutAdvancedCell, buyPutMmpCell);
+function openBuyPut() {
+    let options = getOptionsFromSheet(openBuyPutInstrumentNameCell, openBuyPutAmountCell, openBuyPutTypeCell, openBuyPutLabelCell, openBuyPutPriceCell, openBuyPutTimeInForceCell, openBuyPutMaxShowCell, openBuyPutPostOnlyCell, openBuyPutRejectPostOnlyCell, openBuyPutReduceOnlyCell, openBuyPutStopPriceCell, openBuyPutTriggerCell, openBuyPutAdvancedCell, openBuyPutMmpCell);
     buy(options);
 }
 
-function sellCall() {
-    let options = getOptionsFromSheet(sellCallInstrumentNameCell, sellCallAmountCell, sellCallTypeCell, sellCallLabelCell, sellCallPriceCell, sellCallTimeInForceCell, sellCallMaxShowCell, sellCallPostOnlyCell, sellCallRejectPostOnlyCell, sellCallReduceOnlyCell, sellCallStopPriceCell, sellCallTriggerCell, sellCallAdvancedCell, sellCallMmpCell);
+function openSellCall() {
+    let options = getOptionsFromSheet(openSellCallInstrumentNameCell, openSellCallAmountCell, openSellCallTypeCell, openSellCallLabelCell, openSellCallPriceCell, openSellCallTimeInForceCell, openSellCallMaxShowCell, openSellCallPostOnlyCell, openSellCallRejectPostOnlyCell, openSellCallReduceOnlyCell, openSellCallStopPriceCell, openSellCallTriggerCell, openSellCallAdvancedCell, openSellCallMmpCell);
     sell(options);
 }
 
-function sellPut() {
-    let options = getOptionsFromSheet(sellPutInstrumentNameCell, sellPutAmountCell, sellPutTypeCell, sellPutLabelCell, sellPutPriceCell, sellPutTimeInForceCell, sellPutMaxShowCell, sellPutPostOnlyCell, sellPutRejectPostOnlyCell, sellPutReduceOnlyCell, sellPutStopPriceCell, sellPutTriggerCell, sellPutAdvancedCell, sellPutMmpCell);
+function openSellPut() {
+    let options = getOptionsFromSheet(openSellPutInstrumentNameCell, openSellPutAmountCell, openSellPutTypeCell, openSellPutLabelCell, openSellPutPriceCell, openSellPutTimeInForceCell, openSellPutMaxShowCell, openSellPutPostOnlyCell, openSellPutRejectPostOnlyCell, openSellPutReduceOnlyCell, openSellPutStopPriceCell, openSellPutTriggerCell, openSellPutAdvancedCell, openSellPutMmpCell);
+    sell(options);
+}
+
+function closeBuyCall() {
+    let options = getOptionsFromSheet(closeBuyCallInstrumentNameCell, closeBuyCallAmountCell, closeBuyCallTypeCell, closeBuyCallLabelCell, closeBuyCallPriceCell, closeBuyCallTimeInForceCell, closeBuyCallMaxShowCell, closeBuyCallPostOnlyCell, closeBuyCallRejectPostOnlyCell, closeBuyCallReduceOnlyCell, closeBuyCallStopPriceCell, closeBuyCallTriggerCell, closeBuyCallAdvancedCell, closeBuyCallMmpCell);
+    buy(options);
+}
+
+function closeBuyPut() {
+    let options = getOptionsFromSheet(closeBuyPutInstrumentNameCell, closeBuyPutAmountCell, closeBuyPutTypeCell, closeBuyPutLabelCell, closeBuyPutPriceCell, closeBuyPutTimeInForceCell, closeBuyPutMaxShowCell, closeBuyPutPostOnlyCell, closeBuyPutRejectPostOnlyCell, closeBuyPutReduceOnlyCell, closeBuyPutStopPriceCell, closeBuyPutTriggerCell, closeBuyPutAdvancedCell, closeBuyPutMmpCell);
+    buy(options);
+}
+
+function closeSellCall() {
+    let options = getOptionsFromSheet(closeSellCallInstrumentNameCell, closeSellCallAmountCell, closeSellCallTypeCell, closeSellCallLabelCell, closeSellCallPriceCell, closeSellCallTimeInForceCell, closeSellCallMaxShowCell, closeSellCallPostOnlyCell, closeSellCallRejectPostOnlyCell, closeSellCallReduceOnlyCell, closeSellCallStopPriceCell, closeSellCallTriggerCell, closeSellCallAdvancedCell, closeSellCallMmpCell);
+    sell(options);
+}
+
+function closeSellPut() {
+    let options = getOptionsFromSheet(closeSellPutInstrumentNameCell, closeSellPutAmountCell, closeSellPutTypeCell, closeSellPutLabelCell, closeSellPutPriceCell, closeSellPutTimeInForceCell, closeSellPutMaxShowCell, closeSellPutPostOnlyCell, closeSellPutRejectPostOnlyCell, closeSellPutReduceOnlyCell, closeSellPutStopPriceCell, closeSellPutTriggerCell, closeSellPutAdvancedCell, closeSellPutMmpCell);
     sell(options);
 }
 
