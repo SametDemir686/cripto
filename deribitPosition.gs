@@ -1,59 +1,93 @@
-//
+function buyCall() {
+    let options = getOptionsFromSheet(buyCallInstrumentNameCell, buyCallAmountCell, buyCallTypeCell, buyCallLabelCell, buyCallPriceCell, buyCallTimeInForceCell, buyCallMaxShowCell, buyCallPostOnlyCell, buyCallRejectPostOnlyCell, buyCallReduceOnlyCell, buyCallStopPriceCell, buyCallTriggerCell, buyCallAdvancedCell, buyCallMmpCell);
+    buy(options);
+}
 
-function buy() {
-    let instrument_name = getDataFrom(buyInstrumentNameCell);
-    let amount = getDataFrom(buyAmountCell);
-    let type = getDataFrom(buyTypeCell);
-    let label = getDataFrom(buyLabelCell);
-    let price = getDataFrom(buyPriceCell);
-    let time_in_force = getDataFrom(buyTimeInForceCell);
-    let post_only = getDataFrom(buyPostOnlyCell);
-    let reject_post_only = getDataFrom(buyRejectPostOnlyCell);
-    let max_show = getDataFrom(buyMaxShowCell);
-    let reduce_only = getDataFrom(buyReduceOnlyCell);
-    let stop_price = getDataFrom(buyStopPriceCell);
-    let trigger = getDataFrom(buyTriggerCell);
-    let advanced = getDataFrom(buyAdvancedCell);
-    let mmp = getDataFrom(buyMmpCell);
+function buyPut() {
+    let options = getOptionsFromSheet(buyPutInstrumentNameCell, buyPutAmountCell, buyPutTypeCell, buyPutLabelCell, buyPutPriceCell, buyPutTimeInForceCell, buyPutMaxShowCell, buyPutPostOnlyCell, buyPutRejectPostOnlyCell, buyPutReduceOnlyCell, buyPutStopPriceCell, buyPutTriggerCell, buyPutAdvancedCell, buyPutMmpCell);
+    buy(options);
+}
 
-    let client_secret = "8--w-5ibx5TGv8qWz1X4i2gL8Bx5Y1G1kDOI4WEEuz0";
-    let client_id = "twrAu34G";
-    let tokenUrl = "https://www.deribit.com/api/v2/public/auth?client_id=" + client_id + "&client_secret=" + client_secret + "&grant_type=client_credentials";
+function sellCall() {
+    let options = getOptionsFromSheet(sellCallInstrumentNameCell, sellCallAmountCell, sellCallTypeCell, sellCallLabelCell, sellCallPriceCell, sellCallTimeInForceCell, sellCallMaxShowCell, sellCallPostOnlyCell, sellCallRejectPostOnlyCell, sellCallReduceOnlyCell, sellCallStopPriceCell, sellCallTriggerCell, sellCallAdvancedCell, sellCallMmpCell);
+    sell(options);
+}
+
+function sellPut() {
+    let options = getOptionsFromSheet(sellPutInstrumentNameCell, sellPutAmountCell, sellPutTypeCell, sellPutLabelCell, sellPutPriceCell, sellPutTimeInForceCell, sellPutMaxShowCell, sellPutPostOnlyCell, sellPutRejectPostOnlyCell, sellPutReduceOnlyCell, sellPutStopPriceCell, sellPutTriggerCell, sellPutAdvancedCell, sellPutMmpCell);
+    sell(options);
+}
+
+function getOptionsFromSheet(instrumentNameCell, amountCell, typeCell, labelCell, priceCell, timeInForceCell, maxShowCell, postOnlyCell, rejectPostOnlyCell, reduceOnlyCell, stopPriceCell, triggerCell, advancedCell, mmpCell) {
+    return {
+        instrumentName: getDataFrom(instrumentNameCell),
+        amount: getDataFrom(amountCell),
+        type: getDataFrom(typeCell),
+        label: getDataFrom(labelCell),
+        price: getDataFrom(priceCell),
+        timeInForce: getDataFrom(timeInForceCell),
+        maxShow: getDataFrom(maxShowCell),
+        postOnly: getDataFrom(postOnlyCell),
+        rejectPostOnly: getDataFrom(rejectPostOnlyCell),
+        reduceOnly: getDataFrom(reduceOnlyCell),
+        stopPrice: getDataFrom(stopPriceCell),
+        trigger: getDataFrom(triggerCell),
+        advanced: getDataFrom(advancedCell),
+        mmp: getDataFrom(mmpCell)
+    };
+}
+
+function buy(options) {
     let tokenData = pullDataFrom(tokenUrl).result;
-    let buyUrl = 'https://www.deribit.com/api/v2/private/buy?';
-    buyUrl += 'instrument_name=' + instrument_name;
-
-    function extracted(name, value) {
-        if (value !== undefined) {
-            buyUrl += '&' + name + '=' + value;
-        }
-    }
-    extracted('type', type);
-    extracted('label', label);
-    extracted('price', price);
-    extracted('amount', amount);
-    extracted('time_in_force', time_in_force);
-    extracted('post_only', post_only);
-    extracted('reject_post_only', reject_post_only);
-    extracted('max_show', max_show);
-    extracted('reduce_only', reduce_only);
-    extracted('stop_price', stop_price);
-    extracted('trigger', trigger);
-    extracted('advanced', advanced);
-    extracted('mmp', mmp);
-
+    let buyUrl = getBuyUrl(options);
     sendRequest(buyUrl, tokenData);
 }
 
-function sell() {
+function sell(options) {
+    let tokenData = pullDataFrom(tokenUrl).result;
+    let sellUrl = getSellUrl(options);
+    sendRequest(sellUrl, tokenData);
+}
 
+function getSellUrl(options) {
+    let sellUrl = 'https://www.deribit.com/api/v2/private/sell?';
+    return getUrl(sellUrl, options);
+}
+
+function getBuyUrl(options) {
+    let buyUrl = 'https://www.deribit.com/api/v2/private/buy?';
+    return getUrl(buyUrl, options);
+}
+
+function getUrl(url, options) {
+    url += 'instrument_name=' + options.instrumentName;
+
+    function addField(name, value) {
+        if (value) {
+            url += '&' + name + '=' + value;
+        }
+    }
+
+    addField('type', options.type);
+    addField('label', options.label);
+    addField('price', options.price);
+    addField('amount', options.amount);
+    addField('time_in_force', options.timeInForce);
+    addField('post_only', options.postOnly);
+    addField('reject_post_only', options.rejectPostOnly);
+    addField('max_show', options.maxShow);
+    addField('reduce_only', options.reduceOnly);
+    addField('stop_price', options.stopPrice);
+    addField('trigger', options.trigger);
+    addField('advanced', options.advanced);
+    addField('mmp', options.mmp);
+    return url;
 }
 
 function sendRequest(url, tokenData) {
     var plusOptions = {
         "headers": {
-            "Authorization": "Bearer " + tokenData.access_token,
-            'method': 'post'
+            "Authorization": "Bearer " + tokenData.access_token
         }
     };
     var plusResponse = UrlFetchApp.fetch(url, plusOptions);
