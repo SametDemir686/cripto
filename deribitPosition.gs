@@ -1,8 +1,10 @@
 function openPosition() {
-    runIfCellNotEmpty(openBuyCallInstrumentNameCell, openBuyCall);
-    runIfCellNotEmpty(openBuyPutInstrumentNameCell, openBuyPut);
-    runIfCellNotEmpty(openSellCallInstrumentNameCell, openSellCall);
-    runIfCellNotEmpty(openSellPutInstrumentNameCell, openSellPut);
+    if (sizePriceCheck()) {
+        runIfCellNotEmpty(openBuyCallInstrumentNameCell, openBuyCall);
+        runIfCellNotEmpty(openBuyPutInstrumentNameCell, openBuyPut);
+        runIfCellNotEmpty(openSellCallInstrumentNameCell, openSellCall);
+        runIfCellNotEmpty(openSellPutInstrumentNameCell, openSellPut);
+    }
 }
 
 function closePosition() {
@@ -10,6 +12,43 @@ function closePosition() {
     runIfCellNotEmpty(closeBuyPutInstrumentNameCell, closeBuyPut);
     runIfCellNotEmpty(closeSellCallInstrumentNameCell, closeSellCall);
     runIfCellNotEmpty(closeSellPutInstrumentNameCell, closeSellPut);
+}
+
+function sizePriceCheck() {
+    return checkCall(openBuyCallInstrumentNameCell)
+        && checkCall(openSellCallInstrumentNameCell)
+        && checkPut(openBuyPutInstrumentNameCell)
+        && checkPut(openSellPutInstrumentNameCell);
+}
+
+function checkCall(instrumentNameCell) {
+    let instrumentName = getDataFrom(instrumentNameCell);
+    if (instrumentName) {
+        let openBuyCallAskDeribit = pullAskDeribit(instrumentName);
+        let callPrice = getDataFrom(resultCallOptionCell);
+        let callSize = getDataFrom(resultCallSizeCell);
+        return openBuyCallAskDeribit.price === callPrice && openBuyCallAskDeribit.size >= callSize;
+    }
+    return true;
+}
+
+function checkPut(instrumentNameCell) {
+    let instrumentName = getDataFrom(instrumentNameCell);
+    if (instrumentName) {
+        let openBuyPutAskDeribit = pullAskDeribit(instrumentName);
+        let putPrice = getDataFrom(resultPutOptionCell);
+        let putSize = getDataFrom(resultPutSizeCell);
+        return openBuyPutAskDeribit.price === putPrice && openBuyPutAskDeribit.size >= putSize;
+    }
+    return true;
+}
+
+function pullAskDeribit(instrumentName) {
+    var data = pullDataFrom("https://www.deribit.com/api/v2/public/get_order_book?instrument_name=" + instrumentName);
+    return {
+        price: data.result['asks'][0][0],
+        size: data.result['asks'][0][1]
+    };
 }
 
 function runIfCellNotEmpty(cell, openFunction) {

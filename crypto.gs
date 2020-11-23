@@ -1,16 +1,16 @@
-function pnlPut(exitPrice, putRange, putStrike, putAsk) {
+function pnlPut(exitPrice, putRange, putStrike, putOptionPrice) {
     if (exitPrice - putStrike >= 0) {
-        return -putAsk * putRange;
+        return -putOptionPrice * putRange;
     } else {
-        return putStrike * putRange - exitPrice * putRange - putAsk * putRange;
+        return putStrike * putRange - exitPrice * putRange - putOptionPrice * putRange;
     }
 }
 
-function pnlCall(exitPrice, callRange, callStrike, callAsk) {
+function pnlCall(exitPrice, callRange, callStrike, callOptionPrice) {
     if (exitPrice - callStrike >= 0) {
-        return exitPrice * callRange - callStrike * callRange - callAsk * callRange;
+        return exitPrice * callRange - callStrike * callRange - callOptionPrice * callRange;
     } else {
-        return -callAsk * callRange;
+        return -callOptionPrice * callRange;
     }
 }
 
@@ -46,8 +46,8 @@ function writeBestValues(result) {
     writeDataTo(resultTotalPremiumCell, result.totalPremium);
     writeDataTo(resultCallInstrumentCell, result.callInstrumentName);
     writeDataTo(resultPutInstrumentCell, result.putInstrumentName);
-    writeDataTo(resultCallAskCell, result.callAsk);
-    writeDataTo(resultPutAskCell, result.putAsk);
+    writeDataTo(resultCallOptionCell, result.callOptionPrice);
+    writeDataTo(resultPutOptionCell, result.putOptionPrice);
     writeDataTo(resultMaxReturnPercentageCell, result.maxReturnPercentage);
     writeDataTo(resultMinReturnPercentageCell, result.minReturnPercentage);
     writeDataTo(resultAverageReturnPercentageCell, result.averageReturnPercentage);
@@ -56,7 +56,7 @@ function writeBestValues(result) {
     writeDataTo(resultInitialMarginPutCell, result.initialMarginPut);
 }
 
-function bestValuesChanged(moveRange, callRange, putRange, capitalRange, green, average, exitSayisi, indexBtcDeribit, putAsk, callAsk, movePrice, callStrike, putStrike, callInstrumentName, putInstrumentName, maxReturnPercentage, minReturnPercentage, averageReturnPercentage, totalFundsInvested, initialMarginCall, initialMarginPut) {
+function bestValuesChanged(moveRange, callRange, putRange, capitalRange, green, average, exitSayisi, indexBtcDeribit, putOptionPrice, callOptionPrice, movePrice, callStrike, putStrike, callInstrumentName, putInstrumentName, maxReturnPercentage, minReturnPercentage, averageReturnPercentage, totalFundsInvested, initialMarginCall, initialMarginPut) {
     return {
         moveRange: moveRange,
         callRange: callRange,
@@ -66,11 +66,11 @@ function bestValuesChanged(moveRange, callRange, putRange, capitalRange, green, 
         average: average,
         success: "%" + (green / exitSayisi * 100).toFixed(2),
         indexBtcDeribit: indexBtcDeribit,
-        totalPremium: calculateTotalPremium(putAsk, putRange, callAsk, callRange, movePrice, moveRange),
+        totalPremium: calculateTotalPremium(putOptionPrice, putRange, callOptionPrice, callRange, movePrice, moveRange),
         callStrike: callStrike,
         putStrike: putStrike,
-        putAsk: putAsk,
-        callAsk: callAsk,
+        putOptionPrice: putOptionPrice,
+        callOptionPrice: callOptionPrice,
         callInstrumentName: callInstrumentName,
         putInstrumentName: putInstrumentName,
         maxReturnPercentage: maxReturnPercentage,
@@ -105,17 +105,17 @@ function writeLiqRisk(result, indexBtcDeribit, exitRangeStart, exitRangeEnd, exi
     writeDataTo(resultLiqRiskCell, "%" + (count / exitSayisi * 100).toFixed(2))
 }
 
-function calculatePnlTotal(exitPrice, indexBtcDeribit, exitRangeStart, putRange, putStrike, putAsk, callRange, callStrike, callAsk, moveRange, movePrice, moveStrikePrice, capitalRange) {
-    return pnlPut(exitPrice, putRange, putStrike, putAsk)
-        + pnlCall(exitPrice, callRange, callStrike, callAsk)
+function calculatePnlTotal(exitPrice, indexBtcDeribit, exitRangeStart, putRange, putStrike, putOptionPrice, callRange, callStrike, callOptionPrice, moveRange, movePrice, moveStrikePrice, capitalRange) {
+    return pnlPut(exitPrice, putRange, putStrike, putOptionPrice)
+        + pnlCall(exitPrice, callRange, callStrike, callOptionPrice)
         + pnlMove(exitPrice, moveRange, movePrice, moveStrikePrice)
         + pnlFuture(exitPrice, capitalRange, indexBtcDeribit);
 }
 
-function pnlTotals(exitPrice, indexBtcDeribit, exitRangeStart, putRange, putStrike, putAsk, callRange, callStrike, callAsk, moveRange, movePrice, moveStrikePrice, capitalRange) {
+function pnlTotals(exitPrice, indexBtcDeribit, exitRangeStart, putRange, putStrike, putOptionPrice, callRange, callStrike, callOptionPrice, moveRange, movePrice, moveStrikePrice, capitalRange) {
     return {
         x: exitPrice,
-        y: calculatePnlTotal(exitPrice, indexBtcDeribit, exitRangeStart, putRange, putStrike, putAsk, callRange, callStrike, callAsk, moveRange, movePrice, moveStrikePrice, capitalRange)
+        y: calculatePnlTotal(exitPrice, indexBtcDeribit, exitRangeStart, putRange, putStrike, putOptionPrice, callRange, callStrike, callOptionPrice, moveRange, movePrice, moveStrikePrice, capitalRange)
     };
 }
 
@@ -201,27 +201,27 @@ function calculateMaintenanceMarginPut(indexBtcDeribit, putPreFuture) {
     return Math.max(0.075 * indexBtcDeribit, 0.075 * putPreFuture) + putPreFuture;
 }
 
-function calculateTotalPremium(putAsk, putRange, callAsk, callRange, movePrice, moveRange) {
-    return Math.abs(putAsk * putRange) + Math.abs(callAsk * callRange) + Math.abs(movePrice * moveRange);
+function calculateTotalPremium(putOptionPrice, putRange, callOptionPrice, callRange, movePrice, moveRange) {
+    return Math.abs(putOptionPrice * putRange) + Math.abs(callOptionPrice * callRange) + Math.abs(movePrice * moveRange);
 }
 
-function calculateInitialMarginCall(indexBtcDeribit, callStrike, callRange, callAskPrice) {
+function calculateInitialMarginCall(indexBtcDeribit, callStrike, callRange, callOptionPrice) {
     if (callRange < 0) {
         let x = callStrike > indexBtcDeribit
-            ? Math.max(0.15 - ((callStrike - indexBtcDeribit) / indexBtcDeribit), 0.1) + (callAskPrice / indexBtcDeribit)
-            : 0.15 + (callAskPrice / indexBtcDeribit);
-        return x * indexBtcDeribit * Math.abs(callRange) - callAskPrice * Math.abs(callRange);
+            ? Math.max(0.15 - ((callStrike - indexBtcDeribit) / indexBtcDeribit), 0.1) + (callOptionPrice / indexBtcDeribit)
+            : 0.15 + (callOptionPrice / indexBtcDeribit);
+        return x * indexBtcDeribit * Math.abs(callRange) - callOptionPrice * Math.abs(callRange);
     }
     return 0;
 
 }
 
-function calculateInitialMarginPut(indexBtcDeribit, putStrike, putRange, putAskPrice) {
+function calculateInitialMarginPut(indexBtcDeribit, putStrike, putRange, putOptionPrice) {
     if (putRange < 0) {
         let x = putStrike < indexBtcDeribit
-            ? Math.max(0.15 - (indexBtcDeribit - putStrike) / indexBtcDeribit, 0.1, 0.075 * (putAskPrice / indexBtcDeribit))
-            : Math.max(0.15, 0.075 * (putAskPrice / indexBtcDeribit));
-        return (x + (putAskPrice / indexBtcDeribit)) * indexBtcDeribit * Math.abs(putRange) - putAskPrice * Math.abs(putRange);
+            ? Math.max(0.15 - (indexBtcDeribit - putStrike) / indexBtcDeribit, 0.1, 0.075 * (putOptionPrice / indexBtcDeribit))
+            : Math.max(0.15, 0.075 * (putOptionPrice / indexBtcDeribit));
+        return (x + (putOptionPrice / indexBtcDeribit)) * indexBtcDeribit * Math.abs(putRange) - putOptionPrice * Math.abs(putRange);
     }
     return 0;
 }
@@ -244,17 +244,17 @@ function calculateValues(pnlTotalsArray, exitInterval, totalFundsInvested) {
     return {green, average, averageReturnPercentage, maxReturnPercentage, minReturnPercentage};
 }
 
-function getPnlTotals(indexBtcDeribit, exitRangeStart, exitRangeEnd, putRange, putStrike, putAsk, callRange, callStrike, callAsk, moveRange, movePrice, moveStrikePrice, capitalRange) {
+function getPnlTotals(indexBtcDeribit, exitRangeStart, exitRangeEnd, putRange, putStrike, putOptionPrice, callRange, callStrike, callOptionPrice, moveRange, movePrice, moveStrikePrice, capitalRange) {
     let pnlTotalsArray = [
-        pnlTotals(indexBtcDeribit + exitRangeStart, indexBtcDeribit, exitRangeStart, putRange, putStrike, putAsk, callRange, callStrike, callAsk, moveRange, movePrice, moveStrikePrice, capitalRange),
-        pnlTotals(indexBtcDeribit + exitRangeEnd, indexBtcDeribit, exitRangeStart, putRange, putStrike, putAsk, callRange, callStrike, callAsk, moveRange, movePrice, moveStrikePrice, capitalRange)
+        pnlTotals(indexBtcDeribit + exitRangeStart, indexBtcDeribit, exitRangeStart, putRange, putStrike, putOptionPrice, callRange, callStrike, callOptionPrice, moveRange, movePrice, moveStrikePrice, capitalRange),
+        pnlTotals(indexBtcDeribit + exitRangeEnd, indexBtcDeribit, exitRangeStart, putRange, putStrike, putOptionPrice, callRange, callStrike, callOptionPrice, moveRange, movePrice, moveStrikePrice, capitalRange)
     ];
 
     if (parseInt(putStrike) > indexBtcDeribit + exitRangeStart && parseInt(putStrike) < indexBtcDeribit + exitRangeEnd) {
-        pnlTotalsArray.push(pnlTotals(parseInt(putStrike), indexBtcDeribit, exitRangeStart, putRange, putStrike, putAsk, callRange, callStrike, callAsk, moveRange, movePrice, moveStrikePrice, capitalRange));
+        pnlTotalsArray.push(pnlTotals(parseInt(putStrike), indexBtcDeribit, exitRangeStart, putRange, putStrike, putOptionPrice, callRange, callStrike, callOptionPrice, moveRange, movePrice, moveStrikePrice, capitalRange));
     }
     if (parseInt(callStrike) > indexBtcDeribit + exitRangeStart && parseInt(callStrike) < indexBtcDeribit + exitRangeEnd) {
-        pnlTotalsArray.push(pnlTotals(parseInt(callStrike), indexBtcDeribit, exitRangeStart, putRange, putStrike, putAsk, callRange, callStrike, callAsk, moveRange, movePrice, moveStrikePrice, capitalRange));
+        pnlTotalsArray.push(pnlTotals(parseInt(callStrike), indexBtcDeribit, exitRangeStart, putRange, putStrike, putOptionPrice, callRange, callStrike, callOptionPrice, moveRange, movePrice, moveStrikePrice, capitalRange));
     }
     pnlTotalsArray.sort(function (a, b) {
         return a.x - b.x
@@ -264,7 +264,7 @@ function getPnlTotals(indexBtcDeribit, exitRangeStart, exitRangeEnd, putRange, p
 
 function writeResult(indexBtcDeribit, exitRangeStart, exitRangeEnd, exitRangeIncrement, result, movePrice, moveStrikePrice, interestRate, expiresInCall, expiresInPut, minReturnPercentageCell, maxReturnPercentageCell, averageReturnPercentageCell, maintenanceMarginMaxCallCell, maintenanceMarginMaxPutCell) {
     let exitInterval = exitRangeEnd - exitRangeStart;
-    let pnlTotalsArray = getPnlTotals(indexBtcDeribit, exitRangeStart, exitRangeEnd, result.putRange, result.putStrike, result.putAsk, result.callRange, result.callStrike, result.callAsk, result.moveRange, movePrice, moveStrikePrice, result.capitalRange);
+    let pnlTotalsArray = getPnlTotals(indexBtcDeribit, exitRangeStart, exitRangeEnd, result.putRange, result.putStrike, result.putOptionPrice, result.callRange, result.callStrike, result.callOptionPrice, result.moveRange, movePrice, moveStrikePrice, result.capitalRange);
     let {averageReturnPercentage, maxReturnPercentage, minReturnPercentage} = calculateValues(pnlTotalsArray, exitInterval, result.totalFundsInvested);
     let maxMaintenanceMarginCall = 0;
     let maxMaintenanceMarginPut = 0;
@@ -336,8 +336,8 @@ function getBestValues() {
         totalPremium: "Unknown",
         callStrike: "Unknown",
         putStrike: "Unknown",
-        putAsk: "Unknown",
-        callAsk: "Unknown",
+        putOptionPrice: "Unknown",
+        callOptionPrice: "Unknown",
         callInstrumentName: "Unknown",
         putInstrumentName: "Unknown"
     };
@@ -351,32 +351,34 @@ function getBestValues() {
     let callInstrumentNames = SpreadsheetApp.getActiveSheet().getRange(selectedCallInstrumentColumn + selectedCallInstrumentRow + ":" + callLastRange).getValues();
     let putAsks = pullAskPricesDeribit(map(putInstrumentNames), indexBtcDeribit);
     let callAsks = pullAskPricesDeribit(map(callInstrumentNames), indexBtcDeribit);
+    let putBids = pullBidPricesDeribit(map(putInstrumentNames), indexBtcDeribit);
+    let callBids = pullBidPricesDeribit(map(callInstrumentNames), indexBtcDeribit);
 
     writeDataTo(statusCell, "Calculating Best Values");
     getDataFrom("B4");
     for (let i = 0; i < putInstrumentNames.length; i++) {
         let putInstrumentName = putInstrumentNames[i][0];
         let putStrike = putInstrumentName.split("-")[2];
-        let putAsk = putAsks[i];
         for (let j = 0; j < callInstrumentNames.length; j++) {
             let callInstrumentName = callInstrumentNames[j][0];
             let callStrike = callInstrumentName.split("-")[2];
-            let callAsk = callAsks[j];
             for (let moveRange = moveRangeStart; moveRange <= moveRangeEnd; moveRange += moveRangeIncrement) {
                 for (let callRange = callRangeStart; callRange <= callRangeEnd; callRange += callRangeIncrement) {
-                    let initialMarginCall = calculateInitialMarginCall(indexBtcDeribit, callStrike, callRange, callAsk);
+                    let callOptionPrice = callRange > 0 ? callAsks[j] : callBids[j];
+                    let initialMarginCall = calculateInitialMarginCall(indexBtcDeribit, callStrike, callRange, callOptionPrice);
                     for (let putRange = putRangeStart; putRange <= putRangeEnd; putRange += putRangeIncrement) {
-                        let totalPremium = calculateTotalPremium(putAsk, putRange, callAsk, callRange, movePrice, moveRange);
-                        let initialMarginPut = calculateInitialMarginPut(indexBtcDeribit, putStrike, putRange, putAsk);
+                        let putOptionPrice = putRange > 0 ? putAsks[i] : putBids[i];
+                        let totalPremium = calculateTotalPremium(putOptionPrice, putRange, callOptionPrice, callRange, movePrice, moveRange);
+                        let initialMarginPut = calculateInitialMarginPut(indexBtcDeribit, putStrike, putRange, putOptionPrice);
                         let totalFundsInvested = balanceFuture + totalPremium + initialMarginCall + initialMarginPut;
                         for (let capitalRange = capitalRangeStart; capitalRange <= capitalRangeEnd; capitalRange += capitalRangeIncrement) {
-                            let pnlTotalsArray = getPnlTotals(indexBtcDeribit, exitRangeStart, exitRangeEnd, putRange, putStrike, putAsk, callRange, callStrike, callAsk, moveRange, movePrice, moveStrikePrice, capitalRange);
+                            let pnlTotalsArray = getPnlTotals(indexBtcDeribit, exitRangeStart, exitRangeEnd, putRange, putStrike, putOptionPrice, callRange, callStrike, callOptionPrice, moveRange, movePrice, moveStrikePrice, capitalRange);
 
                             let {green, average, averageReturnPercentage, maxReturnPercentage, minReturnPercentage} = calculateValues(pnlTotalsArray, exitInterval, totalFundsInvested);
 
                             let max = getMax(minReturnPercentage, averageReturnPercentage, boost, threshold, totalFundsInvested, maxTotalFundsInvested);
                             if (max > result.max) {
-                                result = bestValuesChanged(moveRange, callRange, putRange, capitalRange, green, average, exitInterval, indexBtcDeribit, putAsk, callAsk, movePrice, callStrike, putStrike, callInstrumentName, putInstrumentName, maxReturnPercentage, minReturnPercentage, averageReturnPercentage, totalFundsInvested, initialMarginCall, initialMarginPut);
+                                result = bestValuesChanged(moveRange, callRange, putRange, capitalRange, green, average, exitInterval, indexBtcDeribit, putOptionPrice, callOptionPrice, movePrice, callStrike, putStrike, callInstrumentName, putInstrumentName, maxReturnPercentage, minReturnPercentage, averageReturnPercentage, totalFundsInvested, initialMarginCall, initialMarginPut);
                                 result.max = max;
                             }
                         }
@@ -409,13 +411,13 @@ function getBestValues() {
     // for (let exitPrice = indexBtcDeribit + exitRangeStart; exitPrice <= indexBtcDeribit + exitRangeEnd; exitPrice += exitRangeIncrement) {
     //     let callPreFuture = calculateCallPreFuture(exitPrice, result.callStrike, expiresInCall, interestRate, call_IV);
     //     let putPreFuture = calculatePutPreFuture(exitPrice, result.putStrike, expiresInPut, interestRate, put_IV);
-    //     let pnlPutResult = pnlPut(exitPrice, result.putRange, result.putStrike, result.putAsk);
+    //     let pnlPutResult = pnlPut(exitPrice, result.putRange, result.putStrike, result.putOptionPrice);
     //     let pnlMoveResult = pnlMove(exitPrice, result.moveRange, movePrice, moveStrikePrice);
     //     let pnlFutureResult = pnlFuture(exitPrice, result.capitalRange, indexBtcDeribit);
-    //     let pnlCallResult = pnlCall(exitPrice, result.callRange, result.callStrike, result.callAsk);
+    //     let pnlCallResult = pnlCall(exitPrice, result.callRange, result.callStrike, result.callOptionPrice);
     //     let pnlTotal = pnlPutResult + pnlCallResult + pnlMoveResult + pnlFutureResult;
-    //     let pnlCallFuture = (callPreFuture - result.callAsk) * result.callRange;
-    //     let pnlPutFuture = (putPreFuture - result.putAsk) * result.putRange;
+    //     let pnlCallFuture = (callPreFuture - result.callOptionPrice) * result.callRange;
+    //     let pnlPutFuture = (putPreFuture - result.putOptionPrice) * result.putRange;
     //     let pnlTotalFuture = pnlCallFuture + pnlPutFuture + pnlMoveResult;
     //     let maintenanceMarginCall = result.callRange >= 0 ? 0 : calculateMaintenanceMarginCall(indexBtcDeribit, callPreFuture) * Math.abs(result.callRange);
     //     let maintenanceMarginPut = result.putRange >= 0 ? 0 : calculateMaintenanceMarginPut(indexBtcDeribit, putPreFuture) * Math.abs(result.putRange);
@@ -448,6 +450,19 @@ function getMax(minReturnPercentage, averageReturnPercentage, boost, threshold, 
 function pullAskPriceDeribit(instrumentName, indexBtcDeribit) {
     var data = pullDataFrom("https://www.deribit.com/api/v2/public/get_order_book?instrument_name=" + instrumentName);
     return indexBtcDeribit * data.result['asks'][0][0];
+}
+
+function pullBidPriceDeribit(instrumentName, indexBtcDeribit) {
+    var data = pullDataFrom("https://www.deribit.com/api/v2/public/get_order_book?instrument_name=" + instrumentName);
+    return indexBtcDeribit * data.result['bids'][0][0];
+}
+
+function pullBidPricesDeribit(instrumentNames, indexBtcDeribit) {
+    let result = [];
+    for (let instrumentName of instrumentNames) {
+        result.push(pullBidPriceDeribit(instrumentName, indexBtcDeribit));
+    }
+    return result;
 }
 
 function pullAskPricesDeribit(instrumentNames, indexBtcDeribit) {
