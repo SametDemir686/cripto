@@ -11,6 +11,8 @@ function onEdit(e) {
         } else if (cellName === instrumentNameRangeCell) {
             updateCallStrikes();
             updatePutStrikes();
+        } else if (cellName === 'H1') {
+            writeDataTo("H2", "heeyy");
         }
     }
 }
@@ -63,7 +65,7 @@ function clearRow(startColumn, startRow) {
     let sheet = SpreadsheetApp.getActive().getSheetByName('Trade')
     let lastRow = sheet.getLastRow();
     let clear = [];
-    if(lastRow <= parseInt(selectedCallInstrumentRow))
+    if (lastRow <= parseInt(selectedCallInstrumentRow))
         return;
     for (let i = 2; i <= lastRow; i++) {
         clear.push([""]);
