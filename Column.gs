@@ -193,5 +193,3 @@ const selectedCallInstrumentColumn = 'K';
 const selectedCallInstrumentRow = '2';
 const selectedPutInstrumentColumn = 'L';
 const selectedPutInstrumentRow = '2';
-
-
