@@ -20,7 +20,7 @@ function getDataFrom(getFrom) {
 }
 
 function pullIndexPriceDeribitAndWrite() {
-    var data = pullDataFrom("https://test.com/api/v2/public/get_index_price?index_name=btc_usd");
+    var data = pullDataFrom("https://test.deribit.com/api/v2/public/get_index_price?index_name=btc_usd");
     writeDataTo(resultIndexBtcDeribitCell, data.result['index_price']);
 }
 
