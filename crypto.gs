@@ -448,12 +448,12 @@ function getMax(minReturnPercentage, averageReturnPercentage, boost, threshold, 
 }
 
 function pullAskPriceDeribit(instrumentName, indexBtcDeribit) {
-    var data = pullDataFrom("https://test.deribit.com/api/v2/public/get_order_book?instrument_name=" + instrumentName);
+    var data = pullDataFrom("https://www.deribit.com/api/v2/public/get_order_book?instrument_name=" + instrumentName);
     return indexBtcDeribit * data.result['asks'][0][0];
 }
 
 function pullBidPriceDeribit(instrumentName, indexBtcDeribit) {
-    var data = pullDataFrom("https://test.deribit.com/api/v2/public/get_order_book?instrument_name=" + instrumentName);
+    var data = pullDataFrom("https://www.deribit.com/api/v2/public/get_order_book?instrument_name=" + instrumentName);
     return indexBtcDeribit * data.result['bids'][0][0];
 }
 

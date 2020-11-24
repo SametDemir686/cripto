@@ -20,17 +20,17 @@ function getDataFrom(getFrom) {
 }
 
 function pullIndexPriceDeribitAndWrite() {
-    var data = pullDataFrom("https://test.deribit.com/api/v2/public/get_index_price?index_name=btc_usd");
+    var data = pullDataFrom("https://www.deribit.com/api/v2/public/get_index_price?index_name=btc_usd");
     writeDataTo(resultIndexBtcDeribitCell, data.result['index_price']);
 }
 
 function pullCall_IV(callInstrumentName) {
-    var data = pullDataFrom("https://test.deribit.com/api/v2/public/get_order_book?instrument_name=" + callInstrumentName);
+    var data = pullDataFrom("https://www.deribit.com/api/v2/public/get_order_book?instrument_name=" + callInstrumentName);
     return data.result['mark_iv'];
 }
 
 function pullPut_IV(putInstrumentName) {
-    var data = pullDataFrom("https://test.deribit.com/api/v2/public/get_order_book?instrument_name=" + putInstrumentName);
+    var data = pullDataFrom("https://www.deribit.com/api/v2/public/get_order_book?instrument_name=" + putInstrumentName);
     return data.result['mark_iv'];
 }
 

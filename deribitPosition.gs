@@ -44,7 +44,7 @@ function checkPut(instrumentNameCell) {
 }
 
 function pullAskDeribit(instrumentName) {
-    var data = pullDataFrom("https://test.deribit.com/api/v2/public/get_order_book?instrument_name=" + instrumentName);
+    var data = pullDataFrom("https://www.deribit.com/api/v2/public/get_order_book?instrument_name=" + instrumentName);
     return {
         price: data.result['asks'][0][0],
         size: data.result['asks'][0][1]
