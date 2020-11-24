@@ -13,6 +13,13 @@ function updateOrders() {
     writeOrders();
 }
 
+function cancelOrders() {
+    let tokenData = pullDataFrom(tokenUrl).result;
+    let cancelUrl = 'https://test.deribit.com/api/v2/private/cancel_all';
+    sendRequest(cancelUrl, tokenData);
+    updateOrders();
+}
+
 function clearOrders() {
     SpreadsheetApp.getActive().getSheetByName('Trade').getRange('G69:J88').clear({
         contentsOnly: true,

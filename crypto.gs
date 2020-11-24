@@ -365,9 +365,11 @@ function getBestValues() {
             for (let moveRange = moveRangeStart; moveRange <= moveRangeEnd; moveRange += moveRangeIncrement) {
                 for (let callRange = callRangeStart; callRange <= callRangeEnd; callRange += callRangeIncrement) {
                     let callOptionPrice = callRange > 0 ? callAsks[j] : callBids[j];
+                    if(callOptionPrice === undefined) break;
                     let initialMarginCall = calculateInitialMarginCall(indexBtcDeribit, callStrike, callRange, callOptionPrice);
                     for (let putRange = putRangeStart; putRange <= putRangeEnd; putRange += putRangeIncrement) {
                         let putOptionPrice = putRange > 0 ? putAsks[i] : putBids[i];
+                        if(putOptionPrice === undefined) break;
                         let totalPremium = calculateTotalPremium(putOptionPrice, putRange, callOptionPrice, callRange, movePrice, moveRange);
                         let initialMarginPut = calculateInitialMarginPut(indexBtcDeribit, putStrike, putRange, putOptionPrice);
                         let totalFundsInvested = balanceFuture + totalPremium + initialMarginCall + initialMarginPut;
@@ -449,12 +451,16 @@ function getMax(minReturnPercentage, averageReturnPercentage, boost, threshold, 
 
 function pullAskPriceDeribit(instrumentName, indexBtcDeribit) {
     var data = pullDataFrom("https://www.deribit.com/api/v2/public/get_order_book?instrument_name=" + instrumentName);
-    return indexBtcDeribit * data.result['asks'][0][0];
+    let asks = data.result['asks'];
+    if(asks.length === 0) return undefined;
+    return indexBtcDeribit * asks[0][0];
 }
 
 function pullBidPriceDeribit(instrumentName, indexBtcDeribit) {
     var data = pullDataFrom("https://www.deribit.com/api/v2/public/get_order_book?instrument_name=" + instrumentName);
-    return indexBtcDeribit * data.result['bids'][0][0];
+    let bids = data.result['bids'];
+    if(bids.length === 0) return undefined;
+    return indexBtcDeribit * bids[0][0];
 }
 
 function pullBidPricesDeribit(instrumentNames, indexBtcDeribit) {
