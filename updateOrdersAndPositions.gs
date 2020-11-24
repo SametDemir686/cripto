@@ -1,6 +1,6 @@
 function updateOrders() {
     let tokenData = pullDataFrom(tokenUrl).result;
-    let url = 'https://www.deribit.com/api/v2/private/get_open_orders_by_currency?currency=BTC&kind=option&type=all';
+    let url = 'https://test.deribit.com/api/v2/private/get_open_orders_by_currency?currency=BTC&kind=option&type=all';
     let plusOptions = {
         "headers": {
             "Authorization": "Bearer " + tokenData.access_token
@@ -104,7 +104,7 @@ function updateOrders() {
 
 function updatePositions() {
     let tokenData = pullDataFrom(tokenUrl).result;
-    let url = 'https://www.deribit.com/api/v2/private/get_positions?currency=BTC&kind=option';
+    let url = 'https://test.deribit.com/api/v2/private/get_positions?currency=BTC&kind=option';
     let plusOptions = {
         "headers": {
             "Authorization": "Bearer " + tokenData.access_token
@@ -114,95 +114,99 @@ function updatePositions() {
     let data = Utilities.jsonParse(plusResponse.getContentText());
 
     if (data.result.length > 0) {
-        writeDataTo(openPositions1TimeInForceCell, data.result[0].time_in_force);
-        writeDataTo(openPositions1ReduceOnlyCell, data.result[0].reduce_only);
-        writeDataTo(openPositions1ProfitLossCell, data.result[0].profit_loss);
-        writeDataTo(openPositions1PriceCell, data.result[0].price);
-        writeDataTo(openPositions1PostOnlyCell, data.result[0].post_only);
-        writeDataTo(openPositions1OrderTypeCell, data.result[0].order_type);
-        writeDataTo(openPositions1OrderStateCell, data.result[0].order_state);
-        writeDataTo(openPositions1OrderIdCell, data.result[0].order_id);
-        writeDataTo(openPositions1MaxShowCell, data.result[0].max_show);
-        writeDataTo(openPositions1LastUpdateTimestampCell, data.result[0].last_update_timestamp);
-        writeDataTo(openPositions1LabelCell, data.result[0].label);
-        writeDataTo(openPositions1IsLiquidationCell, data.result[0].is_liquidation);
-        writeDataTo(openPositions1InstrumentNameCell, data.result[0].instrument_name);
-        writeDataTo(openPositions1FilledAmountCell, data.result[0].filled_amount);
-        writeDataTo(openPositions1DirectionCell, data.result[0].direction);
-        writeDataTo(openPositions1CreationTimestampCell, data.result[0].creation_timestamp);
-        writeDataTo(openPositions1CommissionCell, data.result[0].commission);
-        writeDataTo(openPositions1AveragePriceCell, data.result[0].average_price);
-        writeDataTo(openPositions1ApiCell, data.result[0].api);
-        writeDataTo(openPositions1AmountCell, data.result[0].amount);
+        let index = 0;
+        let result = data.result[index];
+        writeDataTo(openPositions1AveragePrice, result.average_price);
+        writeDataTo(openPositions1Delta, result.delta);
+        writeDataTo(openPositions1Direction, result.direction);
+        writeDataTo(openPositions1EstimatedLiqPrice, result.estimated_liquidation_price);
+        writeDataTo(openPositions1FloatingProfitLoss, result.floating_profit_loss);
+        writeDataTo(openPositions1IndexPrice, result.index_price);
+        writeDataTo(openPositions1InitialMargin, result.initial_margin);
+        writeDataTo(openPositions1InstrumentName, result.instrument_name);
+        writeDataTo(openPositions1Kind, result.kind);
+        writeDataTo(openPositions1Levegare, result.leverage);
+        writeDataTo(openPositions1MaintenanceMargin, result.maintenance_margin);
+        writeDataTo(openPositions1MarkPrice, result.mark_price);
+        writeDataTo(openPositions1OpenOrdersMargin, result.open_orders_margin);
+        writeDataTo(openPositions1RealizedFunding, result.realized_funding);
+        writeDataTo(openPositions1RealizedProfitLoss, result.realized_profit_loss);
+        writeDataTo(openPositions1SettlementPrice, result.settlement_price);
+        writeDataTo(openPositions1Size, result.size);
+        writeDataTo(openPositions1SizeCurrency, result.size_currency);
+        writeDataTo(openPositions1TotalProfitLoss, result.total_profit_loss);
     }
 
     if (data.result.length > 1) {
-        writeDataTo(openPositions2TimeInForceCell, data.result[1].time_in_force);
-        writeDataTo(openPositions2ReduceOnlyCell, data.result[1].reduce_only);
-        writeDataTo(openPositions2ProfitLossCell, data.result[1].profit_loss);
-        writeDataTo(openPositions2PriceCell, data.result[1].price);
-        writeDataTo(openPositions2PostOnlyCell, data.result[1].post_only);
-        writeDataTo(openPositions2OrderTypeCell, data.result[1].order_type);
-        writeDataTo(openPositions2OrderStateCell, data.result[1].order_state);
-        writeDataTo(openPositions2OrderIdCell, data.result[1].order_id);
-        writeDataTo(openPositions2MaxShowCell, data.result[1].max_show);
-        writeDataTo(openPositions2LastUpdateTimestampCell, data.result[1].last_update_timestamp);
-        writeDataTo(openPositions2LabelCell, data.result[1].label);
-        writeDataTo(openPositions2IsLiquidationCell, data.result[1].is_liquidation);
-        writeDataTo(openPositions2InstrumentNameCell, data.result[1].instrument_name);
-        writeDataTo(openPositions2FilledAmountCell, data.result[1].filled_amount);
-        writeDataTo(openPositions2DirectionCell, data.result[1].direction);
-        writeDataTo(openPositions2CreationTimestampCell, data.result[1].creation_timestamp);
-        writeDataTo(openPositions2CommissionCell, data.result[1].commission);
-        writeDataTo(openPositions2AveragePriceCell, data.result[1].average_price);
-        writeDataTo(openPositions2ApiCell, data.result[1].api);
-        writeDataTo(openPositions2AmountCell, data.result[1].amount);
+        let index = 1;
+        let result = data.result[index];
+        writeDataTo(openPositions2AveragePrice, result.average_price);
+        writeDataTo(openPositions2Delta, result.delta);
+        writeDataTo(openPositions2Direction, result.direction);
+        writeDataTo(openPositions2EstimatedLiqPrice, result.estimated_liquidation_price);
+        writeDataTo(openPositions2FloatingProfitLoss, result.floating_profit_loss);
+        writeDataTo(openPositions2IndexPrice, result.index_price);
+        writeDataTo(openPositions2InitialMargin, result.initial_margin);
+        writeDataTo(openPositions2InstrumentName, result.instrument_name);
+        writeDataTo(openPositions2Kind, result.kind);
+        writeDataTo(openPositions2Levegare, result.leverage);
+        writeDataTo(openPositions2MaintenanceMargin, result.maintenance_margin);
+        writeDataTo(openPositions2MarkPrice, result.mark_price);
+        writeDataTo(openPositions2OpenOrdersMargin, result.open_orders_margin);
+        writeDataTo(openPositions2RealizedFunding, result.realized_funding);
+        writeDataTo(openPositions2RealizedProfitLoss, result.realized_profit_loss);
+        writeDataTo(openPositions2SettlementPrice, result.settlement_price);
+        writeDataTo(openPositions2Size, result.size);
+        writeDataTo(openPositions2SizeCurrency, result.size_currency);
+        writeDataTo(openPositions2TotalProfitLoss, result.total_profit_loss);
     }
 
     if (data.result.length > 2) {
-        writeDataTo(openPositions3TimeInForceCell, data.result[2].time_in_force);
-        writeDataTo(openPositions3ReduceOnlyCell, data.result[2].reduce_only);
-        writeDataTo(openPositions3ProfitLossCell, data.result[2].profit_loss);
-        writeDataTo(openPositions3PriceCell, data.result[2].price);
-        writeDataTo(openPositions3PostOnlyCell, data.result[2].post_only);
-        writeDataTo(openPositions3OrderTypeCell, data.result[2].order_type);
-        writeDataTo(openPositions3OrderStateCell, data.result[2].order_state);
-        writeDataTo(openPositions3OrderIdCell, data.result[2].order_id);
-        writeDataTo(openPositions3MaxShowCell, data.result[2].max_show);
-        writeDataTo(openPositions3LastUpdateTimestampCell, data.result[2].last_update_timestamp);
-        writeDataTo(openPositions3LabelCell, data.result[2].label);
-        writeDataTo(openPositions3IsLiquidationCell, data.result[2].is_liquidation);
-        writeDataTo(openPositions3InstrumentNameCell, data.result[2].instrument_name);
-        writeDataTo(openPositions3FilledAmountCell, data.result[2].filled_amount);
-        writeDataTo(openPositions3DirectionCell, data.result[2].direction);
-        writeDataTo(openPositions3CreationTimestampCell, data.result[2].creation_timestamp);
-        writeDataTo(openPositions3CommissionCell, data.result[2].commission);
-        writeDataTo(openPositions3AveragePriceCell, data.result[2].average_price);
-        writeDataTo(openPositions3ApiCell, data.result[2].api);
-        writeDataTo(openPositions3AmountCell, data.result[2].amount);
+        let index = 2;
+        let result = data.result[index];
+        writeDataTo(openPositions3AveragePrice, result.average_price);
+        writeDataTo(openPositions3Delta, result.delta);
+        writeDataTo(openPositions3Direction, result.direction);
+        writeDataTo(openPositions3EstimatedLiqPrice, result.estimated_liquidation_price);
+        writeDataTo(openPositions3FloatingProfitLoss, result.floating_profit_loss);
+        writeDataTo(openPositions3IndexPrice, result.index_price);
+        writeDataTo(openPositions3InitialMargin, result.initial_margin);
+        writeDataTo(openPositions3InstrumentName, result.instrument_name);
+        writeDataTo(openPositions3Kind, result.kind);
+        writeDataTo(openPositions3Levegare, result.leverage);
+        writeDataTo(openPositions3MaintenanceMargin, result.maintenance_margin);
+        writeDataTo(openPositions3MarkPrice, result.mark_price);
+        writeDataTo(openPositions3OpenOrdersMargin, result.open_orders_margin);
+        writeDataTo(openPositions3RealizedFunding, result.realized_funding);
+        writeDataTo(openPositions3RealizedProfitLoss, result.realized_profit_loss);
+        writeDataTo(openPositions3SettlementPrice, result.settlement_price);
+        writeDataTo(openPositions3Size, result.size);
+        writeDataTo(openPositions3SizeCurrency, result.size_currency);
+        writeDataTo(openPositions3TotalProfitLoss, result.total_profit_loss);
     }
 
     if (data.result.length > 3) {
-        writeDataTo(openPositions4TimeInForceCell, data.result[3].time_in_force);
-        writeDataTo(openPositions4ReduceOnlyCell, data.result[3].reduce_only);
-        writeDataTo(openPositions4ProfitLossCell, data.result[3].profit_loss);
-        writeDataTo(openPositions4PriceCell, data.result[3].price);
-        writeDataTo(openPositions4PostOnlyCell, data.result[3].post_only);
-        writeDataTo(openPositions4OrderTypeCell, data.result[3].order_type);
-        writeDataTo(openPositions4OrderStateCell, data.result[3].order_state);
-        writeDataTo(openPositions4OrderIdCell, data.result[3].order_id);
-        writeDataTo(openPositions4MaxShowCell, data.result[3].max_show);
-        writeDataTo(openPositions4LastUpdateTimestampCell, data.result[3].last_update_timestamp);
-        writeDataTo(openPositions4LabelCell, data.result[3].label);
-        writeDataTo(openPositions4IsLiquidationCell, data.result[3].is_liquidation);
-        writeDataTo(openPositions4InstrumentNameCell, data.result[3].instrument_name);
-        writeDataTo(openPositions4FilledAmountCell, data.result[3].filled_amount);
-        writeDataTo(openPositions4DirectionCell, data.result[3].direction);
-        writeDataTo(openPositions4CreationTimestampCell, data.result[3].creation_timestamp);
-        writeDataTo(openPositions4CommissionCell, data.result[3].commission);
-        writeDataTo(openPositions4AveragePriceCell, data.result[3].average_price);
-        writeDataTo(openPositions4ApiCell, data.result[3].api);
-        writeDataTo(openPositions4AmountCell, data.result[3].amount);
+        let index = 3;
+        let result = data.result[index];
+        writeDataTo(openPositions4AveragePrice, result.average_price);
+        writeDataTo(openPositions4Delta, result.delta);
+        writeDataTo(openPositions4Direction, result.direction);
+        writeDataTo(openPositions4EstimatedLiqPrice, result.estimated_liquidation_price);
+        writeDataTo(openPositions4FloatingProfitLoss, result.floating_profit_loss);
+        writeDataTo(openPositions4IndexPrice, result.index_price);
+        writeDataTo(openPositions4InitialMargin, result.initial_margin);
+        writeDataTo(openPositions4InstrumentName, result.instrument_name);
+        writeDataTo(openPositions4Kind, result.kind);
+        writeDataTo(openPositions4Levegare, result.leverage);
+        writeDataTo(openPositions4MaintenanceMargin, result.maintenance_margin);
+        writeDataTo(openPositions4MarkPrice, result.mark_price);
+        writeDataTo(openPositions4OpenOrdersMargin, result.open_orders_margin);
+        writeDataTo(openPositions4RealizedFunding, result.realized_funding);
+        writeDataTo(openPositions4RealizedProfitLoss, result.realized_profit_loss);
+        writeDataTo(openPositions4SettlementPrice, result.settlement_price);
+        writeDataTo(openPositions4Size, result.size);
+        writeDataTo(openPositions4SizeCurrency, result.size_currency);
+        writeDataTo(openPositions4TotalProfitLoss, result.total_profit_loss);
     }
 }
 

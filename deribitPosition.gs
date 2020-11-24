@@ -44,7 +44,7 @@ function checkPut(instrumentNameCell) {
 }
 
 function pullAskDeribit(instrumentName) {
-    var data = pullDataFrom("https://www.deribit.com/api/v2/public/get_order_book?instrument_name=" + instrumentName);
+    var data = pullDataFrom("https://test.deribit.com/api/v2/public/get_order_book?instrument_name=" + instrumentName);
     return {
         price: data.result['asks'][0][0],
         size: data.result['asks'][0][1]
@@ -128,12 +128,12 @@ function sell(options) {
 }
 
 function getSellUrl(options) {
-    let sellUrl = 'https://www.deribit.com/api/v2/private/sell?';
+    let sellUrl = 'https://test.deribit.com/api/v2/private/sell?';
     return getUrl(sellUrl, options);
 }
 
 function getBuyUrl(options) {
-    let buyUrl = 'https://www.deribit.com/api/v2/private/buy?';
+    let buyUrl = 'https://test.deribit.com/api/v2/private/buy?';
     return getUrl(buyUrl, options);
 }
 
