@@ -5,6 +5,7 @@ function openPosition() {
         runIfCellNotEmpty(openSellCallInstrumentNameCell, openSellCall);
         runIfCellNotEmpty(openSellPutInstrumentNameCell, openSellPut);
     }
+    updateOrdersAndPositions();
 }
 
 function closePosition() {
@@ -12,6 +13,7 @@ function closePosition() {
     runIfCellNotEmpty(closeBuyPutInstrumentNameCell, closeBuyPut);
     runIfCellNotEmpty(closeSellCallInstrumentNameCell, closeSellCall);
     runIfCellNotEmpty(closeSellPutInstrumentNameCell, closeSellPut);
+    updateOrdersAndPositions();
 }
 
 function sizePriceCheck() {
