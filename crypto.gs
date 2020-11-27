@@ -1,3 +1,4 @@
+
 function pnlPut(exitPrice, putRange, putStrike, putOptionPrice) {
     if (exitPrice - putStrike >= 0) {
         return -putOptionPrice * putRange;
@@ -527,5 +528,3 @@ function clearTable() {
     SpreadsheetApp.getActiveSheet().getRange(tablePnlPutFutureColumn + tableRowStartIndex + ":" + tablePnlPutFutureColumn + (clear.length + tableRowStartIndex - 1)).setValues(clear);
     SpreadsheetApp.getActiveSheet().getRange(tablePnlTotalFutureColumn + tableRowStartIndex + ":" + tablePnlTotalFutureColumn + (clear.length + tableRowStartIndex - 1)).setValues(clear);
 }
-
-

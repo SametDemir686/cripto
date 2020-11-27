@@ -1,4 +1,21 @@
+function confirmActionOpenPosition() {
+    var ui = SpreadsheetApp.getUi();
+    var buttonPressed = ui.alert("Are You Sure?", ui.ButtonSet.YES_NO);
+    if (buttonPressed === ui.Button.YES) {
+        openPosition()
+    }
+}
+
+function confirmActionClosePosition() {
+    var ui = SpreadsheetApp.getUi();
+    var buttonPressed = ui.alert("Are You Sure?", ui.ButtonSet.YES_NO);
+    if (buttonPressed === ui.Button.YES) {
+        closePosition()
+    }
+}
+
 function openPosition() {
+
     if (sizePriceCheck()) {
         runIfCellNotEmpty(openBuyCallInstrumentNameCell, openBuyCall);
         runIfCellNotEmpty(openBuyPutInstrumentNameCell, openBuyPut);
@@ -172,4 +189,17 @@ function sendRequest(url, tokenData) {
     };
     var plusResponse = UrlFetchApp.fetch(url, plusOptions);
     var plusData = Utilities.jsonParse(plusResponse.getContentText());
+}
+
+function binanceSpotWallet() {
+    let plusOptions = {
+        "headers": {
+            "X-MBX-APIKEY": "nEneTAzZjtrayjvfD3cZ98DpEYjPKIOlH34Qj8TP9FoDni3Sl9LE9eARCHvzPDpV"
+        }
+    };
+    let timeStamp = ("" + getDataFrom('AltCoins!A1')).split('.')[0];
+    let url = 'https://api.binance.com/sapi/v1/accountSnapshot?timestamp=' + timeStamp + "&type=SPOT";
+    let plusResponse = UrlFetchApp.fetch(url, plusOptions);
+    let data = Utilities.jsonParse(plusResponse.getContentText());
+
 }
