@@ -365,11 +365,11 @@ function getBestValues() {
             for (let moveRange = moveRangeStart; moveRange <= moveRangeEnd; moveRange += moveRangeIncrement) {
                 for (let callRange = callRangeStart; callRange <= callRangeEnd; callRange += callRangeIncrement) {
                     let callOptionPrice = callRange > 0 ? callAsks[j] : callBids[j];
-                    if(callOptionPrice === undefined) break;
+                    if (callOptionPrice === undefined) break;
                     let initialMarginCall = calculateInitialMarginCall(indexBtcDeribit, callStrike, callRange, callOptionPrice);
                     for (let putRange = putRangeStart; putRange <= putRangeEnd; putRange += putRangeIncrement) {
                         let putOptionPrice = putRange > 0 ? putAsks[i] : putBids[i];
-                        if(putOptionPrice === undefined) break;
+                        if (putOptionPrice === undefined) break;
                         let totalPremium = calculateTotalPremium(putOptionPrice, putRange, callOptionPrice, callRange, movePrice, moveRange);
                         let initialMarginPut = calculateInitialMarginPut(indexBtcDeribit, putStrike, putRange, putOptionPrice);
                         let totalFundsInvested = balanceFuture + totalPremium + initialMarginCall + initialMarginPut;
@@ -429,8 +429,10 @@ function getBestValues() {
     // }
     writeDataTo(maintenanceMarginCallCell, maxMaintenanceMarginCall);
     writeDataTo(maintenanceMarginPutCell, maxMaintenanceMarginPut);
-    writeDataTo(resultPutSizeCell, pullAskSizeDeribit(result.putInstrumentName, indexBtcDeribit));
-    writeDataTo(resultCallSizeCell, pullAskSizeDeribit(result.callInstrumentName, indexBtcDeribit));
+    let putOptionSize = result.putRange > 0 ? pullAskSizeDeribit(result.putInstrumentName) : pullBidSizeDeribit(result.putInstrumentName);
+    let callOptionSize = result.callRange > 0 ? pullAskSizeDeribit(result.callInstrumentName) : pullBidSizeDeribit(result.callInstrumentName);
+    writeDataTo(resultPutSizeCell, putOptionSize);
+    writeDataTo(resultCallSizeCell, callOptionSize);
     getDataFrom("B4");
     // writeDataTo(statusCell, "Calculating Liq Risk");
     // writeLiqRisk(result, indexBtcDeribit, exitRangeStart, exitRangeEnd, exitRangeIncrement, exitInterval);
@@ -452,14 +454,14 @@ function getMax(minReturnPercentage, averageReturnPercentage, boost, threshold, 
 function pullAskPriceDeribit(instrumentName, indexBtcDeribit) {
     var data = pullDataFrom("https://www.deribit.com/api/v2/public/get_order_book?instrument_name=" + instrumentName);
     let asks = data.result['asks'];
-    if(asks.length === 0) return undefined;
+    if (asks.length === 0) return undefined;
     return indexBtcDeribit * asks[0][0];
 }
 
 function pullBidPriceDeribit(instrumentName, indexBtcDeribit) {
     var data = pullDataFrom("https://www.deribit.com/api/v2/public/get_order_book?instrument_name=" + instrumentName);
     let bids = data.result['bids'];
-    if(bids.length === 0) return undefined;
+    if (bids.length === 0) return undefined;
     return indexBtcDeribit * bids[0][0];
 }
 

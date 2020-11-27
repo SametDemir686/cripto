@@ -46,20 +46,24 @@ function pullMoveAskPriceFtx() {
     writeDataTo(resultMovePriceCell, data.result['asks']);
 }
 
-function pullAskSizeDeribit(instrumentName, indexBtcDeribit) {
+function pullAskSizeDeribit(instrumentName) {
     var data = pullDataFrom("https://www.deribit.com/api/v2/public/get_order_book?instrument_name=" + instrumentName);
-    return indexBtcDeribit * data.result['asks'][0][1];
+    return data.result['asks'][0][1];
+}
+
+function pullBidSizeDeribit(instrumentName) {
+    var data = pullDataFrom("https://www.deribit.com/api/v2/public/get_order_book?instrument_name=" + instrumentName);
+    return data.result['bids'][0][1];
 }
 
 function binanceSpotWallet() {
     let plusOptions = {
         "headers": {
-            "header": "X-MBX-APIKEY"
+            "X-MBX-APIKEY": "nEneTAzZjtrayjvfD3cZ98DpEYjPKIOlH34Qj8TP9FoDni3Sl9LE9eARCHvzPDpV"
         }
     };
     let timeStamp = (""+getDataFrom('AltCoins!A1')).split('.')[0];
-    let key = 'nEneTAzZjtrayjvfD3cZ98DpEYjPKIOlH34Qj8TP9FoDni3Sl9LE9eARCHvzPDpV';
-    let url ='https://api.binance.com/sapi/v1/accountSnapshot?timestamp=' + timeStamp + "&key=" + key + "&type=SPOT";
+    let url ='https://api.binance.com/sapi/v1/accountSnapshot?timestamp=' + timeStamp + "&type=SPOT";
     let plusResponse = UrlFetchApp.fetch(url, plusOptions);
     let data = Utilities.jsonParse(plusResponse.getContentText());
 
