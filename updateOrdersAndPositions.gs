@@ -75,11 +75,17 @@ function writeOrders() {
 }
 
 function getDataToBeWrittenPositions(data) {
+    let filteredData = [];
+    for (let i = 0; i < data.result.length; i++) {
+        if (data.result[i].size !== 0) {
+            filteredData.push(data.result[i]);
+        }
+    }
     let dataToBeWritten = [];
 
     function extracted(number) {
-        if (data.result.length > number) {
-            let res = data.result[number];
+        if (filteredData.length > number) {
+            let res = filteredData[number];
             dataToBeWritten.push([res.average_price, res.delta, res.direction, res.estimated_liquidation_price, res.floating_profit_loss, res.index_price, res.initial_margin, res.instrument_name, res.kind, res.leverage, res.maintenance_margin, res.mark_price, res.open_orders_margin, res.realized_funding, res.realized_profit_loss, res.settlement_price, res.size, res.size_currency, res.total_profit_loss]);
         } else {
             dataToBeWritten.push(["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""]);
