@@ -34,6 +34,15 @@ function pullPut_IV(putInstrumentName) {
     return data.result['mark_iv'];
 }
 
+function pullCall_MarkPrice(callInstrumentName) {
+    var data = pullDataFrom("https://www.deribit.com/api/v2/public/get_order_book?instrument_name=" + callInstrumentName);
+    writeDataTo(CallMarkPrice, data.result['mark_price']);
+}
+function pullPut_MarkPrice(putInstrumentName) {
+    var data = pullDataFrom("https://www.deribit.com/api/v2/public/get_order_book?instrument_name=" + putInstrumentName);
+    writeDataTo(PutMarkPrice, data.result['mark_price']);
+}
+
 function pullMoveStrikePriceFtx() {
     let instrumentName = getDataFrom(moveInstrumentNameFtxCell);
     var data = pullDataFrom("https://ftx.com/api/futures/" + instrumentName + "/stats");

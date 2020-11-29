@@ -1,4 +1,3 @@
-
 function pnlPut(exitPrice, putRange, putStrike, putOptionPrice) {
     if (exitPrice - putStrike >= 0) {
         return -putOptionPrice * putRange;
@@ -405,6 +404,8 @@ function getBestValues() {
     let put_IV = parseFloat(pullPut_IV(result.putInstrumentName));
     writeDataTo(resultPut_IVCell, put_IV);
     writeDataTo(resultCall_IVCell, call_IV);
+    pullCall_MarkPrice(result.callInstrumentName);
+    pullPut_MarkPrice(result.putInstrumentName);
 
     writeDataTo(statusCell, "Writing best values into table");
     getDataFrom("B4");
@@ -456,14 +457,14 @@ function pullAskPriceDeribit(instrumentName, indexBtcDeribit) {
     var data = pullDataFrom("https://www.deribit.com/api/v2/public/get_order_book?instrument_name=" + instrumentName);
     let asks = data.result['asks'];
     if (asks.length === 0) return undefined;
-    return indexBtcDeribit * asks[0][0];
+    return  indexBtcDeribit * asks[0][0];
 }
 
 function pullBidPriceDeribit(instrumentName, indexBtcDeribit) {
     var data = pullDataFrom("https://www.deribit.com/api/v2/public/get_order_book?instrument_name=" + instrumentName);
     let bids = data.result['bids'];
     if (bids.length === 0) return undefined;
-    return indexBtcDeribit * bids[0][0];
+    return  indexBtcDeribit * bids[0][0];
 }
 
 function pullBidPricesDeribit(instrumentNames, indexBtcDeribit) {
