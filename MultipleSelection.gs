@@ -5,21 +5,26 @@ function onEdit(e) {
         let cellName = activeCell.getA1Notation();
 
         if (cellName === callStrikeCell) {
-            updateCallStrikes();
+            updateCallStrikes("Trade");
         } else if (cellName === putStrikeCell) {
-            updatePutStrikes();
+            updatePutStrikes("Trade");
         } else if (cellName === instrumentNameRangeCell) {
-            updateCallStrikes();
-            updatePutStrikes();
-        } else if (cellName === 'H1') {
-            writeDataTo("H2", "heeyy");
+            updateCallStrikes("Trade");
+            updatePutStrikes("Trade");
+        } else if (cellName === callStrike2Cell) {
+            updateCallStrikes("Trade2");
+        } else if (cellName === putStrike2Cell) {
+            updatePutStrikes("Trade2");
+        } else if (cellName === instrumentNameRange2Cell) {
+            updateCallStrikes("Trade2");
+            updatePutStrikes("Trade2");
         }
     }
 }
 
-function writeValues(transposed, selectedCallInstrumentColumn, selectedCallInstrumentRow) {
+function writeValues(sheetName, transposed, selectedCallInstrumentColumn, selectedCallInstrumentRow) {
     let x = transposed.length + parseInt(selectedCallInstrumentRow) - 1;
-    var range = SpreadsheetApp.getActiveSheet().getRange(selectedCallInstrumentColumn + selectedCallInstrumentRow + ":" + selectedCallInstrumentColumn + (x));
+    var range = SpreadsheetApp.getActiveSheet().getRange(sheetName + "!" + selectedCallInstrumentColumn + selectedCallInstrumentRow + ":" + selectedCallInstrumentColumn + (x));
     range.setValues(transposed);
 }
 
@@ -28,10 +33,10 @@ function getFormattedDate(current_datetime) {
     return (current_datetime.getDate() + 1) + months[current_datetime.getMonth()] + (current_datetime.getFullYear() - 2000);
 }
 
-function updateCallStrikes() {
-    clearRow(selectedCallInstrumentColumn, selectedCallInstrumentRow);
+function updateCallStrikes(sheetName) {
+    clearRow(sheetName, selectedCallInstrumentColumn, selectedCallInstrumentRow);
     let instrumentNames = getInstrumentNames();
-    let callStrikeDate = getDataFrom(callStrikeCell);
+    let callStrikeDate = getDataFrom(sheetName + "!" + callStrikeCell);
     let formatted_date = getFormattedDate(callStrikeDate);
     let entry = getDataFrom(resultIndexBtcDeribitCell);
     let instrumentNameRange = getDataFrom(instrumentNameRangeCell);
@@ -42,13 +47,13 @@ function updateCallStrikes() {
         && parseInt(s[0].split('-')[2]) <= entry + instrumentNameRange
     );
 
-    writeValues(data, selectedCallInstrumentColumn, selectedCallInstrumentRow);
+    writeValues(sheetName, data, selectedCallInstrumentColumn, selectedCallInstrumentRow);
 }
 
-function updatePutStrikes() {
-    clearRow(selectedPutInstrumentColumn, selectedPutInstrumentRow);
+function updatePutStrikes(sheetName) {
+    clearRow(sheetName, selectedPutInstrumentColumn, selectedPutInstrumentRow);
     let instrumentNames = getInstrumentNames();
-    let putStrikeDate = getDataFrom(putStrikeCell);
+    let putStrikeDate = getDataFrom(sheetName + "!" + putStrikeCell);
     let formatted_date = getFormattedDate(putStrikeDate);
     let entry = getDataFrom(resultIndexBtcDeribitCell);
     let instrumentNameRange = getDataFrom(instrumentNameRangeCell);
@@ -58,11 +63,11 @@ function updatePutStrikes() {
         && parseInt(s[0].split('-')[2]) <= entry + instrumentNameRange
     );
 
-    writeValues(data, selectedPutInstrumentColumn, selectedPutInstrumentRow);
+    writeValues(sheetName, data, selectedPutInstrumentColumn, selectedPutInstrumentRow);
 }
 
-function clearRow(startColumn, startRow) {
-    let sheet = SpreadsheetApp.getActive().getSheetByName('Trade')
+function clearRow(sheetName, startColumn, startRow) {
+    let sheet = SpreadsheetApp.getActive().getSheetByName(sheetName)
     let lastRow = sheet.getLastRow();
     let clear = [];
     if (lastRow <= parseInt(selectedCallInstrumentRow))
@@ -71,5 +76,5 @@ function clearRow(startColumn, startRow) {
         clear.push([""]);
     }
     let startCell = startColumn + startRow;
-    SpreadsheetApp.getActiveSheet().getRange("Trade!" + startCell + ":" + startColumn + (clear.length + 1)).setValues(clear);
+    SpreadsheetApp.getActiveSheet().getRange(sheetName + "!" + startCell + ":" + startColumn + (clear.length + 1)).setValues(clear);
 }

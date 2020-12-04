@@ -1,3 +1,11 @@
+function getBestValuesTrade() {
+    getBestValuesBySheetName("Trade!");
+}
+
+function getBestValuesTrade2() {
+    getBestValuesBySheetName("Trade2!");
+}
+
 function pnlPut(exitPrice, putRange, putStrike, putOptionPrice) {
     if (exitPrice - putStrike >= 0) {
         return -putOptionPrice * putRange;
@@ -33,27 +41,27 @@ function calculateExpiresIn(timeDelay_HourBased, instrumentDateString) {
     return endStart / noOfMillisecondsInADay;
 }
 
-function writeBestValues(result) {
-    writeDataTo(statusCell, "Writing Best Values");
+function writeBestValues(sheetName, result) {
+    writeDataTo(sheetName + statusCell, "Writing Best Values");
     getDataFrom("B4");
-    writeDataTo(resultMoveNoCell, result.moveRange);
-    writeDataTo(resultCallNoCell, result.callRange);
-    writeDataTo(resultPutNoCell, result.putRange);
-    writeDataTo(resultCapitalNo, result.capitalRange);
-    writeDataTo(resultAverageCell, result.average);
-    writeDataTo(resultSuccessCell, result.success);
-    writeDataTo(resultIndexBtcDeribitCell, result.indexBtcDeribit);
-    writeDataTo(resultTotalPremiumCell, result.totalPremium);
-    writeDataTo(resultCallInstrumentCell, result.callInstrumentName);
-    writeDataTo(resultPutInstrumentCell, result.putInstrumentName);
-    writeDataTo(resultCallOptionCell, result.callOptionPrice);
-    writeDataTo(resultPutOptionCell, result.putOptionPrice);
-    writeDataTo(resultMaxReturnPercentageCell, result.maxReturnPercentage);
-    writeDataTo(resultMinReturnPercentageCell, result.minReturnPercentage);
-    writeDataTo(resultAverageReturnPercentageCell, result.averageReturnPercentage);
-    writeDataTo(resultTotalFundsInvestedCell, result.totalFundsInvested);
-    writeDataTo(resultInitialMarginCallCell, result.initialMarginCall);
-    writeDataTo(resultInitialMarginPutCell, result.initialMarginPut);
+    writeDataTo(sheetName + resultMoveNoCell, result.moveRange);
+    writeDataTo(sheetName + resultCallNoCell, result.callRange);
+    writeDataTo(sheetName + resultPutNoCell, result.putRange);
+    writeDataTo(sheetName + resultCapitalNo, result.capitalRange);
+    writeDataTo(sheetName + resultAverageCell, result.average);
+    writeDataTo(sheetName + resultSuccessCell, result.success);
+    writeDataTo(sheetName + resultIndexBtcDeribitCell, result.indexBtcDeribit);
+    writeDataTo(sheetName + resultTotalPremiumCell, result.totalPremium);
+    writeDataTo(sheetName + resultCallInstrumentCell, result.callInstrumentName);
+    writeDataTo(sheetName + resultPutInstrumentCell, result.putInstrumentName);
+    writeDataTo(sheetName + resultCallOptionCell, result.callOptionPrice);
+    writeDataTo(sheetName + resultPutOptionCell, result.putOptionPrice);
+    writeDataTo(sheetName + resultMaxReturnPercentageCell, result.maxReturnPercentage);
+    writeDataTo(sheetName + resultMinReturnPercentageCell, result.minReturnPercentage);
+    writeDataTo(sheetName + resultAverageReturnPercentageCell, result.averageReturnPercentage);
+    writeDataTo(sheetName + resultTotalFundsInvestedCell, result.totalFundsInvested);
+    writeDataTo(sheetName + resultInitialMarginCallCell, result.initialMarginCall);
+    writeDataTo(sheetName + resultInitialMarginPutCell, result.initialMarginPut);
 }
 
 function bestValuesChanged(moveRange, callRange, putRange, capitalRange, green, average, exitSayisi, indexBtcDeribit, putOptionPrice, callOptionPrice, movePrice, callStrike, putStrike, callInstrumentName, putInstrumentName, maxReturnPercentage, minReturnPercentage, averageReturnPercentage, totalFundsInvested, initialMarginCall, initialMarginPut) {
@@ -262,7 +270,7 @@ function getPnlTotals(indexBtcDeribit, exitRangeStart, exitRangeEnd, putRange, p
     return pnlTotalsArray;
 }
 
-function writeResult(indexBtcDeribit, exitRangeStart, exitRangeEnd, exitRangeIncrement, result, movePrice, moveStrikePrice, interestRate, expiresInCall, expiresInPut, minReturnPercentageCell, maxReturnPercentageCell, averageReturnPercentageCell, maintenanceMarginMaxCallCell, maintenanceMarginMaxPutCell) {
+function writeResult(sheetName, indexBtcDeribit, exitRangeStart, exitRangeEnd, exitRangeIncrement, result, movePrice, moveStrikePrice, interestRate, expiresInCall, expiresInPut, minReturnPercentageCell, maxReturnPercentageCell, averageReturnPercentageCell, maintenanceMarginMaxCallCell, maintenanceMarginMaxPutCell) {
     let exitInterval = exitRangeEnd - exitRangeStart;
     let pnlTotalsArray = getPnlTotals(indexBtcDeribit, exitRangeStart, exitRangeEnd, result.putRange, result.putStrike, result.putOptionPrice, result.callRange, result.callStrike, result.callOptionPrice, result.moveRange, movePrice, moveStrikePrice, result.capitalRange);
     let {averageReturnPercentage, maxReturnPercentage, minReturnPercentage} = calculateValues(pnlTotalsArray, exitInterval, result.totalFundsInvested);
@@ -278,49 +286,49 @@ function writeResult(indexBtcDeribit, exitRangeStart, exitRangeEnd, exitRangeInc
         if (maxMaintenanceMarginCall < maintenanceMarginCall) maxMaintenanceMarginCall = maintenanceMarginCall;
         if (maxMaintenanceMarginPut < maintenanceMarginPut) maxMaintenanceMarginPut = maintenanceMarginPut;
     }
-    writeDataTo(minReturnPercentageCell, minReturnPercentage);
-    writeDataTo(maxReturnPercentageCell, maxReturnPercentage);
-    writeDataTo(averageReturnPercentageCell, averageReturnPercentage);
-    writeDataTo(maintenanceMarginMaxCallCell, maxMaintenanceMarginCall);
-    writeDataTo(maintenanceMarginMaxPutCell, maxMaintenanceMarginPut);
+    writeDataTo(sheetName + minReturnPercentageCell, minReturnPercentage);
+    writeDataTo(sheetName + maxReturnPercentageCell, maxReturnPercentage);
+    writeDataTo(sheetName + averageReturnPercentageCell, averageReturnPercentage);
+    writeDataTo(sheetName + maintenanceMarginMaxCallCell, maxMaintenanceMarginCall);
+    writeDataTo(sheetName + maintenanceMarginMaxPutCell, maxMaintenanceMarginPut);
 }
 
-function getBestValues() {
+function getBestValuesBySheetName(sheetName) {
     let startTime = new Date();
-    writeDataTo(statusCell, "Pulling Data from Internet");
+    writeDataTo(sheetName + statusCell, "Pulling Data from Internet");
     getDataFrom("B4");
     pullJSON();
-    writeDataTo(statusCell, "Clearing Table");
+    writeDataTo(sheetName + statusCell, "Clearing Table");
     getDataFrom("B4");
     // clearTable();
-    writeDataTo(statusCell, "Getting Initial Values");
-    let capitalRangeStart = getDataFrom(capitalRangeStartCell);
-    let capitalRangeEnd = getDataFrom(capitalRangeEndCell);
-    let capitalRangeIncrement = getDataFrom(capitalRangeIncrementCell);
-    let putRangeStart = getDataFrom(putRangeStartCell);
-    let putRangeEnd = getDataFrom(putRangeEndCell);
-    let putRangeIncrement = getDataFrom(putRangeIncrementCell);
-    let callRangeStart = getDataFrom(callRangeStartCell);
-    let callRangeEnd = getDataFrom(callRangeEndCell);
-    let callRangeIncrement = getDataFrom(callRangeIncrementCell);
-    let moveRangeStart = getDataFrom(moveRangeStartCell);
-    let moveRangeEnd = getDataFrom(moveRangeEndCell);
-    let moveRangeIncrement = getDataFrom(moveRangeIncrementCell);
-    let exitRangeStart = getDataFrom(exitRangeStartCell);
-    let exitRangeEnd = getDataFrom(exitRangeEndCell);
-    let exitRangeIncrement = getDataFrom(exitRangeIncrementCell);
-    let exitRangeEnd3 = getDataFrom(exitRangeEnd3Cell);
-    let exitRangeStart3 = getDataFrom(exitRangeStart3Cell);
-    let exitRangeIncrement3 = getDataFrom(exitRangeIncrement3Cell);
-    let exitRangeEnd2 = getDataFrom(exitRangeEnd2Cell);
-    let exitRangeStart2 = getDataFrom(exitRangeStart2Cell);
-    let exitRangeIncrement2 = getDataFrom(exitRangeIncrement2Cell);
-    let timeDelay = getDataFrom(timeDelayCell);
-    let indexBtcDeribit = getDataFrom(resultIndexBtcDeribitCell);
-    let movePrice = getDataFrom(resultMovePriceCell);
-    let moveStrikePrice = getDataFrom(resultMoveStrikePriceCell);
-    let balanceFuture = getDataFrom(balanceCell);
-    let maxTotalFundsInvested = getDataFrom(maxTotalFundsInvestedCell);
+    writeDataTo(sheetName + statusCell, "Getting Initial Values");
+    let capitalRangeStart = getDataFrom(sheetName + capitalRangeStartCell);
+    let capitalRangeEnd = getDataFrom(sheetName + capitalRangeEndCell);
+    let capitalRangeIncrement = getDataFrom(sheetName + capitalRangeIncrementCell);
+    let putRangeStart = getDataFrom(sheetName + putRangeStartCell);
+    let putRangeEnd = getDataFrom(sheetName + putRangeEndCell);
+    let putRangeIncrement = getDataFrom(sheetName + putRangeIncrementCell);
+    let callRangeStart = getDataFrom(sheetName + callRangeStartCell);
+    let callRangeEnd = getDataFrom(sheetName + callRangeEndCell);
+    let callRangeIncrement = getDataFrom(sheetName + callRangeIncrementCell);
+    let moveRangeStart = getDataFrom(sheetName + moveRangeStartCell);
+    let moveRangeEnd = getDataFrom(sheetName + moveRangeEndCell);
+    let moveRangeIncrement = getDataFrom(sheetName + moveRangeIncrementCell);
+    let exitRangeStart = getDataFrom(sheetName + exitRangeStartCell);
+    let exitRangeEnd = getDataFrom(sheetName + exitRangeEndCell);
+    let exitRangeIncrement = getDataFrom(sheetName + exitRangeIncrementCell);
+    let exitRangeEnd3 = getDataFrom(sheetName + exitRangeEnd3Cell);
+    let exitRangeStart3 = getDataFrom(sheetName + exitRangeStart3Cell);
+    let exitRangeIncrement3 = getDataFrom(sheetName + exitRangeIncrement3Cell);
+    let exitRangeEnd2 = getDataFrom(sheetName + exitRangeEnd2Cell);
+    let exitRangeStart2 = getDataFrom(sheetName + exitRangeStart2Cell);
+    let exitRangeIncrement2 = getDataFrom(sheetName + exitRangeIncrement2Cell);
+    let timeDelay = getDataFrom(sheetName + timeDelayCell);
+    let indexBtcDeribit = getDataFrom(sheetName + resultIndexBtcDeribitCell);
+    let movePrice = getDataFrom(sheetName + resultMovePriceCell);
+    let moveStrikePrice = getDataFrom(sheetName + resultMoveStrikePriceCell);
+    let balanceFuture = getDataFrom(sheetName + balanceCell);
+    let maxTotalFundsInvested = getDataFrom(sheetName + maxTotalFundsInvestedCell);
     let interestRate = 0;
 
     let result = {
@@ -341,20 +349,20 @@ function getBestValues() {
         callInstrumentName: "Unknown",
         putInstrumentName: "Unknown"
     };
-    let threshold = getDataFrom(thresholdCell);
-    let boost = getDataFrom(boostCell);
+    let threshold = getDataFrom(sheetName + thresholdCell);
+    let boost = getDataFrom(sheetName + boostCell);
     let exitInterval = exitRangeEnd - exitRangeStart;
     let exitSayisi = exitInterval / exitRangeIncrement + 1;
-    let putLastRange = findLastRange(selectedPutInstrumentColumn, selectedPutInstrumentRow);
-    let putInstrumentNames = SpreadsheetApp.getActiveSheet().getRange(selectedPutInstrumentColumn + selectedPutInstrumentRow + ":" + putLastRange).getValues();
-    let callLastRange = findLastRange(selectedCallInstrumentColumn, selectedCallInstrumentRow);
-    let callInstrumentNames = SpreadsheetApp.getActiveSheet().getRange(selectedCallInstrumentColumn + selectedCallInstrumentRow + ":" + callLastRange).getValues();
+    let putLastRange = findLastRange(sheetName, selectedPutInstrumentColumn, selectedPutInstrumentRow);
+    let putInstrumentNames = SpreadsheetApp.getActiveSheet().getRange(sheetName + selectedPutInstrumentColumn + selectedPutInstrumentRow + ":" + putLastRange).getValues();
+    let callLastRange = findLastRange(sheetName, selectedCallInstrumentColumn, selectedCallInstrumentRow);
+    let callInstrumentNames = SpreadsheetApp.getActiveSheet().getRange(sheetName + selectedCallInstrumentColumn + selectedCallInstrumentRow + ":" + callLastRange).getValues();
     let putAsks = pullAskPricesDeribit(map(putInstrumentNames), indexBtcDeribit);
     let callAsks = pullAskPricesDeribit(map(callInstrumentNames), indexBtcDeribit);
     let putBids = pullBidPricesDeribit(map(putInstrumentNames), indexBtcDeribit);
     let callBids = pullBidPricesDeribit(map(callInstrumentNames), indexBtcDeribit);
 
-    writeDataTo(statusCell, "Calculating Best Values");
+    writeDataTo(sheetName + statusCell, "Calculating Best Values");
     getDataFrom("B4");
     for (let i = 0; i < putInstrumentNames.length; i++) {
         let putInstrumentName = putInstrumentNames[i][0];
@@ -395,19 +403,19 @@ function getBestValues() {
     let expiresInCall = calculateExpiresIn(timeDelay, callDate);
     let expiresInPut = calculateExpiresIn(timeDelay, putDate);
 
-    writeBestValues(result);
-    writeResult(indexBtcDeribit, exitRangeStart2, exitRangeEnd2, exitRangeIncrement2, result, movePrice, moveStrikePrice, interestRate, expiresInCall, expiresInPut, minReturnPercentage2Cell, maxReturnPercentage2Cell, averageReturnPercentage2Cell, maintenanceMarginMaxCall2Cell, maintenanceMarginMaxPut2Cell);
-    writeResult(indexBtcDeribit, exitRangeStart3, exitRangeEnd3, exitRangeIncrement3, result, movePrice, moveStrikePrice, interestRate, expiresInCall, expiresInPut, minReturnPercentage3Cell, maxReturnPercentage3Cell, averageReturnPercentage3Cell, maintenanceMarginMaxCall3Cell, maintenanceMarginMaxPut3Cell);
-    writeDataTo(statusCell, "Calculating IV values");
+    writeBestValues(sheetName, result);
+    writeResult(sheetName, indexBtcDeribit, exitRangeStart2, exitRangeEnd2, exitRangeIncrement2, result, movePrice, moveStrikePrice, interestRate, expiresInCall, expiresInPut, minReturnPercentage2Cell, maxReturnPercentage2Cell, averageReturnPercentage2Cell, maintenanceMarginMaxCall2Cell, maintenanceMarginMaxPut2Cell);
+    writeResult(sheetName, indexBtcDeribit, exitRangeStart3, exitRangeEnd3, exitRangeIncrement3, result, movePrice, moveStrikePrice, interestRate, expiresInCall, expiresInPut, minReturnPercentage3Cell, maxReturnPercentage3Cell, averageReturnPercentage3Cell, maintenanceMarginMaxCall3Cell, maintenanceMarginMaxPut3Cell);
+    writeDataTo(sheetName + statusCell, "Calculating IV values");
     getDataFrom("B4");
     let call_IV = parseFloat(pullCall_IV(result.callInstrumentName));
     let put_IV = parseFloat(pullPut_IV(result.putInstrumentName));
-    writeDataTo(resultPut_IVCell, put_IV);
-    writeDataTo(resultCall_IVCell, call_IV);
+    writeDataTo(sheetName + resultPut_IVCell, put_IV);
+    writeDataTo(sheetName + resultCall_IVCell, call_IV);
     pullCall_MarkPrice(result.callInstrumentName);
     pullPut_MarkPrice(result.putInstrumentName);
 
-    writeDataTo(statusCell, "Writing best values into table");
+    writeDataTo(sheetName + statusCell, "Writing best values into table");
     getDataFrom("B4");
     let row = tableRowStartIndex;
     let maxMaintenanceMarginCall = 0;
@@ -429,18 +437,18 @@ function getBestValues() {
     //     if (maxMaintenanceMarginPut < maintenanceMarginPut) maxMaintenanceMarginPut = maintenanceMarginPut;
     //     insertToTable(row++, indexBtcDeribit, exitPrice, pnlTotal, pnlTotalFuture, pnlCallFuture, pnlPutFuture, pnlFutureResult, pnlMoveResult, pnlCallResult, pnlPutResult, maintenanceMarginCall, maintenanceMarginPut, callPreFuture, putPreFuture);
     // }
-    writeDataTo(maintenanceMarginCallCell, maxMaintenanceMarginCall);
-    writeDataTo(maintenanceMarginPutCell, maxMaintenanceMarginPut);
+    writeDataTo(sheetName + maintenanceMarginCallCell, maxMaintenanceMarginCall);
+    writeDataTo(sheetName + maintenanceMarginPutCell, maxMaintenanceMarginPut);
     let putOptionSize = result.putRange > 0 ? pullAskSizeDeribit(result.putInstrumentName) : pullBidSizeDeribit(result.putInstrumentName);
     let callOptionSize = result.callRange > 0 ? pullAskSizeDeribit(result.callInstrumentName) : pullBidSizeDeribit(result.callInstrumentName);
-    writeDataTo(resultPutSizeCell, putOptionSize);
-    writeDataTo(resultCallSizeCell, callOptionSize);
+    writeDataTo(sheetName + resultPutSizeCell, putOptionSize);
+    writeDataTo(sheetName + resultCallSizeCell, callOptionSize);
     getDataFrom("B4");
     // writeDataTo(statusCell, "Calculating Liq Risk");
     // writeLiqRisk(result, indexBtcDeribit, exitRangeStart, exitRangeEnd, exitRangeIncrement, exitInterval);
     // getDataFrom("B4");
     let elapsedTime = (new Date() - startTime) / 1000;
-    writeDataTo(statusCell, "Done in " + elapsedTime + " seconds");
+    writeDataTo(sheetName + statusCell, "Done in " + elapsedTime + " seconds");
 }
 
 function getMax(minReturnPercentage, averageReturnPercentage, boost, threshold, totalFundsInvested, maxTotalFundsInvested) {
@@ -457,14 +465,14 @@ function pullAskPriceDeribit(instrumentName, indexBtcDeribit) {
     var data = pullDataFrom("https://www.deribit.com/api/v2/public/get_order_book?instrument_name=" + instrumentName);
     let asks = data.result['asks'];
     if (asks.length === 0) return undefined;
-    return  indexBtcDeribit * asks[0][0];
+    return indexBtcDeribit * asks[0][0];
 }
 
 function pullBidPriceDeribit(instrumentName, indexBtcDeribit) {
     var data = pullDataFrom("https://www.deribit.com/api/v2/public/get_order_book?instrument_name=" + instrumentName);
     let bids = data.result['bids'];
     if (bids.length === 0) return undefined;
-    return  indexBtcDeribit * bids[0][0];
+    return indexBtcDeribit * bids[0][0];
 }
 
 function pullBidPricesDeribit(instrumentNames, indexBtcDeribit) {
@@ -483,8 +491,8 @@ function pullAskPricesDeribit(instrumentNames, indexBtcDeribit) {
     return result;
 }
 
-function findLastRange(columnName, startIndex) {
-    var spr = SpreadsheetApp.getActiveSpreadsheet();
+function findLastRange(sheetName, columnName, startIndex) {
+    var spr = SpreadsheetApp.getActive().getSheetByName(sheetName.substr(0,sheetName.length-1));
     var column = spr.getRange(columnName + ':' + columnName);
     var values = column.getValues(); // get all data in one call
     var ct = startIndex - 1;
