@@ -41,7 +41,7 @@ function updateCallStrikes(sheetName) {
     let entry = getDataFrom(resultIndexBtcDeribitCell);
     let instrumentNameRange = getDataFrom(instrumentNameRangeCell);
 
-    let data = instrumentNames.filter(s => s[0].includes(formatted_date)
+    let data = instrumentNames.filter(s => s[0].split('-')[1] === formatted_date
         && s[0].endsWith("-C")
         && parseInt(s[0].split('-')[2]) >= entry - instrumentNameRange
         && parseInt(s[0].split('-')[2]) <= entry + instrumentNameRange
@@ -57,7 +57,7 @@ function updatePutStrikes(sheetName) {
     let formatted_date = getFormattedDate(putStrikeDate);
     let entry = getDataFrom(resultIndexBtcDeribitCell);
     let instrumentNameRange = getDataFrom(instrumentNameRangeCell);
-    let data = instrumentNames.filter(s => s[0].includes(formatted_date)
+    let data = instrumentNames.filter(s => s[0].split('-')[1] === formatted_date
         && s[0].endsWith("-P")
         && parseInt(s[0].split('-')[2]) >= entry - instrumentNameRange
         && parseInt(s[0].split('-')[2]) <= entry + instrumentNameRange
