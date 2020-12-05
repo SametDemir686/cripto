@@ -15,14 +15,16 @@ function confirmAction(func) {
 }
 
 function openPosition() {
-    runIfCellNotEmpty(openBuyCall1InstrumentNameCell, openBuyCall1);
-    runIfCellNotEmpty(openBuyPut1InstrumentNameCell, openBuyPut1);
-    runIfCellNotEmpty(openSellCall1InstrumentNameCell, openSellCall1);
-    runIfCellNotEmpty(openSellPut1InstrumentNameCell, openSellPut1);
-    runIfCellNotEmpty(openBuyCall2InstrumentNameCell, openBuyCall2);
-    runIfCellNotEmpty(openBuyPut2InstrumentNameCell, openBuyPut2);
-    runIfCellNotEmpty(openSellCall2InstrumentNameCell, openSellCall2);
-    runIfCellNotEmpty(openSellPut2InstrumentNameCell, openSellPut2);
+    if (sizePriceCheck()) {
+        runIfCellNotEmpty(openBuyCall1InstrumentNameCell, openBuyCall1);
+        runIfCellNotEmpty(openBuyPut1InstrumentNameCell, openBuyPut1);
+        runIfCellNotEmpty(openSellCall1InstrumentNameCell, openSellCall1);
+        runIfCellNotEmpty(openSellPut1InstrumentNameCell, openSellPut1);
+        runIfCellNotEmpty(openBuyCall2InstrumentNameCell, openBuyCall2);
+        runIfCellNotEmpty(openBuyPut2InstrumentNameCell, openBuyPut2);
+        runIfCellNotEmpty(openSellCall2InstrumentNameCell, openSellCall2);
+        runIfCellNotEmpty(openSellPut2InstrumentNameCell, openSellPut2);
+    }
     updateOrdersAndPositions();
 }
 
@@ -53,9 +55,8 @@ function checkCall(instrumentNameCell) {
     let instrumentName = getDataFrom(instrumentNameCell);
     if (instrumentName) {
         let openBuyCallAskDeribit = pullAskDeribit(instrumentName);
-        let callPrice = getDataFrom(resultCallOptionCell);
         let callSize = getDataFrom(resultCallSizeCell);
-        return openBuyCallAskDeribit.price === callPrice && openBuyCallAskDeribit.size >= callSize;
+        return openBuyCallAskDeribit.size >= callSize;
     }
     return true;
 }
