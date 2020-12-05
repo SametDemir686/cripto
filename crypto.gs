@@ -45,23 +45,25 @@ function writeBestValues(sheetName, result) {
     writeDataTo(sheetName + statusCell, "Writing Best Values");
     getDataFrom("B4");
     // writeDataTo(sheetName + resultMoveNoCell, result.moveRange);
-    writeDataTo(sheetName + resultCallNoCell, result.callRange);
-    writeDataTo(sheetName + resultPutNoCell, result.putRange);
-    // writeDataTo(sheetName + resultCapitalNo, result.capitalRange);
-    // writeDataTo(sheetName + resultAverageCell, result.average);
-    // writeDataTo(sheetName + resultSuccessCell, result.success);
-    // writeDataTo(sheetName + resultIndexBtcDeribitCell, result.indexBtcDeribit);
-    // writeDataTo(sheetName + resultTotalPremiumCell, result.totalPremium);
-    writeDataTo(sheetName + resultCallInstrumentCell, result.callInstrumentName);
-    writeDataTo(sheetName + resultPutInstrumentCell, result.putInstrumentName);
-    writeDataTo(sheetName + resultCallOptionCell, result.callOptionPrice);
-    writeDataTo(sheetName + resultPutOptionCell, result.putOptionPrice);
-    // writeDataTo(sheetName + resultMaxReturnPercentageCell, result.maxReturnPercentage);
-    // writeDataTo(sheetName + resultMinReturnPercentageCell, result.minReturnPercentage);
-    // writeDataTo(sheetName + resultAverageReturnPercentageCell, result.averageReturnPercentage);
-    writeDataTo(sheetName + resultTotalFundsInvestedCell, result.totalFundsInvested);
-    writeDataTo(sheetName + resultInitialMarginCallCell, result.initialMarginCall);
-    writeDataTo(sheetName + resultInitialMarginPutCell, result.initialMarginPut);
+    // writeDataTo(sheetName + resultCallNoCell, result.callRange);
+    // writeDataTo(sheetName + resultPutNoCell, result.putRange);
+    // // writeDataTo(sheetName + resultCapitalNo, result.capitalRange);
+    // // writeDataTo(sheetName + resultAverageCell, result.average);
+    // // writeDataTo(sheetName + resultSuccessCell, result.success);
+    // // writeDataTo(sheetName + resultIndexBtcDeribitCell, result.indexBtcDeribit);
+    // // writeDataTo(sheetName + resultTotalPremiumCell, result.totalPremium);
+    // writeDataTo(sheetName + resultCallInstrumentCell, result.callInstrumentName);
+    // writeDataTo(sheetName + resultPutInstrumentCell, result.putInstrumentName);
+    // writeDataTo(sheetName + resultCallOptionCell, result.callOptionPrice);
+    // writeDataTo(sheetName + resultPutOptionCell, result.putOptionPrice);
+    // // writeDataTo(sheetName + resultMaxReturnPercentageCell, result.maxReturnPercentage);
+    // // writeDataTo(sheetName + resultMinReturnPercentageCell, result.minReturnPercentage);
+    // // writeDataTo(sheetName + resultAverageReturnPercentageCell, result.averageReturnPercentage);
+    // writeDataTo(sheetName + resultTotalFundsInvestedCell, result.totalFundsInvested);
+    // writeDataTo(sheetName + resultInitialMarginCallCell, result.initialMarginCall);
+    // writeDataTo(sheetName + resultInitialMarginPutCell, result.initialMarginPut);
+    let dataToBeWritten = [result.callRange, result.putRange ,result.callInstrumentName, result.putInstrumentName, result.callOptionPrice, result.putOptionPrice, result.totalFundsInvested, result.initialMarginCall, result.initialMarginPut];
+    SpreadsheetApp.getActiveSheet().getRange(sheetName + "A46:I46").setValues(dataToBeWritten);
 }
 
 function bestValuesChanged(moveRange, callRange, putRange, capitalRange, green, average, exitSayisi, indexBtcDeribit, putOptionPrice, callOptionPrice, movePrice, callStrike, putStrike, callInstrumentName, putInstrumentName, maxReturnPercentage, minReturnPercentage, averageReturnPercentage, totalFundsInvested, initialMarginCall, initialMarginPut) {
