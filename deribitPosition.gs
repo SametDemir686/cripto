@@ -15,7 +15,7 @@ function confirmAction(func) {
 }
 
 function openPosition() {
-    if (sizePriceCheck()) {
+    if (sizeCheck()) {
         runIfCellNotEmpty(openBuyCall1InstrumentNameCell, openBuyCall1);
         runIfCellNotEmpty(openBuyPut1InstrumentNameCell, openBuyPut1);
         runIfCellNotEmpty(openSellCall1InstrumentNameCell, openSellCall1);
@@ -40,7 +40,7 @@ function closePosition() {
     updateOrdersAndPositions();
 }
 
-function sizePriceCheck() {
+function sizeCheck() {
     return checkCall(openBuyCall1InstrumentNameCell)
         && checkCall(openSellCall1InstrumentNameCell)
         && checkCall(openBuyCall2InstrumentNameCell)

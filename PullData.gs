@@ -1,8 +1,8 @@
 
 function pullJSON() {
     pullIndexPriceDeribitAndWrite();
-    pullMoveStrikePriceFtx();
-    pullMoveAskPriceFtx();
+    // pullMoveStrikePriceFtx();
+    // pullMoveAskPriceFtx();
 }
 
 function pullDataFrom(url) {
