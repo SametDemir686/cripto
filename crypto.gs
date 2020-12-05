@@ -72,7 +72,7 @@ function writeBestValues(sheetName, result) {
         result.totalFundsInvested,
         result.initialMarginCall,
         result.initialMarginPut]];
-    SpreadsheetApp.getActiveSheet().getRange(sheetName + "A46:I46").setValues(dataToBeWritten);
+    SpreadsheetApp.getActiveSheet().getRange(sheetName + "B44:J44").setValues(dataToBeWritten);
 }
 
 function bestValuesChanged(moveRange, callRange, putRange, capitalRange, green, average, exitSayisi, indexBtcDeribit, putOptionPrice, callOptionPrice, movePrice, callStrike, putStrike, callInstrumentName, putInstrumentName, maxReturnPercentage, minReturnPercentage, averageReturnPercentage, totalFundsInvested, initialMarginCall, initialMarginPut) {
