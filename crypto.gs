@@ -295,11 +295,11 @@ function writeResult(sheetName, indexBtcDeribit, exitRangeStart, exitRangeEnd, e
 
 function getBestValuesBySheetName(sheetName) {
     let startTime = new Date();
-    writeDataTo(sheetName + statusCell, "Pulling Data from Internet");
-    getDataFrom("B4");
+    // writeDataTo(sheetName + statusCell, "Pulling Data from Internet");
+    // getDataFrom("B4");
     pullJSON();
-    writeDataTo(sheetName + statusCell, "Clearing Table");
-    getDataFrom("B4");
+    // writeDataTo(sheetName + statusCell, "Clearing Table");
+    // getDataFrom("B4");
     // clearTable();
     writeDataTo(sheetName + statusCell, "Getting Initial Values");
     let capitalRangeStart = 0; //getDataFrom(sheetName + capitalRangeStartCell);
