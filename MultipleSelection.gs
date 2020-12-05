@@ -34,7 +34,6 @@ function getFormattedDate(current_datetime) {
 }
 
 function updateCallStrikes(sheetName) {
-    clearRow(sheetName, selectedCallInstrumentColumn, selectedCallInstrumentRow);
     let instrumentNames = getInstrumentNames();
     let callStrikeDate = getDataFrom(sheetName + "!" + callStrikeCell);
     let formatted_date = getFormattedDate(callStrikeDate);
@@ -47,11 +46,11 @@ function updateCallStrikes(sheetName) {
         && parseInt(s[0].split('-')[2]) <= entry + instrumentNameRange
     );
 
-    writeValues(sheetName, data, selectedCallInstrumentColumn, selectedCallInstrumentRow);
+    let lastRow = findLastRange(sheetName + "!", selectedCallInstrumentColumn, selectedCallInstrumentRow);
+    writeValues(sheetName, data, selectedCallInstrumentColumn, lastRow + 1);
 }
 
 function updatePutStrikes(sheetName) {
-    clearRow(sheetName, selectedPutInstrumentColumn, selectedPutInstrumentRow);
     let instrumentNames = getInstrumentNames();
     let putStrikeDate = getDataFrom(sheetName + "!" + putStrikeCell);
     let formatted_date = getFormattedDate(putStrikeDate);
@@ -63,11 +62,12 @@ function updatePutStrikes(sheetName) {
         && parseInt(s[0].split('-')[2]) <= entry + instrumentNameRange
     );
 
-    writeValues(sheetName, data, selectedPutInstrumentColumn, selectedPutInstrumentRow);
+    let lastRow = findLastRange(sheetName + "!", selectedPutInstrumentColumn, selectedPutInstrumentRow);
+    writeValues(sheetName, data, selectedPutInstrumentColumn, lastRow + 1);
 }
 
 function clearRow(sheetName, startColumn, startRow) {
-    let sheet = SpreadsheetApp.getActive().getSheetByName(sheetName)
+    let sheet = SpreadsheetApp.getActive().getSheetByName(sheetName);
     let lastRow = sheet.getLastRow();
     let clear = [];
     if (lastRow <= parseInt(selectedCallInstrumentRow))
