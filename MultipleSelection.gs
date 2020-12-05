@@ -22,9 +22,18 @@ function onEdit(e) {
     }
 }
 
-function writeValues(sheetName, transposed, selectedCallInstrumentColumn, selectedCallInstrumentRow) {
-    let x = transposed.length + parseInt(selectedCallInstrumentRow) - 1;
-    var range = SpreadsheetApp.getActiveSheet().getRange(sheetName + "!" + selectedCallInstrumentColumn + selectedCallInstrumentRow + ":" + selectedCallInstrumentColumn + (x));
+function clearRows() {
+    clearRow("Trade", selectedCallInstrumentColumn, parseInt(selectedCallInstrumentRow));
+    clearRow("Trade", selectedPutInstrumentColumn, parseInt(selectedPutInstrumentRow));
+    clearRow("Trade2", selectedCallInstrument2Column, parseInt(selectedCallInstrument2Row));
+    clearRow("Trade2", selectedPutInstrument2Column, parseInt(selectedPutInstrument2Row));
+}
+
+function writeValues(sheetName, transposed, selectedCallInstrumentColumn, startRow) {
+    let endRow = startRow + transposed.length - 1;
+    let startCell = selectedCallInstrumentColumn + startRow;
+    let endCell = selectedCallInstrumentColumn + endRow;
+    var range = SpreadsheetApp.getActiveSheet().getRange(sheetName + "!" + startCell + ":" + endCell);
     range.setValues(transposed);
 }
 
@@ -46,8 +55,8 @@ function updateCallStrikes(sheetName) {
         && parseInt(s[0].split('-')[2]) <= entry + instrumentNameRange
     );
 
-    let lastRow = findLastRange(sheetName + "!", selectedCallInstrumentColumn, selectedCallInstrumentRow);
-    writeValues(sheetName, data, selectedCallInstrumentColumn, lastRow + 1);
+    let lastCell = findLastRow(sheetName + "!", selectedCallInstrumentColumn, selectedCallInstrumentRow);
+    writeValues(sheetName, data, selectedCallInstrumentColumn, lastCell + 1);
 }
 
 function updatePutStrikes(sheetName) {
@@ -62,15 +71,26 @@ function updatePutStrikes(sheetName) {
         && parseInt(s[0].split('-')[2]) <= entry + instrumentNameRange
     );
 
-    let lastRow = findLastRange(sheetName + "!", selectedPutInstrumentColumn, selectedPutInstrumentRow);
+    let lastRow = findLastRow(sheetName + "!", selectedPutInstrumentColumn, selectedPutInstrumentRow);
     writeValues(sheetName, data, selectedPutInstrumentColumn, lastRow + 1);
+}
+
+function findLastRow(sheetName, columnName, startIndex) {
+    var spr = SpreadsheetApp.getActive().getSheetByName(sheetName.substr(0, sheetName.length - 1));
+    var column = spr.getRange(columnName + ':' + columnName);
+    var values = column.getValues(); // get all data in one call
+    var row = startIndex - 1;
+    while (values[row] && values[row][0] !== "") {
+        row++;
+    }
+    return row;
 }
 
 function clearRow(sheetName, startColumn, startRow) {
     let sheet = SpreadsheetApp.getActive().getSheetByName(sheetName);
     let lastRow = sheet.getLastRow();
     let clear = [];
-    if (lastRow <= parseInt(selectedCallInstrumentRow))
+    if (lastRow <= startRow)
         return;
     for (let i = 2; i <= lastRow; i++) {
         clear.push([""]);
