@@ -21,14 +21,14 @@ function cancelOrders() {
 }
 
 function clearOrders() {
-    SpreadsheetApp.getActive().getSheetByName('Trade').getRange('G69:J88').clear({
+    SpreadsheetApp.getActive().getSheetByName('Trade').getRange('G86:J105').clear({
         contentsOnly: true,
         skipFilteredRows: false
     });
 }
 
 function clearPositions() {
-    SpreadsheetApp.getActive().getSheetByName('Trade').getRange('B69:C87').clear({
+    SpreadsheetApp.getActive().getSheetByName('Trade').getRange('B86:E104').clear({
         contentsOnly: true,
         skipFilteredRows: false
     });
@@ -71,7 +71,7 @@ function writeOrders() {
     let data = Utilities.jsonParse(plusResponse.getContentText());
     let dataToBeWritten = getDataToBeWrittenOrders(data);
 
-    SpreadsheetApp.getActive().getSheetByName('Trade').getRange('G69:J88').setValues(dataToBeWritten);
+    SpreadsheetApp.getActive().getSheetByName('Trade').getRange('G86:J105').setValues(dataToBeWritten);
 }
 
 function getDataToBeWrittenPositions(data) {
@@ -113,5 +113,5 @@ function writePositions() {
 
     let dataToBeWritten = getDataToBeWrittenPositions(data);
 
-    SpreadsheetApp.getActive().getSheetByName('Trade').getRange('B69:E87').setValues(dataToBeWritten);
+    SpreadsheetApp.getActive().getSheetByName('Trade').getRange('B86:E104').setValues(dataToBeWritten);
 }
