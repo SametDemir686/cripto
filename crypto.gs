@@ -398,28 +398,28 @@ function getBestValuesBySheetName(sheetName) {
         }
     }
 
-    let putDate = result.putInstrumentName.split('-')[1];
-    let callDate = result.callInstrumentName.split('-')[1];
-    let expiresInCall = calculateExpiresIn(timeDelay, callDate);
-    let expiresInPut = calculateExpiresIn(timeDelay, putDate);
+    // let putDate = result.putInstrumentName.split('-')[1];
+    // let callDate = result.callInstrumentName.split('-')[1];
+    // let expiresInCall = calculateExpiresIn(timeDelay, callDate);
+    // let expiresInPut = calculateExpiresIn(timeDelay, putDate);
 
     writeBestValues(sheetName, result);
     //writeResult(sheetName, indexBtcDeribit, exitRangeStart2, exitRangeEnd2, exitRangeIncrement2, result, movePrice, moveStrikePrice, interestRate, expiresInCall, expiresInPut, minReturnPercentage2Cell, maxReturnPercentage2Cell, averageReturnPercentage2Cell, maintenanceMarginMaxCall2Cell, maintenanceMarginMaxPut2Cell);
     //writeResult(sheetName, indexBtcDeribit, exitRangeStart3, exitRangeEnd3, exitRangeIncrement3, result, movePrice, moveStrikePrice, interestRate, expiresInCall, expiresInPut, minReturnPercentage3Cell, maxReturnPercentage3Cell, averageReturnPercentage3Cell, maintenanceMarginMaxCall3Cell, maintenanceMarginMaxPut3Cell);
-    writeDataTo(sheetName + statusCell, "Calculating IV values");
-    getDataFrom("B4");
-    let call_IV = parseFloat(pullCall_IV(result.callInstrumentName));
-    let put_IV = parseFloat(pullPut_IV(result.putInstrumentName));
+    // writeDataTo(sheetName + statusCell, "Calculating IV values");
+    // getDataFrom("B4");
+    // let call_IV = parseFloat(pullCall_IV(result.callInstrumentName));
+    // let put_IV = parseFloat(pullPut_IV(result.putInstrumentName));
     //writeDataTo(sheetName + resultPut_IVCell, put_IV);
     //writeDataTo(sheetName + resultCall_IVCell, call_IV);
     // pullCall_MarkPrice(result.callInstrumentName);
     // pullPut_MarkPrice(result.putInstrumentName);
 
-    writeDataTo(sheetName + statusCell, "Writing best values into table");
-    getDataFrom("B4");
-    let row = tableRowStartIndex;
-    let maxMaintenanceMarginCall = 0;
-    let maxMaintenanceMarginPut = 0;
+    // writeDataTo(sheetName + statusCell, "Writing best values into table");
+    // getDataFrom("B4");
+    // let row = tableRowStartIndex;
+    // let maxMaintenanceMarginCall = 0;
+    // let maxMaintenanceMarginPut = 0;
     // for (let exitPrice = indexBtcDeribit + exitRangeStart; exitPrice <= indexBtcDeribit + exitRangeEnd; exitPrice += exitRangeIncrement) {
     //     let callPreFuture = calculateCallPreFuture(exitPrice, result.callStrike, expiresInCall, interestRate, call_IV);
     //     let putPreFuture = calculatePutPreFuture(exitPrice, result.putStrike, expiresInPut, interestRate, put_IV);
@@ -437,13 +437,13 @@ function getBestValuesBySheetName(sheetName) {
     //     if (maxMaintenanceMarginPut < maintenanceMarginPut) maxMaintenanceMarginPut = maintenanceMarginPut;
     //     insertToTable(row++, indexBtcDeribit, exitPrice, pnlTotal, pnlTotalFuture, pnlCallFuture, pnlPutFuture, pnlFutureResult, pnlMoveResult, pnlCallResult, pnlPutResult, maintenanceMarginCall, maintenanceMarginPut, callPreFuture, putPreFuture);
     // }
-    writeDataTo(sheetName + maintenanceMarginCallCell, maxMaintenanceMarginCall);
-    writeDataTo(sheetName + maintenanceMarginPutCell, maxMaintenanceMarginPut);
-    let putOptionSize = result.putRange > 0 ? pullAskSizeDeribit(result.putInstrumentName) : pullBidSizeDeribit(result.putInstrumentName);
-    let callOptionSize = result.callRange > 0 ? pullAskSizeDeribit(result.callInstrumentName) : pullBidSizeDeribit(result.callInstrumentName);
-    writeDataTo(sheetName + resultPutSizeCell, putOptionSize);
-    writeDataTo(sheetName + resultCallSizeCell, callOptionSize);
-    getDataFrom("B4");
+    // writeDataTo(sheetName + maintenanceMarginCallCell, maxMaintenanceMarginCall);
+    // writeDataTo(sheetName + maintenanceMarginPutCell, maxMaintenanceMarginPut);
+    // let putOptionSize = result.putRange > 0 ? pullAskSizeDeribit(result.putInstrumentName) : pullBidSizeDeribit(result.putInstrumentName);
+    // let callOptionSize = result.callRange > 0 ? pullAskSizeDeribit(result.callInstrumentName) : pullBidSizeDeribit(result.callInstrumentName);
+    // writeDataTo(sheetName + resultPutSizeCell, putOptionSize);
+    // writeDataTo(sheetName + resultCallSizeCell, callOptionSize);
+    // getDataFrom("B4");
     // writeDataTo(statusCell, "Calculating Liq Risk");
     // writeLiqRisk(result, indexBtcDeribit, exitRangeStart, exitRangeEnd, exitRangeIncrement, exitInterval);
     // getDataFrom("B4");
