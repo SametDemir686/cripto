@@ -5,19 +5,21 @@ function onEdit(e) {
         let cellName = activeCell.getA1Notation();
 
         if (cellName === callStrikeCell) {
-            updateCallStrikes("Trade");
+            // updateCallStrikes("Trade");
         } else if (cellName === putStrikeCell) {
-            updatePutStrikes("Trade");
+            // updatePutStrikes("Trade");
         } else if (cellName === instrumentNameRangeCell) {
             updateCallStrikes("Trade");
             updatePutStrikes("Trade");
+            updateCallStrikes("Trade2");
+            updatePutStrikes("Trade2");
         } else if (cellName === callStrike2Cell) {
-            updateCallStrikes("Trade2");
+            // updateCallStrikes("Trade2");
         } else if (cellName === putStrike2Cell) {
-            updatePutStrikes("Trade2");
+            // updatePutStrikes("Trade2");
         } else if (cellName === instrumentNameRange2Cell) {
-            updateCallStrikes("Trade2");
-            updatePutStrikes("Trade2");
+            // updateCallStrikes("Trade2");
+            // updatePutStrikes("Trade2");
         }
     }
 }

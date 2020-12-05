@@ -15,16 +15,16 @@ function confirmAction(func) {
 }
 
 function openPosition() {
-    if (sizeCheck()) {
-        runIfCellNotEmpty(openBuyCall1InstrumentNameCell, openBuyCall1);
-        runIfCellNotEmpty(openBuyPut1InstrumentNameCell, openBuyPut1);
-        runIfCellNotEmpty(openSellCall1InstrumentNameCell, openSellCall1);
-        runIfCellNotEmpty(openSellPut1InstrumentNameCell, openSellPut1);
-        runIfCellNotEmpty(openBuyCall2InstrumentNameCell, openBuyCall2);
-        runIfCellNotEmpty(openBuyPut2InstrumentNameCell, openBuyPut2);
-        runIfCellNotEmpty(openSellCall2InstrumentNameCell, openSellCall2);
-        runIfCellNotEmpty(openSellPut2InstrumentNameCell, openSellPut2);
-    }
+    //if (sizeCheck()) {
+    runIfCellNotEmpty(openBuyCall1InstrumentNameCell, openBuyCall1);
+    runIfCellNotEmpty(openBuyPut1InstrumentNameCell, openBuyPut1);
+    runIfCellNotEmpty(openSellCall1InstrumentNameCell, openSellCall1);
+    runIfCellNotEmpty(openSellPut1InstrumentNameCell, openSellPut1);
+    runIfCellNotEmpty(openBuyCall2InstrumentNameCell, openBuyCall2);
+    runIfCellNotEmpty(openBuyPut2InstrumentNameCell, openBuyPut2);
+    runIfCellNotEmpty(openSellCall2InstrumentNameCell, openSellCall2);
+    runIfCellNotEmpty(openSellPut2InstrumentNameCell, openSellPut2);
+    //}
     updateOrdersAndPositions();
 }
 
@@ -67,7 +67,7 @@ function checkPut(instrumentNameCell) {
         let openBuyPutAskDeribit = pullAskDeribit(instrumentName);
         let putPrice = getDataFrom(resultPutOptionCell);
         let putSize = getDataFrom(resultPutSizeCell);
-        return openBuyPutAskDeribit.price === putPrice && openBuyPutAskDeribit.size >= putSize;
+        return openBuyPutAskDeribit.size >= putSize;
     }
     return true;
 }

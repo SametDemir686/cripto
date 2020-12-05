@@ -409,10 +409,11 @@ function getBestValuesBySheetName(sheetName) {
         }
     }
 
-    // let putDate = result.putInstrumentName.split('-')[1];
-    // let callDate = result.callInstrumentName.split('-')[1];
-    // let expiresInCall = calculateExpiresIn(timeDelay, callDate);
-    // let expiresInPut = calculateExpiresIn(timeDelay, putDate);
+    SpreadsheetApp.getActiveSheet().getRange(sheetName + "H40:I42").setValues([
+        getMaxMaintenanceMargins(result, indexBtcDeribit, interestRate, timeDelay, getDataFrom('Trade!B40')),
+        getMaxMaintenanceMargins(result, indexBtcDeribit, interestRate, timeDelay, getDataFrom('Trade!B41')),
+        getMaxMaintenanceMargins(result, indexBtcDeribit, interestRate, timeDelay, getDataFrom('Trade!B42'))
+    ]);
 
     writeBestValues(sheetName, result);
     //writeResult(sheetName, indexBtcDeribit, exitRangeStart2, exitRangeEnd2, exitRangeIncrement2, result, movePrice, moveStrikePrice, interestRate, expiresInCall, expiresInPut, minReturnPercentage2Cell, maxReturnPercentage2Cell, averageReturnPercentage2Cell, maintenanceMarginMaxCall2Cell, maintenanceMarginMaxPut2Cell);
@@ -460,6 +461,26 @@ function getBestValuesBySheetName(sheetName) {
     // getDataFrom("B4");
     let elapsedTime = (new Date() - startTime) / 1000;
     writeDataTo(sheetName + statusCell, "Done in " + elapsedTime + " seconds");
+}
+
+function getMaxMaintenanceMargins(result, indexBtcDeribit, interestRate, timeDelay, percentage) {
+    let putDate = result.putInstrumentName.split('-')[1];
+    let callDate = result.callInstrumentName.split('-')[1];
+    let expiresInCall = calculateExpiresIn(timeDelay, callDate);
+    let expiresInPut = calculateExpiresIn(timeDelay, putDate);
+    let call_IV = parseFloat(pullCall_IV(result.callInstrumentName));
+    let put_IV = parseFloat(pullPut_IV(result.putInstrumentName));
+    let maxMaintenanceMarginCall = 0;
+    let maxMaintenanceMarginPut = 0;
+    for (let exitPrice = indexBtcDeribit * (1 - percentage / 100); exitPrice <= indexBtcDeribit * (1 + percentage / 100); exitPrice += indexBtcDeribit * percentage / 10000) {
+        let callPreFuture = calculateCallPreFuture(exitPrice, result.callStrike, expiresInCall, interestRate, call_IV);
+        let putPreFuture = calculatePutPreFuture(exitPrice, result.putStrike, expiresInPut, interestRate, put_IV);
+        let maintenanceMarginCall = result.callRange >= 0 ? 0 : calculateMaintenanceMarginCall(indexBtcDeribit, callPreFuture) * Math.abs(result.callRange);
+        let maintenanceMarginPut = result.putRange >= 0 ? 0 : calculateMaintenanceMarginPut(indexBtcDeribit, putPreFuture) * Math.abs(result.putRange);
+        if (maxMaintenanceMarginCall < maintenanceMarginCall) maxMaintenanceMarginCall = maintenanceMarginCall;
+        if (maxMaintenanceMarginPut < maintenanceMarginPut) maxMaintenanceMarginPut = maintenanceMarginPut;
+    }
+    return [maxMaintenanceMarginCall, maxMaintenanceMarginPut];
 }
 
 function getMax(minReturnPercentage, averageReturnPercentage, boost, threshold, totalFundsInvested, maxTotalFundsInvested) {
