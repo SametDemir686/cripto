@@ -368,6 +368,8 @@ function getBestValuesBySheetName(sheetName) {
     let putInstrumentNames = SpreadsheetApp.getActiveSheet().getRange(sheetName + selectedPutInstrumentColumn + selectedPutInstrumentRow + ":" + putLastRange).getValues();
     let callLastRange = findLastRange(sheetName, selectedCallInstrumentColumn, selectedCallInstrumentRow);
     let callInstrumentNames = SpreadsheetApp.getActiveSheet().getRange(sheetName + selectedCallInstrumentColumn + selectedCallInstrumentRow + ":" + callLastRange).getValues();
+    writeDataTo(sheetName + statusCell, "Pulling Asks and Bids");
+    getDataFrom("B4");
     let putAsksAndBids = pullAskAndBidPricesDeribit(map(putInstrumentNames), indexBtcDeribit);
     let callAsksAndBids = pullAskAndBidPricesDeribit(map(callInstrumentNames), indexBtcDeribit);
 
