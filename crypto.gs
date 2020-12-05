@@ -62,7 +62,7 @@ function writeBestValues(sheetName, result) {
     // writeDataTo(sheetName + resultTotalFundsInvestedCell, result.totalFundsInvested);
     // writeDataTo(sheetName + resultInitialMarginCallCell, result.initialMarginCall);
     // writeDataTo(sheetName + resultInitialMarginPutCell, result.initialMarginPut);
-    let dataToBeWritten = [result.callRange, result.putRange ,result.callInstrumentName, result.putInstrumentName, result.callOptionPrice, result.putOptionPrice, result.totalFundsInvested, result.initialMarginCall, result.initialMarginPut];
+    let dataToBeWritten = [[result.callRange], [result.putRange], [result.callInstrumentName], [result.putInstrumentName], [result.callOptionPrice], [result.putOptionPrice], [result.totalFundsInvested], [result.initialMarginCall], [result.initialMarginPut]];
     SpreadsheetApp.getActiveSheet().getRange(sheetName + "A46:I46").setValues(transpose(dataToBeWritten));
 }
 
@@ -494,7 +494,7 @@ function pullAskPricesDeribit(instrumentNames, indexBtcDeribit) {
 }
 
 function findLastRange(sheetName, columnName, startIndex) {
-    var spr = SpreadsheetApp.getActive().getSheetByName(sheetName.substr(0,sheetName.length-1));
+    var spr = SpreadsheetApp.getActive().getSheetByName(sheetName.substr(0, sheetName.length - 1));
     var column = spr.getRange(columnName + ':' + columnName);
     var values = column.getValues(); // get all data in one call
     var ct = startIndex - 1;
