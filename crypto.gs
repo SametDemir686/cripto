@@ -368,10 +368,8 @@ function getBestValuesBySheetName(sheetName) {
     let putInstrumentNames = SpreadsheetApp.getActiveSheet().getRange(sheetName + selectedPutInstrumentColumn + selectedPutInstrumentRow + ":" + putLastRange).getValues();
     let callLastRange = findLastRange(sheetName, selectedCallInstrumentColumn, selectedCallInstrumentRow);
     let callInstrumentNames = SpreadsheetApp.getActiveSheet().getRange(sheetName + selectedCallInstrumentColumn + selectedCallInstrumentRow + ":" + callLastRange).getValues();
-    let putAsks = pullAskPricesDeribit(map(putInstrumentNames), indexBtcDeribit);
-    let callAsks = pullAskPricesDeribit(map(callInstrumentNames), indexBtcDeribit);
-    let putBids = pullBidPricesDeribit(map(putInstrumentNames), indexBtcDeribit);
-    let callBids = pullBidPricesDeribit(map(callInstrumentNames), indexBtcDeribit);
+    let putAsksAndBids = pullAskAndBidPricesDeribit(map(putInstrumentNames), indexBtcDeribit);
+    let callAsksAndBids = pullAskAndBidPricesDeribit(map(callInstrumentNames), indexBtcDeribit);
 
     writeDataTo(sheetName + statusCell, "Calculating Best Values");
     getDataFrom("B4");
@@ -383,11 +381,11 @@ function getBestValuesBySheetName(sheetName) {
             let callStrike = callInstrumentName.split("-")[2];
             for (let moveRange = moveRangeStart; moveRange <= moveRangeEnd; moveRange += moveRangeIncrement) {
                 for (let callRange = callRangeStart; callRange <= callRangeEnd; callRange += callRangeIncrement) {
-                    let callOptionPrice = callRange > 0 ? callAsks[j] : callBids[j];
+                    let callOptionPrice = callRange > 0 ? callAsksAndBids[j].asks : callAsksAndBids[j].bids;
                     if (callOptionPrice === undefined) break;
                     let initialMarginCall = calculateInitialMarginCall(indexBtcDeribit, callStrike, callRange, callOptionPrice);
                     for (let putRange = putRangeStart; putRange <= putRangeEnd; putRange += putRangeIncrement) {
-                        let putOptionPrice = putRange > 0 ? putAsks[i] : putBids[i];
+                        let putOptionPrice = putRange > 0 ? putAsksAndBids[i].asks : putAsksAndBids[i].bids;
                         if (putOptionPrice === undefined) break;
                         let totalPremium = calculateTotalPremium(putOptionPrice, putRange, callOptionPrice, callRange, movePrice, moveRange);
                         let initialMarginPut = calculateInitialMarginPut(indexBtcDeribit, putStrike, putRange, putOptionPrice);
@@ -472,32 +470,31 @@ function getMax(minReturnPercentage, averageReturnPercentage, boost, threshold, 
     }
 }
 
-function pullAskPriceDeribit(instrumentName, indexBtcDeribit) {
-    var data = pullDataFrom("https://www.deribit.com/api/v2/public/get_order_book?instrument_name=" + instrumentName);
+function pullOrderBook(instrumentName) {
+    return pullDataFrom("https://www.deribit.com/api/v2/public/get_order_book?instrument_name=" + instrumentName);
+}
+
+function pullAskAndBidPriceDeribit(instrumentName, indexBtcDeribit) {
+    var data = pullOrderBook(instrumentName);
+    return {asks: getAsks(data, indexBtcDeribit), bids: getBids(data, indexBtcDeribit)};
+}
+
+function getAsks(data, indexBtcDeribit) {
     let asks = data.result['asks'];
     if (asks.length === 0) return undefined;
     return indexBtcDeribit * asks[0][0];
 }
 
-function pullBidPriceDeribit(instrumentName, indexBtcDeribit) {
-    var data = pullDataFrom("https://www.deribit.com/api/v2/public/get_order_book?instrument_name=" + instrumentName);
+function getBids(data, indexBtcDeribit) {
     let bids = data.result['bids'];
     if (bids.length === 0) return undefined;
     return indexBtcDeribit * bids[0][0];
 }
 
-function pullBidPricesDeribit(instrumentNames, indexBtcDeribit) {
+function pullAskAndBidPricesDeribit(instrumentNames, indexBtcDeribit) {
     let result = [];
     for (let instrumentName of instrumentNames) {
-        result.push(pullBidPriceDeribit(instrumentName, indexBtcDeribit));
-    }
-    return result;
-}
-
-function pullAskPricesDeribit(instrumentNames, indexBtcDeribit) {
-    let result = [];
-    for (let instrumentName of instrumentNames) {
-        result.push(pullAskPriceDeribit(instrumentName, indexBtcDeribit));
+        result.push(pullAskAndBidPriceDeribit(instrumentName, indexBtcDeribit));
     }
     return result;
 }
