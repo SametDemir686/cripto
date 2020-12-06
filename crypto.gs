@@ -313,7 +313,7 @@ function getBestValuesBySheetName(sheetName) {
     // writeDataTo(sheetName + statusCell, "Clearing Table");
     // getDataFrom("B4");
     // clearTable();
-    writeDataTo(sheetName + statusCell, "Getting Initial Values");
+    // writeDataTo(sheetName + statusCell, "Getting Initial Values");
     let capitalRangeStart = 0; //getDataFrom(sheetName + capitalRangeStartCell);
     let capitalRangeEnd = 0; //getDataFrom(sheetName + capitalRangeEndCell);
     let capitalRangeIncrement = 100; //getDataFrom(sheetName + capitalRangeIncrementCell);
@@ -368,14 +368,14 @@ function getBestValuesBySheetName(sheetName) {
     let putInstrumentNames = SpreadsheetApp.getActiveSheet().getRange(sheetName + selectedPutInstrumentColumn + selectedPutInstrumentRow + ":" + putLastRange).getValues();
     let callLastRange = findLastRange(sheetName, selectedCallInstrumentColumn, selectedCallInstrumentRow);
     let callInstrumentNames = SpreadsheetApp.getActiveSheet().getRange(sheetName + selectedCallInstrumentColumn + selectedCallInstrumentRow + ":" + callLastRange).getValues();
-    writeDataTo(sheetName + statusCell, "Pulling Asks and Bids");
-    getDataFrom("B4");
+    // writeDataTo(sheetName + statusCell, "Pulling Asks and Bids");
+    // getDataFrom("B4");
     let indexBtcDeribit = pullIndexPriceDeribit();
     let putAsksAndBids = pullAskAndBidPricesDeribit(map(putInstrumentNames), indexBtcDeribit);
     let callAsksAndBids = pullAskAndBidPricesDeribit(map(callInstrumentNames), indexBtcDeribit);
 
-    writeDataTo(sheetName + statusCell, "Calculating Best Values");
-    getDataFrom("B4");
+    // writeDataTo(sheetName + statusCell, "Calculating Best Values");
+    // getDataFrom("B4");
     for (let i = 0; i < putInstrumentNames.length; i++) {
         let putInstrumentName = putInstrumentNames[i][0];
         let putStrike = putInstrumentName.split("-")[2];
