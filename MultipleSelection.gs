@@ -9,7 +9,7 @@ function onEdit(e) {
         } else if (cellName === putStrikeCell) {
             // updatePutStrikes("Trade");
         } else if (cellName === instrumentNameRangeCell) {
-            let entry = pullIndexPriceDeribit();
+            let entry = getDataFrom('K29');
             updateCallStrikes("Trade", entry);
             updatePutStrikes("Trade", entry);
             updateCallStrikes("Trade2", entry);
@@ -23,14 +23,6 @@ function onEdit(e) {
             // updatePutStrikes("Trade2");
         }
     }
-}
-
-function test() {
-    let entry = pullIndexPriceDeribit();
-    updateCallStrikes("Trade", entry);
-    updatePutStrikes("Trade", entry);
-    updateCallStrikes("Trade2", entry);
-    updatePutStrikes("Trade2", entry);
 }
 
 function clearRows() {
