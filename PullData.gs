@@ -1,4 +1,3 @@
-
 function pullJSON() {
     pullIndexPriceDeribitAndWrite();
     // pullMoveStrikePriceFtx();
@@ -38,6 +37,7 @@ function pullCall_MarkPrice(callInstrumentName) {
     var data = pullDataFrom("https://www.deribit.com/api/v2/public/get_order_book?instrument_name=" + callInstrumentName);
     writeDataTo(CallMarkPrice, data.result['mark_price']);
 }
+
 function pullPut_MarkPrice(putInstrumentName) {
     var data = pullDataFrom("https://www.deribit.com/api/v2/public/get_order_book?instrument_name=" + putInstrumentName);
     writeDataTo(PutMarkPrice, data.result['mark_price']);
@@ -71,8 +71,8 @@ function binanceSpotWallet() {
             "X-MBX-APIKEY": "nEneTAzZjtrayjvfD3cZ98DpEYjPKIOlH34Qj8TP9FoDni3Sl9LE9eARCHvzPDpV"
         }
     };
-    let timeStamp = (""+getDataFrom('AltCoins!A1')).split('.')[0];
-    let url ='https://api.binance.com/sapi/v1/accountSnapshot?timestamp=' + timeStamp + "&type=SPOT";
+    let timeStamp = ("" + getDataFrom('AltCoins!A1')).split('.')[0];
+    let url = 'https://api.binance.com/sapi/v1/accountSnapshot?timestamp=' + timeStamp + "&type=SPOT";
     let plusResponse = UrlFetchApp.fetch(url, plusOptions);
     let data = Utilities.jsonParse(plusResponse.getContentText());
 

@@ -415,7 +415,7 @@ function getBestValuesBySheetName(sheetName) {
         getMaxMaintenanceMargins(result, indexBtcDeribit, interestRate, timeDelay, getDataFrom('Trade!B27'))
     ]);
 
-    if(maxTotalFundsInvested < result.totalFundsInvested) {
+    if (maxTotalFundsInvested < result.totalFundsInvested) {
         alert("Couldn't find less than " + maxTotalFundsInvested + "$");
         SpreadsheetApp.getActiveSheet().getRange(sheetName + "B29:J29").clear();
     } else {
