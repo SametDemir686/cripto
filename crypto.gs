@@ -41,6 +41,23 @@ function calculateExpiresIn(timeDelay_HourBased, instrumentDateString) {
     return endStart / noOfMillisecondsInADay;
 }
 
+function calculateProfitLoss(result) {
+    let exitPrice = getDataFrom('Trade!B21');
+    return calculatePnlTotal(exitPrice,
+        result.indexBtcDeribit,
+        0,
+        result.putRange,
+        result.putStrike,
+        result.putOptionPrice,
+        result.callRange,
+        result.callStrike,
+        result.callOptionPrice,
+        result.moveRange,
+        0,
+        0,
+        result.capitalRange);
+}
+
 function writeBestValues(sheetName, result) {
     // writeDataTo(sheetName + statusCell, "Writing Best Values");
     // getDataFrom("B4");
@@ -62,6 +79,7 @@ function writeBestValues(sheetName, result) {
     // writeDataTo(sheetName + resultTotalFundsInvestedCell, result.totalFundsInvested);
     // writeDataTo(sheetName + resultInitialMarginCallCell, result.initialMarginCall);
     // writeDataTo(sheetName + resultInitialMarginPutCell, result.initialMarginPut);
+    let sheet = SpreadsheetApp.getActiveSheet();
     let dataToBeWritten = [[
         result.callRange.toFixed(1),
         result.putRange.toFixed(1),
@@ -72,9 +90,11 @@ function writeBestValues(sheetName, result) {
         result.totalFundsInvested,
         result.initialMarginCall,
         result.initialMarginPut,
-        result.indexBtcDeribit
+        result.indexBtcDeribit,
+        calculateProfitLoss(result)
     ]];
-    SpreadsheetApp.getActiveSheet().getRange(sheetName + "B29:K29").setValues(dataToBeWritten);
+    sheet.getRange(sheetName + "B29:L29").setValues(dataToBeWritten);
+
 }
 
 function bestValuesChanged(moveRange, callRange, putRange, capitalRange, green, average, exitSayisi, indexBtcDeribit, putOptionPrice, callOptionPrice, movePrice, callStrike, putStrike, callInstrumentName, putInstrumentName, maxReturnPercentage, minReturnPercentage, averageReturnPercentage, totalFundsInvested, initialMarginCall, initialMarginPut) {
