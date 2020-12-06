@@ -1,9 +1,3 @@
-function pullJSON(sheetName) {
-    pullIndexPriceDeribitAndWrite(sheetName);
-    // pullMoveStrikePriceFtx();
-    // pullMoveAskPriceFtx();
-}
-
 function pullDataFrom(url) {
     var response = UrlFetchApp.fetch(url);
     return JSON.parse(response.getContentText());
@@ -13,14 +7,13 @@ function writeDataTo(writeTo, data) {
     SpreadsheetApp.getActiveSheet().getRange(writeTo).setValue(data);
 }
 
-
 function getDataFrom(getFrom) {
     return SpreadsheetApp.getActiveSheet().getRange(getFrom).getValue();
 }
 
-function pullIndexPriceDeribitAndWrite(sheetName) {
-    var data = pullDataFrom("https://www.deribit.com/api/v2/public/get_index_price?index_name=btc_usd");
-    writeDataTo(sheetName + resultIndexBtcDeribitCell, data.result['index_price']);
+function pullIndexPriceDeribit() {
+    let data = pullDataFrom("https://www.deribit.com/api/v2/public/get_index_price?index_name=btc_usd");
+    return data.result['index_price'];
 }
 
 function pullCall_IV(callInstrumentName) {

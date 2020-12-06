@@ -71,8 +71,10 @@ function writeBestValues(sheetName, result) {
         result.putOptionPrice / result.indexBtcDeribit,
         result.totalFundsInvested,
         result.initialMarginCall,
-        result.initialMarginPut]];
-    SpreadsheetApp.getActiveSheet().getRange(sheetName + "B29:J29").setValues(dataToBeWritten);
+        result.initialMarginPut,
+        result.indexBtcDeribit
+    ]];
+    SpreadsheetApp.getActiveSheet().getRange(sheetName + "B29:K29").setValues(dataToBeWritten);
 }
 
 function bestValuesChanged(moveRange, callRange, putRange, capitalRange, green, average, exitSayisi, indexBtcDeribit, putOptionPrice, callOptionPrice, movePrice, callStrike, putStrike, callInstrumentName, putInstrumentName, maxReturnPercentage, minReturnPercentage, averageReturnPercentage, totalFundsInvested, initialMarginCall, initialMarginPut) {
@@ -308,7 +310,6 @@ function getBestValuesBySheetName(sheetName) {
     let startTime = new Date();
     // writeDataTo(sheetName + statusCell, "Pulling Data from Internet");
     // getDataFrom("B4");
-    pullJSON(sheetName);
     // writeDataTo(sheetName + statusCell, "Clearing Table");
     // getDataFrom("B4");
     // clearTable();
@@ -335,13 +336,11 @@ function getBestValuesBySheetName(sheetName) {
     let exitRangeStart2 = 0; //getDataFrom(sheetName + exitRangeStart2Cell);
     let exitRangeIncrement2 = 100; //getDataFrom(sheetName + exitRangeIncrement2Cell);
     let timeDelay = getDataFrom(sheetName + timeDelayCell);
-    let indexBtcDeribit = getDataFrom(sheetName + resultIndexBtcDeribitCell);
     let movePrice = 0; //getDataFrom(sheetName + resultMovePriceCell);
     let moveStrikePrice = 0; //getDataFrom(sheetName + resultMoveStrikePriceCell);
     let balanceFuture = 0; //getDataFrom(sheetName + balanceCell);
     let maxTotalFundsInvested = getDataFrom(sheetName + maxTotalFundsInvestedCell);
     let interestRate = 0;
-
     let result = {
         moveRange: "Unknown",
         callRange: "Unknown",
@@ -360,6 +359,7 @@ function getBestValuesBySheetName(sheetName) {
         callInstrumentName: "Unknown",
         putInstrumentName: "Unknown"
     };
+
     let threshold = getDataFrom(sheetName + thresholdCell);
     let boost = getDataFrom(sheetName + boostCell);
     let exitInterval = exitRangeEnd - exitRangeStart;
@@ -370,6 +370,7 @@ function getBestValuesBySheetName(sheetName) {
     let callInstrumentNames = SpreadsheetApp.getActiveSheet().getRange(sheetName + selectedCallInstrumentColumn + selectedCallInstrumentRow + ":" + callLastRange).getValues();
     writeDataTo(sheetName + statusCell, "Pulling Asks and Bids");
     getDataFrom("B4");
+    let indexBtcDeribit = pullIndexPriceDeribit();
     let putAsksAndBids = pullAskAndBidPricesDeribit(map(putInstrumentNames), indexBtcDeribit);
     let callAsksAndBids = pullAskAndBidPricesDeribit(map(callInstrumentNames), indexBtcDeribit);
 
