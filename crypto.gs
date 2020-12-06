@@ -308,7 +308,7 @@ function getBestValuesBySheetName(sheetName) {
     let startTime = new Date();
     // writeDataTo(sheetName + statusCell, "Pulling Data from Internet");
     // getDataFrom("B4");
-    pullJSON();
+    pullJSON(sheetName);
     // writeDataTo(sheetName + statusCell, "Clearing Table");
     // getDataFrom("B4");
     // clearTable();
