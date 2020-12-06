@@ -63,8 +63,8 @@ function writeBestValues(sheetName, result) {
     // writeDataTo(sheetName + resultInitialMarginCallCell, result.initialMarginCall);
     // writeDataTo(sheetName + resultInitialMarginPutCell, result.initialMarginPut);
     let dataToBeWritten = [[
-        result.callRange,
-        result.putRange,
+        result.callRange.toFixed(1),
+        result.putRange.toFixed(1),
         result.callInstrumentName,
         result.putInstrumentName,
         result.callOptionPrice / result.indexBtcDeribit,
@@ -417,6 +417,7 @@ function getBestValuesBySheetName(sheetName) {
 
     if(maxTotalFundsInvested < result.totalFundsInvested) {
         alert("Couldn't find less than " + maxTotalFundsInvested + "$");
+        SpreadsheetApp.getActiveSheet().getRange(sheetName + "B29:J29").clear();
     } else {
         writeBestValues(sheetName, result);
     }
