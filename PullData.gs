@@ -12,27 +12,27 @@ function getDataFrom(getFrom) {
 }
 
 function pullIndexPriceDeribit() {
-    let data = pullDataFrom("https://www.deribit.com/api/v2/public/get_index_price?index_name=btc_usd");
+    let data = pullDataFrom("https://test.deribit.com/api/v2/public/get_index_price?index_name=btc_usd");
     return data.result['index_price'];
 }
 
 function pullCall_IV(callInstrumentName) {
-    var data = pullDataFrom("https://www.deribit.com/api/v2/public/get_order_book?instrument_name=" + callInstrumentName);
+    var data = pullDataFrom("https://test.deribit.com/api/v2/public/get_order_book?instrument_name=" + callInstrumentName);
     return data.result['mark_iv'];
 }
 
 function pullPut_IV(putInstrumentName) {
-    var data = pullDataFrom("https://www.deribit.com/api/v2/public/get_order_book?instrument_name=" + putInstrumentName);
+    var data = pullDataFrom("https://test.deribit.com/api/v2/public/get_order_book?instrument_name=" + putInstrumentName);
     return data.result['mark_iv'];
 }
 
 function pullCall_MarkPrice(callInstrumentName) {
-    var data = pullDataFrom("https://www.deribit.com/api/v2/public/get_order_book?instrument_name=" + callInstrumentName);
+    var data = pullDataFrom("https://test.deribit.com/api/v2/public/get_order_book?instrument_name=" + callInstrumentName);
     writeDataTo(CallMarkPrice, data.result['mark_price']);
 }
 
 function pullPut_MarkPrice(putInstrumentName) {
-    var data = pullDataFrom("https://www.deribit.com/api/v2/public/get_order_book?instrument_name=" + putInstrumentName);
+    var data = pullDataFrom("https://test.deribit.com/api/v2/public/get_order_book?instrument_name=" + putInstrumentName);
     writeDataTo(PutMarkPrice, data.result['mark_price']);
 }
 
@@ -49,12 +49,12 @@ function pullMoveAskPriceFtx() {
 }
 
 function pullAskSizeDeribit(instrumentName) {
-    var data = pullDataFrom("https://www.deribit.com/api/v2/public/get_order_book?instrument_name=" + instrumentName);
+    var data = pullDataFrom("https://test.deribit.com/api/v2/public/get_order_book?instrument_name=" + instrumentName);
     return data.result['asks'][0][1];
 }
 
 function pullBidSizeDeribit(instrumentName) {
-    var data = pullDataFrom("https://www.deribit.com/api/v2/public/get_order_book?instrument_name=" + instrumentName);
+    var data = pullDataFrom("https://test.deribit.com/api/v2/public/get_order_book?instrument_name=" + instrumentName);
     return data.result['bids'][0][1];
 }
 
