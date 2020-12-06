@@ -42,8 +42,8 @@ function calculateExpiresIn(timeDelay_HourBased, instrumentDateString) {
 }
 
 function writeBestValues(sheetName, result) {
-    writeDataTo(sheetName + statusCell, "Writing Best Values");
-    getDataFrom("B4");
+    // writeDataTo(sheetName + statusCell, "Writing Best Values");
+    // getDataFrom("B4");
     // writeDataTo(sheetName + resultMoveNoCell, result.moveRange);
     // writeDataTo(sheetName + resultCallNoCell, result.callRange);
     // writeDataTo(sheetName + resultPutNoCell, result.putRange);
