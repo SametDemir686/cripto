@@ -415,7 +415,11 @@ function getBestValuesBySheetName(sheetName) {
         getMaxMaintenanceMargins(result, indexBtcDeribit, interestRate, timeDelay, getDataFrom('Trade!B27'))
     ]);
 
-    writeBestValues(sheetName, result);
+    if(maxTotalFundsInvested < result.totalFundsInvested) {
+        alert("Couldn't find less than " + maxTotalFundsInvested + "$");
+    } else {
+        writeBestValues(sheetName, result);
+    }
     //writeResult(sheetName, indexBtcDeribit, exitRangeStart2, exitRangeEnd2, exitRangeIncrement2, result, movePrice, moveStrikePrice, interestRate, expiresInCall, expiresInPut, minReturnPercentage2Cell, maxReturnPercentage2Cell, averageReturnPercentage2Cell, maintenanceMarginMaxCall2Cell, maintenanceMarginMaxPut2Cell);
     //writeResult(sheetName, indexBtcDeribit, exitRangeStart3, exitRangeEnd3, exitRangeIncrement3, result, movePrice, moveStrikePrice, interestRate, expiresInCall, expiresInPut, minReturnPercentage3Cell, maxReturnPercentage3Cell, averageReturnPercentage3Cell, maintenanceMarginMaxCall3Cell, maintenanceMarginMaxPut3Cell);
     // writeDataTo(sheetName + statusCell, "Calculating IV values");
@@ -491,6 +495,10 @@ function getMax(minReturnPercentage, averageReturnPercentage, boost, threshold, 
     } else {
         return averageReturnPercentage;
     }
+}
+
+function alert(message) {
+    SpreadsheetApp.getUi().alert(message);
 }
 
 function pullOrderBook(instrumentName) {
