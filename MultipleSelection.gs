@@ -9,10 +9,11 @@ function onEdit(e) {
         } else if (cellName === putStrikeCell) {
             // updatePutStrikes("Trade");
         } else if (cellName === instrumentNameRangeCell) {
-            updateCallStrikes("Trade");
-            updatePutStrikes("Trade");
-            updateCallStrikes("Trade2");
-            updatePutStrikes("Trade2");
+            let entry = pullIndexPriceDeribit();
+            updateCallStrikes("Trade", entry);
+            updatePutStrikes("Trade", entry);
+            updateCallStrikes("Trade2", entry);
+            updatePutStrikes("Trade2", entry);
         } else if (cellName === callStrike2Cell) {
             // updateCallStrikes("Trade2");
         } else if (cellName === putStrike2Cell) {
@@ -22,6 +23,14 @@ function onEdit(e) {
             // updatePutStrikes("Trade2");
         }
     }
+}
+
+function test() {
+    let entry = pullIndexPriceDeribit();
+    updateCallStrikes("Trade", entry);
+    updatePutStrikes("Trade", entry);
+    updateCallStrikes("Trade2", entry);
+    updatePutStrikes("Trade2", entry);
 }
 
 function clearRows() {
@@ -44,11 +53,10 @@ function getFormattedDate(current_datetime) {
     return (current_datetime.getDate() + 1) + months[current_datetime.getMonth()] + (current_datetime.getFullYear() - 2000);
 }
 
-function updateCallStrikes(sheetName) {
+function updateCallStrikes(sheetName, entry) {
     let instrumentNames = getInstrumentNames();
     let callStrikeDate = getDataFrom(sheetName + "!" + callStrikeCell);
     let formatted_date = getFormattedDate(callStrikeDate);
-    let entry = pullIndexPriceDeribit();
     let instrumentNameRange = getDataFrom(instrumentNameRangeCell);
 
     let data = instrumentNames.filter(s => s[0].split('-')[1] === formatted_date
@@ -61,11 +69,10 @@ function updateCallStrikes(sheetName) {
     writeValues(sheetName, data, selectedCallInstrumentColumn, lastCell + 1);
 }
 
-function updatePutStrikes(sheetName) {
+function updatePutStrikes(sheetName, entry) {
     let instrumentNames = getInstrumentNames();
     let putStrikeDate = getDataFrom(sheetName + "!" + putStrikeCell);
     let formatted_date = getFormattedDate(putStrikeDate);
-    let entry = pullIndexPriceDeribit();
     let instrumentNameRange = getDataFrom(instrumentNameRangeCell);
     let data = instrumentNames.filter(s => s[0].split('-')[1] === formatted_date
         && s[0].endsWith("-P")
