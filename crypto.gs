@@ -72,7 +72,7 @@ function writeBestValues(sheetName, result) {
         result.totalFundsInvested,
         result.initialMarginCall,
         result.initialMarginPut]];
-    SpreadsheetApp.getActiveSheet().getRange(sheetName + "B44:J44").setValues(dataToBeWritten);
+    SpreadsheetApp.getActiveSheet().getRange(sheetName + "B29:J29").setValues(dataToBeWritten);
 }
 
 function bestValuesChanged(moveRange, callRange, putRange, capitalRange, green, average, exitSayisi, indexBtcDeribit, putOptionPrice, callOptionPrice, movePrice, callStrike, putStrike, callInstrumentName, putInstrumentName, maxReturnPercentage, minReturnPercentage, averageReturnPercentage, totalFundsInvested, initialMarginCall, initialMarginPut) {
@@ -221,7 +221,7 @@ function calculateMaintenanceMarginPut(indexBtcDeribit, putPreFuture) {
 }
 
 function calculateTotalPremium(putOptionPrice, putRange, callOptionPrice, callRange, movePrice, moveRange) {
-    return Math.abs(putOptionPrice * putRange) + Math.abs(callOptionPrice * callRange) + Math.abs(movePrice * moveRange);
+    return (putOptionPrice * putRange) + (callOptionPrice * callRange) + Math.abs(movePrice * moveRange);
 }
 
 function calculateInitialMarginCall(indexBtcDeribit, callStrike, callRange, callOptionPrice) {
@@ -409,10 +409,10 @@ function getBestValuesBySheetName(sheetName) {
         }
     }
 
-    SpreadsheetApp.getActiveSheet().getRange(sheetName + "H40:I42").setValues([
-        getMaxMaintenanceMargins(result, indexBtcDeribit, interestRate, timeDelay, getDataFrom('Trade!B40')),
-        getMaxMaintenanceMargins(result, indexBtcDeribit, interestRate, timeDelay, getDataFrom('Trade!B41')),
-        getMaxMaintenanceMargins(result, indexBtcDeribit, interestRate, timeDelay, getDataFrom('Trade!B42'))
+    SpreadsheetApp.getActiveSheet().getRange(sheetName + "B36:C38").setValues([
+        getMaxMaintenanceMargins(result, indexBtcDeribit, interestRate, timeDelay, getDataFrom('Trade!B25')),
+        getMaxMaintenanceMargins(result, indexBtcDeribit, interestRate, timeDelay, getDataFrom('Trade!B26')),
+        getMaxMaintenanceMargins(result, indexBtcDeribit, interestRate, timeDelay, getDataFrom('Trade!B27'))
     ]);
 
     writeBestValues(sheetName, result);
