@@ -15,7 +15,7 @@ function updateOrders() {
 
 function cancelOrders() {
     let tokenData = pullDataFrom(tokenUrl).result;
-    let cancelUrl = 'https://test.deribit.com/api/v2/private/cancel_all';
+    let cancelUrl = 'https://www.deribit.com/api/v2/private/cancel_all';
     sendRequest(cancelUrl, tokenData);
     updateOrders();
 }
@@ -61,7 +61,7 @@ function getDataToBeWrittenOrders(data) {
 
 function writeOrders() {
     let tokenData = pullDataFrom(tokenUrl).result;
-    let url = 'https://test.deribit.com/api/v2/private/get_open_orders_by_currency?currency=BTC&kind=option&type=all';
+    let url = 'https://www.deribit.com/api/v2/private/get_open_orders_by_currency?currency=BTC&kind=option&type=all';
     let plusOptions = {
         "headers": {
             "Authorization": "Bearer " + tokenData.access_token
@@ -102,7 +102,7 @@ function getDataToBeWrittenPositions(data) {
 
 function writePositions() {
     let tokenData = pullDataFrom(tokenUrl).result;
-    let url = 'https://test.deribit.com/api/v2/private/get_positions?currency=BTC&kind=option';
+    let url = 'https://www.deribit.com/api/v2/private/get_positions?currency=BTC&kind=option';
     let plusOptions = {
         "headers": {
             "Authorization": "Bearer " + tokenData.access_token

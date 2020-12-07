@@ -1,4 +1,5 @@
 function sendTelegramNotification() {
+    updatePositions();
     let values = SpreadsheetApp.getActiveSheet().getRange("Trade!B105:E105").getValues();
     let text = "";
     for (let i = 0; i < values[0].length; i++) {
