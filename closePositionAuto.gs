@@ -2,20 +2,45 @@ function closePositionAuto() {
     let indexPrice = pullIndexPriceDeribit();
     let totalPnls = calculateCurrentPnlTotals(indexPrice);
     if (totalPnls <= -10) {
-        sendTextToTelegramWithNotification(chats.stopLossAlert, "Danger is coming!! We are closing the position");
-        // closePosition();
-        sendTextToTelegramWithNotification(chats.stopLossAlert, "Position is closed! You are safe now :D");
+        closePosition();
+        deleteTrigger('closePositionAuto');
+        sendTextToTelegramWithNotification(chats.stopLossAlert, "Danger is coming!! We are closing the position\nPosition is closed! You are safe now :)");
         updatePositionsAndSendToTelegram(chats.stopLossAlert);
     }
 }
 
+function createT() {
+    createTrigger('closePositionAuto');
+}
+
+function createTrigger(funcName) {
+    ScriptApp.newTrigger(funcName)
+        .timeBased()
+        .everyMinutes(1)
+        .create();
+}
+
+function deleteTrigger(triggerHandler) {
+    var allTriggers = ScriptApp.getProjectTriggers();
+    for (var i = 0; i < allTriggers.length; i++) {
+        if (allTriggers[i].getHandlerFunction() === triggerHandler) {
+            ScriptApp.deleteTrigger(allTriggers[i]);
+            break;
+        }
+    }
+}
+
 function calculateCurrentPnlTotals(indexPrice) {
-    return getPnlTotal(indexPrice, getPosition1())
-        + getPnlTotal(indexPrice, getPosition2());
+    let position1 = getPosition1();
+    let pnlTotal = getPnlTotal(indexPrice, position1);
+    let position2 = getPosition2();
+    let pnlTotal1 = getPnlTotal(indexPrice, position2);
+    return pnlTotal + pnlTotal1;
 }
 
 function getPnlTotal(indexPrice, p2) {
-    return calculatePnlTotal(indexPrice, p2.indexBtcDeribit, 0, p2.putRange, p2.putStrike, p2.putOptionPrice, p2.callRange, p2.callStrike, p2.callOptionPrice, 0, 0, 0, 0);
+    let calculatePnlTotal1 = calculatePnlTotal(indexPrice, p2.indexBtcDeribit, 0, p2.putRange, p2.putStrike, p2.putOptionPrice, p2.callRange, p2.callStrike, p2.callOptionPrice, 0, 0, 0, 0);
+    return calculatePnlTotal1;
 }
 
 function getPosition1() {
@@ -36,7 +61,7 @@ function getValues(values) {
         putInstrumentName: values[3],
         putStrike: getStrike(values[3]),
         callOptionPrice: values[4],
-        callStrike: getStrike(values[4]),
+        callStrike: getStrike(values[2]),
         putOptionPrice: values[5],
         totalFundsInvested: values[6],
         initialMarginCall: values[7],
@@ -46,5 +71,5 @@ function getValues(values) {
 }
 
 function getStrike(instrumentName) {
-    return instrumentName.split('-')[2];
+    return parseInt(instrumentName.split('-')[2]);
 }
