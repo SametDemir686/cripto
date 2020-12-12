@@ -5,7 +5,7 @@ function updatePositionsAndSendToTelegram() {
 
 function sendPositionsToTelegram() {
     let positions = getPositionsToString();
-    sendTextToTelegramWithoutNotification(positions);
+    sendTextToTelegramWithoutNotification(chats.tradeEmin, positions);
 }
 
 function getPositionsToString() {
@@ -18,39 +18,39 @@ function getPositionsToString() {
     return text;
 }
 
-function sendTextToTelegramWithoutNotification(text) {
-    UrlFetchApp.fetch("https://api.telegram.org/bot" + botSecret + "/sendMessage?text=" + encodeURIComponent(text) + "&chat_id=" + chatId + "&parse_mode=HTML&disable_notification=true");
+function sendTextToTelegramWithoutNotification(chat, text) {
+    UrlFetchApp.fetch("https://api.telegram.org/bot" + chat.botSecret + "/sendMessage?text=" + encodeURIComponent(text) + "&chat_id=" + chat.chatId + "&parse_mode=HTML&disable_notification=true");
 }
 
-function sendTextToTelegramWithNotification(text) {
-    UrlFetchApp.fetch("https://api.telegram.org/bot" + botSecret + "/sendMessage?text=" + encodeURIComponent(text) + "&chat_id=" + chatId + "&parse_mode=HTML");
+function sendTextToTelegramWithNotification(chat, text) {
+    UrlFetchApp.fetch("https://api.telegram.org/bot" + chat.botSecret + "/sendMessage?text=" + encodeURIComponent(text) + "&chat_id=" + chat.chatId + "&parse_mode=HTML");
 }
 
-function getLastMessage() {
-    var result = pullDataFrom("https://api.telegram.org/bot" + botSecret + "/getUpdates").result;
+function getLastMessage(chat) {
+    var result = pullDataFrom("https://api.telegram.org/bot" + chat.botSecret + "/getUpdates").result;
     return result[result.length - 1].message;
 }
 
-function getLastMessageText() {
-    return getLastMessage().text;
+function getLastMessageText(chat) {
+    return getLastMessage(chat).text;
 }
 
-function isLastMessage(expectedMessage) {
-    return getLastMessageText().toUpperCase() === expectedMessage.toUpperCase();
+function isLastMessage(chat, expectedMessage) {
+    return getLastMessageText(chat).toUpperCase() === expectedMessage.toUpperCase();
 }
 
-function getLastMessageDate() {
-    return getLastMessage().date;
+function getLastMessageDate(chat) {
+    return getLastMessage(chat).date;
 }
 
 function closeIfLastMessageIsClose() {
-    if (isLastMessage("Close")) {
-        sendTextToTelegramWithNotification("Do you want to close? Type Yes in 4 sec");
+    if (isLastMessage(chats.alertEmin, "Close")) {
+        sendTextToTelegramWithNotification(chats.alertEmin, "Do you want to close? Type Yes in 4 sec");
         Utilities.sleep(4000);
-        if (isLastMessage("Yes")) {
+        if (isLastMessage(chats.alertEmin, "Yes")) {
             // closePosition();
             sendPositionsToTelegram();
-            sendTextToTelegramWithNotification("Close Position triggered");
+            sendTextToTelegramWithNotification(chats.alertEmin, "Close Position triggered");
         }
     }
 }
