@@ -43,17 +43,11 @@ function getLastMessageDate() {
     return getLastMessage().date;
 }
 
-function isLastMessageInLast1Min() {
-    let now = new Date();
-    now.setMinutes(now.getMinutes() - 1);
-    return getLastMessageDate() < now;
-}
-
 function closeIfLastMessageIsClose() {
     if (isLastMessage("Close")) {
         sendTextToTelegramWithNotification("Do you want to close? Type Yes in 4 sec");
         Utilities.sleep(4000);
-        if (isLastMessageInLast1Min() && isLastMessage("Yes")) {
+        if (isLastMessage("Yes")) {
             // closePosition();
             sendPositionsToTelegram();
             sendTextToTelegramWithNotification("Close Position triggered");
