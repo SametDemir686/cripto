@@ -20,10 +20,10 @@ function createTrigger(funcName) {
         .create();
 }
 
-function deleteTrigger(triggerHandler) {
+function deleteTrigger(funcName) {
     var allTriggers = ScriptApp.getProjectTriggers();
     for (var i = 0; i < allTriggers.length; i++) {
-        if (allTriggers[i].getHandlerFunction() === triggerHandler) {
+        if (allTriggers[i].getHandlerFunction() === funcName) {
             ScriptApp.deleteTrigger(allTriggers[i]);
             break;
         }
