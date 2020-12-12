@@ -35,7 +35,7 @@ function isLastMessage(expectedMessage) {
     return getLastMessageOnTelegram().toUpperCase() === expectedMessage.toUpperCase();
 }
 
-function receiveTextToSheet() {
+function closeIfLastMessageIsClose() {
     if (isLastMessage("Close")) {
         sendTextToTelegramWithNotification("Do you want to close? Type Yes in 4 sec");
         Utilities.sleep(4000);
