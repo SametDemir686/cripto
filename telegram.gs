@@ -1,11 +1,15 @@
-function updatePositionsAndSendToTelegram() {
-    updatePositions();
-    sendPositionsToTelegram();
+function updatePositionsAndSendToTradeEmin() {
+    updatePositionsAndSendToTelegram(chats.tradeEmin);
 }
 
-function sendPositionsToTelegram() {
+function updatePositionsAndSendToTelegram(chat) {
+    updatePositions();
+    sendPositionsToTelegram(chat);
+}
+
+function sendPositionsToTelegram(chat) {
     let positions = getPositionsToString();
-    sendTextToTelegramWithoutNotification(chats.tradeEmin, positions);
+    sendTextToTelegramWithoutNotification(chat, positions);
 }
 
 function getPositionsToString() {

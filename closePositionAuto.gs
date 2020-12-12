@@ -1,13 +1,11 @@
 function closePositionAuto() {
-    writeDataTo(undefined);
     let indexPrice = pullIndexPriceDeribit();
     let totalPnls = calculateCurrentPnlTotals(indexPrice);
     if (totalPnls <= -10) {
-        sendTextToTelegramWithNotification(chats.stopLossAlert, "Danger is coming!! Do you want to close your position?");
-        Utilities.sleep(60000);
-        if(!isLastMessage(chats.stopLossAlert, "No")) {
-            closePosition();
-        }
+        sendTextToTelegramWithNotification(chats.stopLossAlert, "Danger is coming!! We are closing the position");
+        // closePosition();
+        sendTextToTelegramWithNotification(chats.stopLossAlert, "Position is closed! You are safe now :D");
+        updatePositionsAndSendToTelegram(chats.stopLossAlert);
     }
 }
 
