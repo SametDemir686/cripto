@@ -470,3 +470,4 @@ const closeBuyPut2StopPriceCell = 'J79';
 const closeBuyPut2TriggerCell = 'J80';
 const closeBuyPut2AdvancedCell = 'J81';
 const closeBuyPut2MmpCell = 'J82';
+const telegramClosePosition ="Trade!$A$41";

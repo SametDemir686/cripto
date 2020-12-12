@@ -243,7 +243,10 @@ function calculateMaintenanceMarginPut(indexBtcDeribit, putPreFuture) {
 }
 
 function calculateTotalPremium(putOptionPrice, putRange, callOptionPrice, callRange, movePrice, moveRange) {
-    return (putOptionPrice * putRange) + (callOptionPrice * callRange) + Math.abs(movePrice * moveRange);
+  putRange=putRange<0?0:putRange;
+  callRange=callRange<0?0:callRange;
+  
+  return (putOptionPrice * putRange) + (callOptionPrice * callRange) + Math.abs(movePrice * moveRange);
 }
 
 function calculateInitialMarginCall(indexBtcDeribit, callStrike, callRange, callOptionPrice) {
