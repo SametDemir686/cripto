@@ -53,10 +53,8 @@ function closeIfLastMessageIsClose() {
         Utilities.sleep(4000);
         if (isLastMessage(chats.alertEmin, "Yes")) {
             closePosition();
-            sendPositionsToTelegram();
+            sendPositionsToTelegram(chats.alertEmin);
             sendTextToTelegramWithNotification(chats.alertEmin, "Close Position triggered");
         }
     }
 }
-
-

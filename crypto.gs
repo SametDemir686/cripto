@@ -243,10 +243,10 @@ function calculateMaintenanceMarginPut(indexBtcDeribit, putPreFuture) {
 }
 
 function calculateTotalPremium(putOptionPrice, putRange, callOptionPrice, callRange, movePrice, moveRange) {
-  putRange=putRange<0?0:putRange;
-  callRange=callRange<0?0:callRange;
-  
-  return (putOptionPrice * putRange) + (callOptionPrice * callRange) + Math.abs(movePrice * moveRange);
+    putRange = putRange < 0 ? 0 : putRange;
+    callRange = callRange < 0 ? 0 : callRange;
+
+    return (putOptionPrice * putRange) + (callOptionPrice * callRange) + Math.abs(movePrice * moveRange);
 }
 
 function calculateInitialMarginCall(indexBtcDeribit, callStrike, callRange, callOptionPrice) {
@@ -433,18 +433,22 @@ function getBestValuesBySheetName(sheetName) {
         }
     }
 
+    if (maxTotalFundsInvested < result.totalFundsInvested) {
+        alert("Couldn't find less than " + maxTotalFundsInvested + "$");
+        SpreadsheetApp.getActiveSheet().getRange(sheetName + "B29:J29").clear();
+    } else if (result.callStrike === "Unknown") {
+        alert("Couldn't find any result!! Check your inputs");
+        SpreadsheetApp.getActiveSheet().getRange(sheetName + "B29:J29").clear();
+    } else {
+        writeBestValues(sheetName, result);
+    }
+
     SpreadsheetApp.getActiveSheet().getRange(sheetName + "B36:C38").setValues([
         getMaxMaintenanceMargins(result, indexBtcDeribit, interestRate, timeDelay, getDataFrom('Trade!B25')),
         getMaxMaintenanceMargins(result, indexBtcDeribit, interestRate, timeDelay, getDataFrom('Trade!B26')),
         getMaxMaintenanceMargins(result, indexBtcDeribit, interestRate, timeDelay, getDataFrom('Trade!B27'))
     ]);
 
-    if (maxTotalFundsInvested < result.totalFundsInvested) {
-        alert("Couldn't find less than " + maxTotalFundsInvested + "$");
-        SpreadsheetApp.getActiveSheet().getRange(sheetName + "B29:J29").clear();
-    } else {
-        writeBestValues(sheetName, result);
-    }
     //writeResult(sheetName, indexBtcDeribit, exitRangeStart2, exitRangeEnd2, exitRangeIncrement2, result, movePrice, moveStrikePrice, interestRate, expiresInCall, expiresInPut, minReturnPercentage2Cell, maxReturnPercentage2Cell, averageReturnPercentage2Cell, maintenanceMarginMaxCall2Cell, maintenanceMarginMaxPut2Cell);
     //writeResult(sheetName, indexBtcDeribit, exitRangeStart3, exitRangeEnd3, exitRangeIncrement3, result, movePrice, moveStrikePrice, interestRate, expiresInCall, expiresInPut, minReturnPercentage3Cell, maxReturnPercentage3Cell, averageReturnPercentage3Cell, maintenanceMarginMaxCall3Cell, maintenanceMarginMaxPut3Cell);
     // writeDataTo(sheetName + statusCell, "Calculating IV values");
@@ -490,6 +494,44 @@ function getBestValuesBySheetName(sheetName) {
     // getDataFrom("B4");
     let elapsedTime = (new Date() - startTime) / 1000;
     writeDataTo(sheetName + statusCell, "Done in " + elapsedTime + " seconds");
+}
+
+function calculateMaxLoss() {
+    let pnlTotals = SpreadsheetApp.getActiveSheet().getRange("Position3!AD7:DZ7").getValues()[0];
+    let indexPrices = SpreadsheetApp.getActiveSheet().getRange("Position3!AD11:DZ11").getValues()[0];
+    let timeDelay = getDataFrom('Trade!E12');
+    let intersections = [];
+    for (let i = 0; i < pnlTotals.length - 1; i++) {
+        if (pnlTotals[i] * pnlTotals[i + 1] < 0) {
+            intersections.push(indexPrices[i]);
+        }
+    }
+    let position1 = getPosition1();
+    let position2 = getPosition2();
+
+    let i = 25;
+    for (let exitPrice of intersections) {
+        let pnlTotalFuture1 = calcPnlTotalFuture(exitPrice, position1, timeDelay);
+        let pnlTotalFuture2 = calcPnlTotalFuture(exitPrice, position2, timeDelay);
+        let maxLoss = pnlTotalFuture1 + pnlTotalFuture2;
+        writeDataTo('Trade!I' + i, exitPrice);
+        writeDataTo('Trade!J' + i, maxLoss);
+        i++;
+    }
+}
+
+function calcPnlTotalFuture(exitPrice, position, timeDelay) {
+    let putDate = position.putInstrumentName.split('-')[1];
+    let callDate = position.callInstrumentName.split('-')[1];
+    let expiresInPut = calculateExpiresIn(timeDelay, putDate);
+    let expiresInCall = calculateExpiresIn(timeDelay, callDate);
+    let call_IV = parseFloat(pullCall_IV(position.callInstrumentName));
+    let put_IV = parseFloat(pullPut_IV(position.putInstrumentName));
+    let callPreFuture = calculateCallPreFuture(exitPrice, position.callStrike, expiresInCall, 0, call_IV);
+    let putPreFuture = calculatePutPreFuture(exitPrice, position.putStrike, expiresInPut, 0, put_IV);
+    let pnlCallFuture = (callPreFuture - position.callOptionPrice) * position.callRange;
+    let pnlPutFuture = (putPreFuture - position.putOptionPrice) * position.putRange;
+    return pnlCallFuture + pnlPutFuture;
 }
 
 function getMaxMaintenanceMargins(result, indexBtcDeribit, interestRate, timeDelay, percentage) {
@@ -600,4 +642,32 @@ function clearTable() {
     SpreadsheetApp.getActiveSheet().getRange(tablePnlCallFutureColumn + tableRowStartIndex + ":" + tablePnlCallFutureColumn + (clear.length + tableRowStartIndex - 1)).setValues(clear);
     SpreadsheetApp.getActiveSheet().getRange(tablePnlPutFutureColumn + tableRowStartIndex + ":" + tablePnlPutFutureColumn + (clear.length + tableRowStartIndex - 1)).setValues(clear);
     SpreadsheetApp.getActiveSheet().getRange(tablePnlTotalFutureColumn + tableRowStartIndex + ":" + tablePnlTotalFutureColumn + (clear.length + tableRowStartIndex - 1)).setValues(clear);
+}
+
+function getExitIntersections(indexBtcDeribit, callRange, callStrike, callOptionPrice, putRange, putStrike, putOptionPrice) {
+    let pnlTotals = getPnlTotals(indexBtcDeribit, -100000, 100000, putRange, putStrike, putOptionPrice, callRange, callStrike, callOptionPrice, 0, 0, 0, 0);
+    let intersections = [];
+    for (let i = 0; i < pnlTotals.length - 1; i++) {
+        let p1 = pnlTotals[i];
+        let p2 = pnlTotals[i + 1];
+        let intersection = get_intersection(p1, p2, {x: p1.x, y: y}, {x: p2.x, y: y});
+        if (intersection != null)
+            intersections.push(intersection);
+    }
+    return intersections;
+}
+
+function get_intersection(p0, p1, p2, p3) {
+    let s1_x = p1.x - p0.x;
+    let s1_y = p1.y - p0.y;
+    let s2_x = p3.x - p2.x;
+    let s2_y = p3.y - p2.y;
+
+    let s = (-s1_y * (p0.x - p2.x) + s1_x * (p0.y - p2.y)) / (-s2_x * s1_y + s1_x * s2_y);
+    let t = (s2_x * (p0.y - p2.y) - s2_y * (p0.x - p2.x)) / (-s2_x * s1_y + s1_x * s2_y);
+
+    if (s >= 0 && s <= 1 && t >= 0 && t <= 1)
+        return {x: p0.x + (t * s1_x), y: p0.y + (t * s1_y)};
+    else
+        return null;
 }

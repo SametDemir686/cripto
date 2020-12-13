@@ -38,8 +38,7 @@ function calculateCurrentPnlTotals(indexPrice) {
 }
 
 function getPnlTotal(indexPrice, p2) {
-    let calculatePnlTotal1 = calculatePnlTotal(indexPrice, p2.indexBtcDeribit, 0, p2.putRange, p2.putStrike, p2.putOptionPrice, p2.callRange, p2.callStrike, p2.callOptionPrice, 0, 0, 0, 0);
-    return calculatePnlTotal1;
+    return calculatePnlTotal(indexPrice, p2.indexBtcDeribit, 0, p2.putRange, p2.putStrike, p2.putOptionPrice, p2.callRange, p2.callStrike, p2.callOptionPrice, 0, 0, 0, 0);
 }
 
 function getPosition1() {
