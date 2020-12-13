@@ -1,9 +1,17 @@
 function confirmActionOpenPosition() {
-    confirmAction(openPosition);
+    if (!isSafeMode()) {
+        confirmAction(openPosition);
+    } else {
+        alert("You are in safe mode");
+    }
 }
 
 function confirmActionClosePosition() {
-    confirmAction(closePosition);
+    if (!isSafeMode()) {
+        confirmAction(closePosition);
+    } else {
+        alert("You are in safe mode");
+    }
 }
 
 function confirmAction(func) {
@@ -15,30 +23,32 @@ function confirmAction(func) {
 }
 
 function openPosition() {
-    //if (sizeCheck()) {
-    runIfCellNotEmpty(openBuyCall1InstrumentNameCell, openBuyCall1);
-    runIfCellNotEmpty(openBuyPut1InstrumentNameCell, openBuyPut1);
-    runIfCellNotEmpty(openSellCall1InstrumentNameCell, openSellCall1);
-    runIfCellNotEmpty(openSellPut1InstrumentNameCell, openSellPut1);
-    runIfCellNotEmpty(openBuyCall2InstrumentNameCell, openBuyCall2);
-    runIfCellNotEmpty(openBuyPut2InstrumentNameCell, openBuyPut2);
-    runIfCellNotEmpty(openSellCall2InstrumentNameCell, openSellCall2);
-    runIfCellNotEmpty(openSellPut2InstrumentNameCell, openSellPut2);
-    createTrigger('closePositionAuto');
-    //}
+    if (!isSafeMode()) {
+        runIfCellNotEmpty(openBuyCall1InstrumentNameCell, openBuyCall1);
+        runIfCellNotEmpty(openBuyPut1InstrumentNameCell, openBuyPut1);
+        runIfCellNotEmpty(openSellCall1InstrumentNameCell, openSellCall1);
+        runIfCellNotEmpty(openSellPut1InstrumentNameCell, openSellPut1);
+        runIfCellNotEmpty(openBuyCall2InstrumentNameCell, openBuyCall2);
+        runIfCellNotEmpty(openBuyPut2InstrumentNameCell, openBuyPut2);
+        runIfCellNotEmpty(openSellCall2InstrumentNameCell, openSellCall2);
+        runIfCellNotEmpty(openSellPut2InstrumentNameCell, openSellPut2);
+        createTrigger('closePositionAuto');
+    }
     updateOrdersAndPositions();
 }
 
 function closePosition() {
-    runIfCellNotEmpty(closeBuyCall1InstrumentNameCell, closeBuyCall1);
-    runIfCellNotEmpty(closeBuyPut1InstrumentNameCell, closeBuyPut1);
-    runIfCellNotEmpty(closeSellCall1InstrumentNameCell, closeSellCall1);
-    runIfCellNotEmpty(closeSellPut1InstrumentNameCell, closeSellPut1);
-    runIfCellNotEmpty(closeBuyCall2InstrumentNameCell, closeBuyCall2);
-    runIfCellNotEmpty(closeBuyPut2InstrumentNameCell, closeBuyPut2);
-    runIfCellNotEmpty(closeSellCall2InstrumentNameCell, closeSellCall2);
-    runIfCellNotEmpty(closeSellPut2InstrumentNameCell, closeSellPut2);
-    deleteTrigger('closePositionAuto');
+    if (!isSafeMode()) {
+        runIfCellNotEmpty(closeBuyCall1InstrumentNameCell, closeBuyCall1);
+        runIfCellNotEmpty(closeBuyPut1InstrumentNameCell, closeBuyPut1);
+        runIfCellNotEmpty(closeSellCall1InstrumentNameCell, closeSellCall1);
+        runIfCellNotEmpty(closeSellPut1InstrumentNameCell, closeSellPut1);
+        runIfCellNotEmpty(closeBuyCall2InstrumentNameCell, closeBuyCall2);
+        runIfCellNotEmpty(closeBuyPut2InstrumentNameCell, closeBuyPut2);
+        runIfCellNotEmpty(closeSellCall2InstrumentNameCell, closeSellCall2);
+        runIfCellNotEmpty(closeSellPut2InstrumentNameCell, closeSellPut2);
+        deleteTrigger('closePositionAuto');
+    }
     updateOrdersAndPositions();
 }
 
@@ -75,7 +85,7 @@ function checkPut(instrumentNameCell) {
 }
 
 function pullAskDeribit(instrumentName) {
-    var data = pullDataFrom("https://www.deribit.com/api/v2/public/get_order_book?instrument_name=" + instrumentName);
+    var data = pullDataFrom(getServerAddress() + "/api/v2/public/get_order_book?instrument_name=" + instrumentName);
     return {
         price: data.result['asks'][0][0],
         size: data.result['asks'][0][1]
@@ -199,12 +209,12 @@ function sell(options) {
 }
 
 function getSellUrl(options) {
-    let sellUrl = 'https://www.deribit.com/api/v2/private/sell?';
+    let sellUrl = getServerAddress() + '/api/v2/private/sell?';
     return getUrl(sellUrl, options);
 }
 
 function getBuyUrl(options) {
-    let buyUrl = 'https://www.deribit.com/api/v2/private/buy?';
+    let buyUrl = getServerAddress() + '/api/v2/private/buy?';
     return getUrl(buyUrl, options);
 }
 

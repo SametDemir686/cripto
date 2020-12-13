@@ -527,7 +527,7 @@ function alert(message) {
 }
 
 function pullOrderBook(instrumentName) {
-    return pullDataFrom("https://www.deribit.com/api/v2/public/get_order_book?instrument_name=" + instrumentName);
+    return pullDataFrom(getServerAddress() + "/api/v2/public/get_order_book?instrument_name=" + instrumentName);
 }
 
 function pullAskAndBidPriceDeribit(instrumentName, indexBtcDeribit) {

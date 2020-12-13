@@ -1,6 +1,6 @@
 const client_id = getDataFrom('Instruments!N2');
 const client_secret = getDataFrom('Instruments!Q2');
-let tokenUrl = "https://www.deribit.com/api/v2/public/auth?client_id=" + client_id + "&client_secret=" + client_secret + "&grant_type=client_credentials";
+let tokenUrl = getServerAddress() + "/api/v2/public/auth?client_id=" + client_id + "&client_secret=" + client_secret + "&grant_type=client_credentials";
 
 const chats = {
     tradeEmin: {

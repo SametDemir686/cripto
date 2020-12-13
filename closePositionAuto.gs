@@ -3,7 +3,6 @@ function closePositionAuto() {
     let totalPnls = calculateCurrentPnlTotals(indexPrice);
     if (totalPnls <= -10) {
         closePosition();
-        deleteTrigger('closePositionAuto');
         sendTextToTelegramWithNotification(chats.stopLossAlert, "Danger is coming!! We are closing the position\nPosition is closed! You are safe now :)");
         updatePositionsAndSendToTelegram(chats.stopLossAlert);
     }

@@ -28,7 +28,7 @@ function pullInstrumentsDeribit() {
 }
 
 function pullInstrumentNames() {
-    var url = "https://test.deribit.com/api/v2/public/get_instruments?currency=BTC&expired=false&kind=option";
+    var url = getServerAddress() + "/api/v2/public/get_instruments?currency=BTC&expired=false&kind=option";
     let data = pullDataFrom(url);
     return data.result.map(s => s['instrument_name']);
 }
