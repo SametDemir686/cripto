@@ -1,6 +1,4 @@
-const client_id = getDataFrom('Instruments!N2');
-const client_secret = getDataFrom('Instruments!Q2');
-let tokenUrl = getServerAddress() + "/api/v2/public/auth?client_id=" + client_id + "&client_secret=" + client_secret + "&grant_type=client_credentials";
+let tokenUrl = getServerAddress() + "/api/v2/public/auth?client_id=" + getClientId() + "&client_secret=" + getClientSecret() + "&grant_type=client_credentials";
 
 const chats = {
     tradeEmin: {
@@ -18,7 +16,7 @@ const chats = {
 };
 
 function getServerAddress() {
-    if(isTestMode()) {
+    if (isTestMode()) {
         return "https://test.deribit.com";
     } else {
         return "https://www.deribit.com";
@@ -39,4 +37,16 @@ function isSafeMode() {
 
 function isRealMode() {
     return getMode() === "Real";
+}
+
+function getClientId() {
+    let clientIdReal = getDataFrom('Instruments!N2');
+    let clientIdTest = getDataFrom('Instruments!N5');
+    return isTestMode() ? clientIdTest : clientIdReal;
+}
+
+function getClientSecret() {
+    let clientSecretReal = getDataFrom('Instruments!Q2');
+    let clientSecretTest = getDataFrom('Instruments!Q5');
+    return isTestMode() ? clientSecretTest : clientSecretReal;
 }
