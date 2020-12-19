@@ -23,9 +23,6 @@ function getPositionsToString() {
 }
 
 
-
-
-
 function sendTextToTelegramWithoutNotification(chat, text) {
     UrlFetchApp.fetch("https://api.telegram.org/bot" + chat.botSecret + "/sendMessage?text=" + encodeURIComponent(text) + "&chat_id=" + chat.chatId + "&parse_mode=HTML&disable_notification=true");
 }
@@ -34,8 +31,8 @@ function sendTextToTelegramWithNotification(chat, text) {
     UrlFetchApp.fetch("https://api.telegram.org/bot" + chat.botSecret + "/sendMessage?text=" + encodeURIComponent(text) + "&chat_id=" + chat.chatId + "&parse_mode=HTML");
 }
 
-function sendKeyboardToTelegram(chat, text,kokolo) {
-    UrlFetchApp.fetch("https://api.telegram.org/bot" + chat.botSecret + "/sendMessage?text=" + encodeURIComponent(text) + "&chat_id=" + chat.chatId + "&parse_mode=HTML"+encodeURIComponent(JSON.stringify(text)));
+function sendKeyboardToTelegram(chat, text, kokolo) {
+    UrlFetchApp.fetch("https://api.telegram.org/bot" + chat.botSecret + "/sendMessage?text=" + encodeURIComponent(text) + "&chat_id=" + chat.chatId + "&parse_mode=HTML" + encodeURIComponent(JSON.stringify(text)));
 }
 
 function deleteWebhook(chat) {
@@ -73,9 +70,6 @@ function closeIfLastMessageIsClose() {
 }
 
 
-
-
-
 function getBestResultToString() {
     let values = SpreadsheetApp.getActiveSheet().getRange("Trade!A45:L45").getValues();
     let titleValues = SpreadsheetApp.getActiveSheet().getRange("Trade!A44:L44").getValues();
@@ -83,7 +77,7 @@ function getBestResultToString() {
     for (let i = 0; i < values[0].length; i++) {
         let value = values[0][i];
         let titleValue = titleValues[0][i];
-        text +=  titleValue + ":" + value.toFixed(1) + "\n";
+        text += titleValue + ":" + value.toFixed(1) + "\n";
     }
     return text;
 
@@ -97,12 +91,10 @@ function getBestOptionsToString() {
     for (let i = 0; i < values[0].length; i++) {
         let value = values[0][i];
         let titleValue = titleValues[0][i];
-        text +=  titleValue + ":" + value + "\n";
+        text += titleValue + ":" + value + "\n";
     }
     return text;
 }
-
-
 
 
 //function getOptionDatesAvailable() {
@@ -135,31 +127,61 @@ function sendBestResultToTelegram(chat) {
 
 }
 
-function waitForNextMessage () {
-    var lastdate = getLastMessageDate(chats.runWithTelegram);
-    while (getLastMessageDate(chats.runWithTelegram) === lastdate);
+function waitForNextMessage() {
+    var lastMessage = getLastMessage(chats.runWithTelegram);
+    let newMessage = getLastMessage(chats.runWithTelegram);
+    while (newMessage.date === lastMessage.date) {
+        newMessage = getLastMessage(chats.runWithTelegram);
+    }
+    return newMessage.text.toUpperCase() === "STOP" ? -1 : 0;
+}
+
+function onlyUnique(value, index, self) {
+    return self.indexOf(value) === index;
+}
+
+function getUniqueIntrumentNames() {
+    let lastRow = findLastRow("Instruments!", 'A', 2);
+    let values = transpose(SpreadsheetApp.getActiveSheet().getRange("Instruments!A2:A" + lastRow).getValues())[0].map(s => s.split('-')[1]).filter(onlyUnique);
+    return transpose([values]);
+}
+
+function sendMessageWithKeyboard(chat, text, keyboard) {
+    var reply_markup = {
+        keyboard: keyboard,
+        one_time_keyboard: true,
+        resize_keyboard: true
+    };
+    UrlFetchApp.fetch("https://api.telegram.org/bot" + chat.botSecret + "/sendMessage?text=" + encodeURIComponent(text) +
+        "&chat_id=" + chat.chatId +
+        "&parse_mode=HTML" +
+        "&reply_markup=" + encodeURIComponent(JSON.stringify(reply_markup)));
+}
+
+function f() {
+    sendMessageWithKeyboard(chats.runWithTelegram, "Option date you want?", getUniqueIntrumentNames());
 }
 
 function runWithTelegram() {
-    sendTextToTelegramWithNotification(chats.runWithTelegram, ' How much money do you want to invest in?');
-    waitForNextMessage ();
-    writeDataTo('Trade!B18',getLastMessage(chats.runWithTelegram).text );
+    sendTextToTelegramWithNotification(chats.runWithTelegram, 'How much money do you want to invest in?');
+    if (waitForNextMessage() === -1) return;
+    writeDataTo('Trade!B18', getLastMessage(chats.runWithTelegram).text);
 
-    sendTextToTelegramWithNotification(chats.runWithTelegram, ' Bullish change percentage?');
-    waitForNextMessage ();
+    sendTextToTelegramWithNotification(chats.runWithTelegram, 'Bullish change percentage?');
+    if (waitForNextMessage() === -1) return;
     writeDataTo('Trade!K25', getLastMessage(chats.runWithTelegram).text);
 
-    sendTextToTelegramWithNotification(chats.runWithTelegram, ' Bearish change percentage?');
-    waitForNextMessage ();
+    sendTextToTelegramWithNotification(chats.runWithTelegram, 'Bearish change percentage?');
+    if (waitForNextMessage() === -1) return;
     writeDataTo('Trade!L25', getLastMessage(chats.runWithTelegram).text);
 
-    sendTextToTelegramWithNotification(chats.runWithTelegram, ' Option date you want ? (19Dec20)');
-    waitForNextMessage ();
-    writeDataTo('Trade!A3',getLastMessage(chats.runWithTelegram).text );
+    sendMessageWithKeyboard(chats.runWithTelegram, "Option date you want?", getUniqueIntrumentNames());
+    if (waitForNextMessage() === -1) return;
+    writeDataTo('Trade!A3', getLastMessage(chats.runWithTelegram).text);
 
 
-    writeDataTo(instrumentNameRangeCell,'2000' );
-    sendTextToTelegramWithNotification(chats.runWithTelegram, ' Calculating Best Options To  Trade ! ');
+    writeDataTo(instrumentNameRangeCell, '2000');
+    sendTextToTelegramWithNotification(chats.runWithTelegram, 'Calculating Best Options To  Trade !');
     clearRows();
     getInstrumentDates();
     getBestValuesTrade();
@@ -167,6 +189,5 @@ function runWithTelegram() {
 
     var d = new Date();
     var timeStamp = d.getTime();
-    sendTextToTelegramWithNotification(chats.runWithTelegram, 'http://bit.ly/PnlGraph?v={' + timeStamp +'}');
+    sendTextToTelegramWithNotification(chats.runWithTelegram, 'http://bit.ly/PnlGraph?v={' + timeStamp + '}');
 }
-

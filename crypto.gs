@@ -37,7 +37,7 @@ function calculateExpiresIn(timeDelay_HourBased, instrumentDateString) {
     let timeDelayInMilliseconds = timeDelay_HourBased * noOfMillisecondsInHour;
 
     let end = new Date(instrumentDateString);
-    end.setHours(10);
+    end.setHours(11);
     let endStart = (end - new Date() - timeDelayInMilliseconds);
     return endStart / noOfMillisecondsInADay;
 }
@@ -531,9 +531,6 @@ function calcPnlTotalFuture(exitPrice, position, timeDelay) {
     let callPreFuture = calculateCallPreFuture(exitPrice, position.callStrike, expiresInCall, 0, call_IV);
     let putPreFuture = calculatePutPreFuture(exitPrice, position.putStrike, expiresInPut, 0, put_IV);
     let pnlCallFuture = (callPreFuture - position.callOptionPrice* position.indexBtcDeribit) * position.callRange;
-      
-
-    
     let pnlPutFuture = (putPreFuture - position.putOptionPrice* position.indexBtcDeribit) * position.putRange;
     return pnlCallFuture + pnlPutFuture;
 }

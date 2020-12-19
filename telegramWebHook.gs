@@ -25,22 +25,25 @@ function doGet(e) {
 }
 
 function doPost(e) {
-    switch (JSON.parse(e.postData.contents).message.text.toUpperCase()) {
-        case "CLOSE":
-            closeIfLastMessageIsClose();
-            break;
-        case "RUN":
-            runWithTelegram();
-            break;
-        case "BTC":
-            let btcPriceNow = pullIndexPriceDeribit();
-            sendTextToTelegramWithNotification(chats.runWithTelegram, btcPriceNow);
-            break;
-        case "POSITION":
-            updatePositionsAndSendToTradeEmin();
-            break;
+    try {
+        switch (JSON.parse(e.postData.contents).message.text.toUpperCase()) {
+            case "CLOSE":
+                closeIfLastMessageIsClose();
+                break;
+            case "RUN":
+                runWithTelegram();
+                break;
+            case "BTC":
+                let btcPriceNow = pullIndexPriceDeribit();
+                sendTextToTelegramWithNotification(chats.runWithTelegram, btcPriceNow);
+                break;
+            case "POSITION":
+                updatePositionsAndSendToTradeEmin();
+                break;
+        }
+    } catch (e) {
+        sendTextToTelegramWithNotification(chats.runWithTelegram, 'UNKNOWN ERROR!!');
     }
-
     sendTextToTelegramWithNotification(chats.runWithTelegram, '  Type "Run" to start \n Type "Close" to close your open position \n Type "Btc" to check BTC price  \n Type "Position" to check your postion PNL ');
     setWebhook();
 }
