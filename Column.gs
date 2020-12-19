@@ -33,7 +33,6 @@ const callRangeEndCell = 'A7';
 const callRangeIncrementCell = 'A8';
 const putRangeStartCell = 'B6';
 const putRangeEndCell = 'B7';
-const maxTotalFundsInvestedCell = 'B18';
 const putRangeIncrementCell = 'B8';
 const timeDelayCell = 'E12';
 const balanceCell = 'E10';
@@ -42,7 +41,7 @@ const resultCallInstrumentCell = 'F16';
 const resultPutInstrumentCell = 'G16';
 const resultCallOptionCell = 'F6';
 const resultPutOptionCell = 'G6';
-const resultCall_IVCell = 'F12';
+const resultCall_IVCell = 'A40';
 const resultPut_IVCell = 'G12';
 const resultMoveNoCell = 'J12';
 const resultCallNoCell = 'F3';
@@ -352,9 +351,7 @@ const openPositions4SizeCurrency = 'E102';
 const openPositions4TotalProfitLoss = 'E103';
 const CallMarkPrice = 'F9';
 const PutMarkPrice = 'G9';
-const callStrikeCell = 'A3';
 const putStrikeCell = 'B3';
-const instrumentNameRangeCell = 'B4';
 const callStrike2Cell = 'C3';
 const putStrike2Cell = 'D3';
 const instrumentNameRange2Cell = 'D4';
@@ -470,4 +467,25 @@ const closeBuyPut2StopPriceCell = 'J79';
 const closeBuyPut2TriggerCell = 'J80';
 const closeBuyPut2AdvancedCell = 'J81';
 const closeBuyPut2MmpCell = 'J82';
-const telegramClosePosition ="Trade!$A$41";
+const percent1 ="Trade!$B$25";
+const percent2 ="Trade!$B$26";
+const percent3 ="Trade!$B$27";
+
+const maxTotalFundsInvestedCell = 'B18';
+const maxTotalFundsInvestedCell2 = 'B19';
+const instrumentNameRangeCell = 'B4';
+const callStrikeCell = 'A3';
+
+
+
+const bullpercent1 = 'K25';
+const bearpercent1 = 'L25';
+const bullpercent2 = 'K26';
+const bearpercent2 = 'L26';
+
+
+
+
+
+
+

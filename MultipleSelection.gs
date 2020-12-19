@@ -25,6 +25,22 @@ function onEdit(e) {
     }
 }
 
+function getInstrumentDates() {
+        let entry = getDataFrom('K29');
+            updateCallStrikes("Trade", entry);
+            updatePutStrikes("Trade", entry);
+            updateCallStrikes("Trade2", entry);
+            updatePutStrikes("Trade2", entry);
+}
+
+
+
+
+
+
+
+
+
 function clearRows() {
     clearRow("Trade", selectedCallInstrumentColumn, parseInt(selectedCallInstrumentRow));
     clearRow("Trade", selectedPutInstrumentColumn, parseInt(selectedPutInstrumentRow));

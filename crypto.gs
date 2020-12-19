@@ -1,5 +1,6 @@
 function getBestValuesTrade() {
     getBestValuesBySheetName("Trade!");
+    calculateMaxLoss();
 }
 
 function getBestValuesTrade2() {
@@ -391,14 +392,14 @@ function getBestValuesBySheetName(sheetName) {
     let putInstrumentNames = SpreadsheetApp.getActiveSheet().getRange(sheetName + selectedPutInstrumentColumn + selectedPutInstrumentRow + ":" + putLastRange).getValues();
     let callLastRange = findLastRange(sheetName, selectedCallInstrumentColumn, selectedCallInstrumentRow);
     let callInstrumentNames = SpreadsheetApp.getActiveSheet().getRange(sheetName + selectedCallInstrumentColumn + selectedCallInstrumentRow + ":" + callLastRange).getValues();
-    // writeDataTo(sheetName + statusCell, "Pulling Asks and Bids");
-    // getDataFrom("B4");
+    writeDataTo(sheetName + statusCell, "Pulling Asks and Bids");
+     getDataFrom("B4");
     let indexBtcDeribit = pullIndexPriceDeribit();
     let putAsksAndBids = pullAskAndBidPricesDeribit(map(putInstrumentNames), indexBtcDeribit);
     let callAsksAndBids = pullAskAndBidPricesDeribit(map(callInstrumentNames), indexBtcDeribit);
 
-    // writeDataTo(sheetName + statusCell, "Calculating Best Values");
-    // getDataFrom("B4");
+     writeDataTo(sheetName + statusCell, "Calculating Best Values");
+     getDataFrom("B4");
     for (let i = 0; i < putInstrumentNames.length; i++) {
         let putInstrumentName = putInstrumentNames[i][0];
         let putStrike = putInstrumentName.split("-")[2];
@@ -435,18 +436,18 @@ function getBestValuesBySheetName(sheetName) {
 
     if (maxTotalFundsInvested < result.totalFundsInvested) {
         alert("Couldn't find less than " + maxTotalFundsInvested + "$");
-        SpreadsheetApp.getActiveSheet().getRange(sheetName + "B29:J29").clear();
+        SpreadsheetApp.getActiveSheet().getRange(sheetName + "B29:C29").setValue('0');
     } else if (result.callStrike === "Unknown") {
         alert("Couldn't find any result!! Check your inputs");
-        SpreadsheetApp.getActiveSheet().getRange(sheetName + "B29:J29").clear();
+        SpreadsheetApp.getActiveSheet().getRange(sheetName + "B29:C29").setValue('0');
     } else {
         writeBestValues(sheetName, result);
     }
 
     SpreadsheetApp.getActiveSheet().getRange(sheetName + "B36:C38").setValues([
-        getMaxMaintenanceMargins(result, indexBtcDeribit, interestRate, timeDelay, getDataFrom('Trade!B25')),
-        getMaxMaintenanceMargins(result, indexBtcDeribit, interestRate, timeDelay, getDataFrom('Trade!B26')),
-        getMaxMaintenanceMargins(result, indexBtcDeribit, interestRate, timeDelay, getDataFrom('Trade!B27'))
+        getMaxMaintenanceMargins(result, indexBtcDeribit, interestRate, timeDelay, getDataFrom('Trade!K27')),
+        getMaxMaintenanceMargins(result, indexBtcDeribit, interestRate, timeDelay, getDataFrom('Trade!L27')),
+        getMaxMaintenanceMargins(result, indexBtcDeribit, interestRate, timeDelay, getDataFrom('Trade!L27'))
     ]);
 
     //writeResult(sheetName, indexBtcDeribit, exitRangeStart2, exitRangeEnd2, exitRangeIncrement2, result, movePrice, moveStrikePrice, interestRate, expiresInCall, expiresInPut, minReturnPercentage2Cell, maxReturnPercentage2Cell, averageReturnPercentage2Cell, maintenanceMarginMaxCall2Cell, maintenanceMarginMaxPut2Cell);
@@ -529,8 +530,11 @@ function calcPnlTotalFuture(exitPrice, position, timeDelay) {
     let put_IV = parseFloat(pullPut_IV(position.putInstrumentName));
     let callPreFuture = calculateCallPreFuture(exitPrice, position.callStrike, expiresInCall, 0, call_IV);
     let putPreFuture = calculatePutPreFuture(exitPrice, position.putStrike, expiresInPut, 0, put_IV);
-    let pnlCallFuture = (callPreFuture - position.callOptionPrice) * position.callRange;
-    let pnlPutFuture = (putPreFuture - position.putOptionPrice) * position.putRange;
+    let pnlCallFuture = (callPreFuture - position.callOptionPrice* position.indexBtcDeribit) * position.callRange;
+      
+
+    
+    let pnlPutFuture = (putPreFuture - position.putOptionPrice* position.indexBtcDeribit) * position.putRange;
     return pnlCallFuture + pnlPutFuture;
 }
 

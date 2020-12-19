@@ -12,8 +12,18 @@ const chats = {
     stopLossAlert: {
         botSecret: '1482529145:AAGrXF7fXk00PFZGrA0_KmgZuyFx4o0XAek',
         chatId: 1132267979
-    }
+    },
+    runWithTelegram: {
+        botSecret: '1439106550:AAGqH87pMb9Fy0i8OZLZOS5Db13vQN3QDww',
+        chatId: 1132267979
+    
+}
+  
+  
+  
 };
+
+
 
 function getServerAddress() {
     if (isTestMode()) {
