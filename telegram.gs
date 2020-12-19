@@ -135,64 +135,27 @@ function sendBestResultToTelegram(chat) {
 
 }
 
-
-
-function lastMessageDateIsDifferent () {
-// Utilities.sleep(5 * 1000);  
-
-
+function waitForNextMessage () {
     var lastdate = getLastMessageDate(chats.runWithTelegram);
-
-    do {
-        Utilities.sleep(5 * 1000);
-    }
-    while (getLastMessageDate(chats.runWithTelegram) == lastdate);
-
-
-    return  dateIsdifferent=1;
-
-
+    while (getLastMessageDate(chats.runWithTelegram) === lastdate);
 }
+
 function runWithTelegram() {
-    //let textt=  getLastMessage(chats.runWithTelegram).text;
-
-    // if( textt.split(",")[1] !=undefined && textt.split(",")[2]!=	undefined  && textt.split(",")[3] !=	undefined && textt.split(",")[4] !=undefined && textt.split(",")[5] !=undefined && textt.split(",")[6] !=undefined){
-
-
-
     sendTextToTelegramWithNotification(chats.runWithTelegram, ' How much money do you want to invest in?');
-
-    if ( lastMessageDateIsDifferent () ==1 ){
-        let desired=  getLastMessage(chats.runWithTelegram).text;
-        writeDataTo('Trade!B18',desired );
-        let  dateIsdifferent=0;
-    }
-
-
+    waitForNextMessage ();
+    writeDataTo('Trade!B18',getLastMessage(chats.runWithTelegram).text );
 
     sendTextToTelegramWithNotification(chats.runWithTelegram, ' Bullish change percentage?');
-
-    if ( lastMessageDateIsDifferent () ==1 ){
-        let bullpercent11=  getLastMessage(chats.runWithTelegram).text;
-        writeDataTo('Trade!K25', bullpercent11);
-        let   dateIsdifferent=0;
-    }
+    waitForNextMessage ();
+    writeDataTo('Trade!K25', getLastMessage(chats.runWithTelegram).text);
 
     sendTextToTelegramWithNotification(chats.runWithTelegram, ' Bearish change percentage?');
-
-    if ( lastMessageDateIsDifferent () ==1 ){
-        let bearpercent11=  getLastMessage(chats.runWithTelegram).text;
-        writeDataTo('Trade!L25', bearpercent11);
-        let  dateIsdifferent=0;
-    }
+    waitForNextMessage ();
+    writeDataTo('Trade!L25', getLastMessage(chats.runWithTelegram).text);
 
     sendTextToTelegramWithNotification(chats.runWithTelegram, ' Option date you want ? (19Dec20)');
-    // sendOptionDatesToTelegram(chats.runWithTelegram);
-    if ( lastMessageDateIsDifferent () ==1 ){
-        let date=  getLastMessage(chats.runWithTelegram).text;
-        writeDataTo('Trade!A3',date );
-        let  dateIsdifferent=0;
-    }
+    waitForNextMessage ();
+    writeDataTo('Trade!A3',getLastMessage(chats.runWithTelegram).text );
 
 
     writeDataTo(instrumentNameRangeCell,'2000' );
@@ -205,24 +168,5 @@ function runWithTelegram() {
     var d = new Date();
     var timeStamp = d.getTime();
     sendTextToTelegramWithNotification(chats.runWithTelegram, 'http://bit.ly/PnlGraph?v={' + timeStamp +'}');
-
-
-
-
-    //let bullpercent22 = textt.split(",")[3];
-    //let bearpercent22 =  textt.split(",")[
-    //writeDataTo('Trade!K26', bullpercent22);
-    //writeDataTo('Trade!L26', bearpercent22 );
-
-
-
-
 }
-
-
-function runWithTelegram2() {
-    //getBestValuesTrade2();
-}
-       
-
 
