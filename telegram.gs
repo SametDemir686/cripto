@@ -38,10 +38,14 @@ function sendKeyboardToTelegram(chat, text,kokolo) {
     UrlFetchApp.fetch("https://api.telegram.org/bot" + chat.botSecret + "/sendMessage?text=" + encodeURIComponent(text) + "&chat_id=" + chat.chatId + "&parse_mode=HTML"+encodeURIComponent(JSON.stringify(text)));
 }
 
+function deleteWebhook(chat) {
+    UrlFetchApp.fetch("https://api.telegram.org/bot" + chat.botSecret + "/deleteWebhook");
+}
+
 function getLastMessage(chat) {
+    deleteWebhook(chat);
     var result = pullDataFrom("https://api.telegram.org/bot" + chat.botSecret + "/getUpdates").result;
     return result[result.length - 1].message;
-
 }
 
 function getLastMessageText(chat) {
