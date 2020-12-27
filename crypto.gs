@@ -508,6 +508,12 @@ function calculateMaxLoss() {
     let position1 = getPosition1();
 
     let i = 25;
+    if(intersections.length === 0) {
+        writeDataTo('Trade!I' + i, 0);
+        writeDataTo('Trade!J' + i, 0);
+        return;
+    }
+
     for (let exitPrice of intersections) {
         let maxLoss = calcPnlTotalFuture(exitPrice, position1, timeDelay);
         writeDataTo('Trade!I' + i, exitPrice);
