@@ -84,8 +84,8 @@ function getLastMessageDate(chat) {
 
 function closeIfLastMessageIsClose() {
     if (isLastMessage(chats.runWithTelegram, "/Close")) {
-        sendTextToTelegramWithNotification(chats.runWithTelegram, "Do you want to close? Type Yes in 4 sec");
-        Utilities.sleep(4000);
+        sendTextToTelegramWithNotification(chats.runWithTelegram, "Do you want to close? Type Yes in 10 sec");
+        waitForNextMessage(10000);
         if (isLastMessage(chats.runWithTelegram, "Yes")) {
             sendTextToTelegramWithNotification(chats.runWithTelegram, "Close Position triggered");
             closePosition();
@@ -97,8 +97,8 @@ function closeIfLastMessageIsClose() {
 
 function OpenIfLastMessageIsOpen() {
     if (isLastMessage(chats.runWithTelegram, "/Open")) {
-        sendTextToTelegramWithNotification(chats.runWithTelegram, "Do you want to open a position? Type Yes in 4 sec");
-        Utilities.sleep(4000);
+        sendTextToTelegramWithNotification(chats.runWithTelegram, "Do you want to open a position? Type Yes in 10 sec");
+        Utilities.sleep(10000);
         if (isLastMessage(chats.runWithTelegram, "Yes")) {
             sendTextToTelegramWithNotification(chats.runWithTelegram, "Open Position triggered");
             openPosition();
