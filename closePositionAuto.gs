@@ -2,8 +2,9 @@ function closePositionAuto() {
     let indexPrice = pullIndexPriceDeribit();
     let totalPnls = calculateCurrentPnlTotals(indexPrice);
     if (totalPnls <= -10) {
+        sendTextToTelegramWithNotification(chats.runWithTelegram, "Danger is coming!! We are closing the position");
         closePosition();
-        sendTextToTelegramWithNotification(chats.runWithTelegram, "Danger is coming!! We are closing the position\nPosition is closed! You are safe now :)");
+        sendTextToTelegramWithNotification(chats.runWithTelegram, "Position is closed! You are safe now");
         updatePositionsAndSendToTelegram(chats.runWithTelegram);
     }
 }
