@@ -2,7 +2,9 @@ function onEdit(e) {
     var spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
     var activeCell = spreadsheet.getActiveCell();
     if (spreadsheet.getActiveSheet().getName() === "Trade") {
+        console.log();
         if (activeCell.getA1Notation() === instrumentNameRangeCell) {
+            console.log();
             let entry = getDataFrom('K29');
             updateCallStrikes("Trade", entry);
             updatePutStrikes("Trade", entry);
