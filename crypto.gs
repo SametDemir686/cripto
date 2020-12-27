@@ -42,7 +42,7 @@ function calculateExpiresIn(timeDelay_HourBased, instrumentDateString) {
     return endStart / noOfMillisecondsInADay;
 }
 
-console.log(calculateExpiresIn(0, "20DEC20")*24);
+console.log(calculateExpiresIn(0, "20DEC20") * 24);
 
 function calculateProfitLoss(result) {
     let exitPrice = getDataFrom('Trade!B21');
@@ -395,13 +395,13 @@ function getBestValuesBySheetName(sheetName) {
     let callLastRange = findLastRange(sheetName, selectedCallInstrumentColumn, selectedCallInstrumentRow);
     let callInstrumentNames = SpreadsheetApp.getActiveSheet().getRange(sheetName + selectedCallInstrumentColumn + selectedCallInstrumentRow + ":" + callLastRange).getValues();
     writeDataTo(sheetName + statusCell, "Pulling Asks and Bids");
-     getDataFrom("B4");
+    getDataFrom("B4");
     let indexBtcDeribit = pullIndexPriceDeribit();
     let putAsksAndBids = pullAskAndBidPricesDeribit(map(putInstrumentNames), indexBtcDeribit);
     let callAsksAndBids = pullAskAndBidPricesDeribit(map(callInstrumentNames), indexBtcDeribit);
 
-     writeDataTo(sheetName + statusCell, "Calculating Best Values");
-     getDataFrom("B4");
+    writeDataTo(sheetName + statusCell, "Calculating Best Values");
+    getDataFrom("B4");
     for (let i = 0; i < putInstrumentNames.length; i++) {
         let putInstrumentName = putInstrumentNames[i][0];
         let putStrike = putInstrumentName.split("-")[2];
@@ -532,8 +532,8 @@ function calcPnlTotalFuture(exitPrice, position, timeDelay) {
     let put_IV = parseFloat(pullPut_IV(position.putInstrumentName));
     let callPreFuture = calculateCallPreFuture(exitPrice, position.callStrike, expiresInCall, 0, call_IV);
     let putPreFuture = calculatePutPreFuture(exitPrice, position.putStrike, expiresInPut, 0, put_IV);
-    let pnlCallFuture = (callPreFuture - position.callOptionPrice* position.indexBtcDeribit) * position.callRange;
-    let pnlPutFuture = (putPreFuture - position.putOptionPrice* position.indexBtcDeribit) * position.putRange;
+    let pnlCallFuture = (callPreFuture - position.callOptionPrice * position.indexBtcDeribit) * position.callRange;
+    let pnlPutFuture = (putPreFuture - position.putOptionPrice * position.indexBtcDeribit) * position.putRange;
     return pnlCallFuture + pnlPutFuture;
 }
 

@@ -467,15 +467,14 @@ const closeBuyPut2StopPriceCell = 'J79';
 const closeBuyPut2TriggerCell = 'J80';
 const closeBuyPut2AdvancedCell = 'J81';
 const closeBuyPut2MmpCell = 'J82';
-const percent1 ="Trade!$B$25";
-const percent2 ="Trade!$B$26";
-const percent3 ="Trade!$B$27";
+const percent1 = "Trade!$B$25";
+const percent2 = "Trade!$B$26";
+const percent3 = "Trade!$B$27";
 
 const maxTotalFundsInvestedCell = 'B18';
 const maxTotalFundsInvestedCell2 = 'B19';
 const instrumentNameRangeCell = 'B4';
 const callStrikeCell = 'A3';
-
 
 
 const bullpercent1 = 'K25';

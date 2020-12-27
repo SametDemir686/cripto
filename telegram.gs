@@ -63,11 +63,11 @@ function deleteWebhook(chat) {
 function getLastMessage(chat) {
     deleteWebhook(chat);
     var result = pullDataFrom("https://api.telegram.org/bot" + chat.botSecret + "/getUpdates").result;
-    var userIdCheck =  result[result.length - 1].message.from.id ;
-    if ( userIdCheck=== 1132267979){
-    return result[result.length - 1].message;
-}
-  
+    var userIdCheck = result[result.length - 1].message.from.id;
+    if (userIdCheck === chats.emin.user_id) {
+        return result[result.length - 1].message;
+    }
+
 }
 
 function getLastMessageText(chat) {
@@ -108,8 +108,6 @@ function OpenIfLastMessageIsOpen() {
     }
 }
 
-
-
 function getBestResultToString() {
     let values = SpreadsheetApp.getActiveSheet().getRange("Trade!A45:L45").getValues();
     let titleValues = SpreadsheetApp.getActiveSheet().getRange("Trade!A44:L44").getValues();
@@ -117,11 +115,9 @@ function getBestResultToString() {
     for (let i = 0; i < values[0].length; i++) {
         let value = values[0][i];
         let titleValue = titleValues[0][i];
-        text += titleValue + ":"+"\n" +  value.toFixed(1) + "\n";
+        text += titleValue + ":" + "\n" + value.toFixed(1) + "\n";
     }
     return text;
-
-
 }
 
 function getBestOptionsToString() {

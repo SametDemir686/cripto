@@ -16,13 +16,11 @@ const chats = {
     runWithTelegram: {
         botSecret: '1439106550:AAGqH87pMb9Fy0i8OZLZOS5Db13vQN3QDww',
         chatId: -1001457406790
-    
-}
-  
-  
-  
+    },
+    emin: {
+        user_id: 1132267979
+    }
 };
-
 
 
 function getServerAddress() {
