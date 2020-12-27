@@ -3,10 +3,6 @@ function getBestValuesTrade() {
     calculateMaxLoss();
 }
 
-function getBestValuesTrade2() {
-    getBestValuesBySheetName("Trade2!");
-}
-
 function pnlPut(exitPrice, putRange, putStrike, putOptionPrice) {
     if (exitPrice - putStrike >= 0) {
         return -putOptionPrice * putRange;
@@ -510,13 +506,10 @@ function calculateMaxLoss() {
         }
     }
     let position1 = getPosition1();
-    let position2 = getPosition2();
 
     let i = 25;
     for (let exitPrice of intersections) {
-        let pnlTotalFuture1 = calcPnlTotalFuture(exitPrice, position1, timeDelay);
-        let pnlTotalFuture2 = calcPnlTotalFuture(exitPrice, position2, timeDelay);
-        let maxLoss = pnlTotalFuture1 + pnlTotalFuture2;
+        let maxLoss = calcPnlTotalFuture(exitPrice, position1, timeDelay);
         writeDataTo('Trade!I' + i, exitPrice);
         writeDataTo('Trade!J' + i, maxLoss);
         i++;

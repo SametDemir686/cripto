@@ -2,25 +2,10 @@ function onEdit(e) {
     var spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
     var activeCell = spreadsheet.getActiveCell();
     if (spreadsheet.getActiveSheet().getName() === "Trade") {
-        let cellName = activeCell.getA1Notation();
-
-        if (cellName === callStrikeCell) {
-            // updateCallStrikes("Trade");
-        } else if (cellName === putStrikeCell) {
-            // updatePutStrikes("Trade");
-        } else if (cellName === instrumentNameRangeCell) {
+        if (activeCell.getA1Notation() === instrumentNameRangeCell) {
             let entry = getDataFrom('K29');
             updateCallStrikes("Trade", entry);
             updatePutStrikes("Trade", entry);
-            updateCallStrikes("Trade2", entry);
-            updatePutStrikes("Trade2", entry);
-        } else if (cellName === callStrike2Cell) {
-            // updateCallStrikes("Trade2");
-        } else if (cellName === putStrike2Cell) {
-            // updatePutStrikes("Trade2");
-        } else if (cellName === instrumentNameRange2Cell) {
-            // updateCallStrikes("Trade2");
-            // updatePutStrikes("Trade2");
         }
     }
 }
@@ -29,16 +14,12 @@ function getInstrumentDates() {
     let entry = getDataFrom('K29');
     updateCallStrikes("Trade", entry);
     updatePutStrikes("Trade", entry);
-    updateCallStrikes("Trade2", entry);
-    updatePutStrikes("Trade2", entry);
 }
 
 
 function clearRows() {
     clearRow("Trade", selectedCallInstrumentColumn, parseInt(selectedCallInstrumentRow));
     clearRow("Trade", selectedPutInstrumentColumn, parseInt(selectedPutInstrumentRow));
-    clearRow("Trade2", selectedCallInstrument2Column, parseInt(selectedCallInstrument2Row));
-    clearRow("Trade2", selectedPutInstrument2Column, parseInt(selectedPutInstrument2Row));
 }
 
 function writeValues(sheetName, transposed, selectedCallInstrumentColumn, startRow) {

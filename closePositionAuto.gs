@@ -31,10 +31,7 @@ function deleteTrigger(funcName) {
 
 function calculateCurrentPnlTotals(indexPrice) {
     let position1 = getPosition1();
-    let pnlTotal = getPnlTotal(indexPrice, position1);
-    let position2 = getPosition2();
-    let pnlTotal1 = getPnlTotal(indexPrice, position2);
-    return pnlTotal + pnlTotal1;
+    return getPnlTotal(indexPrice, position1);
 }
 
 function getPnlTotal(indexPrice, p2) {
@@ -43,11 +40,6 @@ function getPnlTotal(indexPrice, p2) {
 
 function getPosition1() {
     let values = SpreadsheetApp.getActiveSheet().getRange("Trade!B29:L29").getValues()[0];
-    return getValues(values);
-}
-
-function getPosition2() {
-    let values = SpreadsheetApp.getActiveSheet().getRange("Trade!B30:L30").getValues()[0];
     return getValues(values);
 }
 
