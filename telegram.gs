@@ -216,7 +216,7 @@ function runWithTelegram() {
     writeDataTo('Trade!A3', getLastMessage(chats.runWithTelegram).text);
 
 
-    writeDataTo(instrumentNameRangeCell, '5000');
+    writeDataTo(instrumentNameRangeCell, 5000);
     sendTextToTelegramWithNotification(chats.runWithTelegram, 'Verdiğin bilgilere göre en iyi opsiyon hesaplanıyor !');
     clearRows();
     getInstrumentDates();
