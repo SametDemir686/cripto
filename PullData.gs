@@ -26,20 +26,34 @@ function pullPut_IV(putInstrumentName) {
     return data.result['mark_iv'];
 }
 
+function pullMarkPrice(instrumentName) {
+    return pullDataFrom(getServerAddress() + "/api/v2/public/get_order_book?instrument_name=" + instrumentName).result['mark_price'];
+}
+
 function pullCall_MarkPrice(callInstrumentName) {
-    var data = pullDataFrom(getServerAddress() + "/api/v2/public/get_order_book?instrument_name=" + callInstrumentName);
-    writeDataTo(CallMarkPrice, data.result['mark_price']);
+    var markPrice = pullMarkPrice(callInstrumentName);
+    writeDataTo(CallMarkPrice, markPrice);
 }
 
 function pullPut_MarkPrice(putInstrumentName) {
-    var data = pullDataFrom(getServerAddress() + "/api/v2/public/get_order_book?instrument_name=" + putInstrumentName);
-    writeDataTo(PutMarkPrice, data.result['mark_price']);
+    var markPrice = pullMarkPrice(putInstrumentName);
+    writeDataTo(PutMarkPrice, markPrice);
 }
 
 function pullMoveStrikePriceFtx() {
     let instrumentName = getDataFrom(moveInstrumentNameFtxCell);
     var data = pullDataFrom("https://ftx.com/api/futures/" + instrumentName + "/stats");
     writeDataTo(resultMoveStrikePriceCell, data.result['strikePrice']);
+}
+
+function pullPricesDeribit(instrumentName) {
+    var data = pullOrderBook(instrumentName);
+    return {
+        markPrice: pullMarkPrice(instrumentName),
+        asks: getAsks(data, 1),
+        bids: getBids(data, 1),
+        indexPrice: pullIndexPriceDeribit()
+    };
 }
 
 function pullMoveAskPriceFtx() {

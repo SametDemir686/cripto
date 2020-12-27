@@ -42,6 +42,8 @@ function calculateExpiresIn(timeDelay_HourBased, instrumentDateString) {
     return endStart / noOfMillisecondsInADay;
 }
 
+console.log(calculateExpiresIn(0, "20DEC20")*24);
+
 function calculateProfitLoss(result) {
     let exitPrice = getDataFrom('Trade!B21');
     return calculatePnlTotal(exitPrice,
