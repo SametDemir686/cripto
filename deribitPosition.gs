@@ -47,6 +47,7 @@ function closePosition() {
         runIfCellNotEmpty(closeBuyPut2InstrumentNameCell, closeBuyPut2);
         runIfCellNotEmpty(closeSellCall2InstrumentNameCell, closeSellCall2);
         runIfCellNotEmpty(closeSellPut2InstrumentNameCell, closeSellPut2);
+        sendTextToTelegramWithNotification(chats.runWithTelegram, 'Max Loss: ' + calcPnlTotalFuture(pullIndexPriceDeribit(), getPosition1(), 0));
         deleteTrigger('closePositionAuto');
     }
     updateOrdersAndPositions();
