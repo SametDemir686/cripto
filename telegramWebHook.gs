@@ -46,7 +46,7 @@ function doPost(e) {
                     updatePositionsAndSendToTradeEmin();
                     break;
                 case "/COMMANDS":
-                    sendTextToTelegramWithNotification(chats.runWithTelegram, '  Type "Run" to start \n Type "Close" to close your open position \n Type "Btc" to check BTC price  \n Type "Position" to check your postion PNL ');
+                    sendTextToTelegramWithNotification(chats.runWithTelegram, '  Type /Run to start \n Type /Close to close your open position \n Type /Btc to check BTC price  \n Type /Position to check your postion  \n Type /OPEN to open position');
                     break;
                 case "/CANCELORDERS":
                     cancelOrders();

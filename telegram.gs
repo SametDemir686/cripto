@@ -38,7 +38,7 @@ function getPositionsToString() {
     let text = "";
     for (let i = 0; i < values.length; i++) {
         let value = values[i];
-        text += "Position " + (i + 1) + ": " + value + "\n";
+        text += "Position ($) " + (i + 1) + ": " + value + "\n";
     }
     return text;
 }
@@ -63,10 +63,7 @@ function deleteWebhook(chat) {
 function getLastMessage(chat) {
     deleteWebhook(chat);
     var result = pullDataFrom("https://api.telegram.org/bot" + chat.botSecret + "/getUpdates").result;
-    var userIdCheck = result[result.length - 1].message.from.id;
-    if (userIdCheck === chats.emin.user_id) {
-        return result[result.length - 1].message;
-    }
+    return result[result.length - 1].message;
 
 }
 
@@ -115,7 +112,7 @@ function getBestResultToString() {
     for (let i = 0; i < values[0].length; i++) {
         let value = values[0][i];
         let titleValue = titleValues[0][i];
-        text += titleValue + ":" + "\n" + value.toFixed(1) + "\n";
+        text += titleValue + ":"+ value.toFixed(1) + "\n";
     }
     return text;
 }
@@ -166,10 +163,14 @@ function sendBestResultToTelegram(chat) {
 function waitForNextMessage() {
     var lastMessage = getLastMessage(chats.runWithTelegram);
     let newMessage = getLastMessage(chats.runWithTelegram);
-    while (newMessage.date === lastMessage.date) {
+    while (newMessage.date === lastMessage.date || newMessage.from.id !== chats.emin.user_id) {
         newMessage = getLastMessage(chats.runWithTelegram);
     }
-    return newMessage.text.toUpperCase() === "STOP" ? -1 : 0;
+    if (newMessage.text.toUpperCase() === "/STOP") {
+        sendTextToTelegramWithoutNotification(chats.runWithTelegram, "As you wish boss");
+        return -1;
+    }
+    return 0;
 }
 
 function onlyUnique(value, index, self) {
