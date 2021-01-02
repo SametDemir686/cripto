@@ -495,7 +495,7 @@ function getBestValuesBySheetName(sheetName) {
 function calculateMaxLoss() {
     let timeDelay = getDataFrom('Trade!B10');
     let position1 = getPosition1();
-    let intersections = getExitIntersections(position1.indexBtcDeribit, position1.callRange, position1.callStrike, position1.callOptionPrice, position1.putRange, position1.putStrike, position1.putOptionPrice, 0);
+    let intersections = getExitIntersections(position1.indexBtcDeribit, position1.callRange, position1.callStrike, position1.callOptionPrice, position1.putRange, position1.putStrike, position1.putOptionPrice, -10);
     let i = 25;
     for (let intersection of intersections) {
         let exitPrice = intersection.x;

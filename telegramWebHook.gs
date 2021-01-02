@@ -38,6 +38,9 @@ function doPost(e) {
                 case "/RUN":
                     runWithTelegram();
                     break;
+                case "/BALANCE":
+                    sendBalanceTelegram();
+                    break;
                 case "/BTC":
                     let btcPriceNow = pullIndexPriceDeribit();
                     sendTextToTelegramWithNotification(chats.runWithTelegram, btcPriceNow);

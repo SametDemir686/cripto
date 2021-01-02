@@ -200,6 +200,11 @@ function f() {
     sendMessageWithKeyboard(chats.runWithTelegram, "Option date you want?", getUniqueIntrumentNames());
 }
 
+function sendBalanceTelegram() {
+    let balance = getBalance();
+    sendTextToTelegramWithoutNotification(chats.runWithTelegram, balance);
+}
+
 function runWithTelegram() {
     sendTextToTelegramWithNotification(chats.runWithTelegram, 'Ne kadar yatırım yapmak istersin $ ?');
     if (waitForNextMessage() === -1) return;

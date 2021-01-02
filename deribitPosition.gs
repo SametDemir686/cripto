@@ -47,7 +47,7 @@ function closePosition() {
         runIfCellNotEmpty(closeBuyPut2InstrumentNameCell, closeBuyPut2);
         runIfCellNotEmpty(closeSellCall2InstrumentNameCell, closeSellCall2);
         runIfCellNotEmpty(closeSellPut2InstrumentNameCell, closeSellPut2);
-        sendTextToTelegramWithNotification(chats.runWithTelegram, 'Max Loss: ' + calcPnlTotalFuture(pullIndexPriceDeribit(), getPosition1(), 0));
+        sendTextToTelegramWithNotification(chats.runWithTelegram, 'Loss: ' + calcPnlTotalFuture(pullIndexPriceDeribit(), getPosition1(), 0));
         deleteTrigger('closePositionAuto');
     }
     updateOrdersAndPositions();
@@ -197,16 +197,25 @@ function getOptionsFromSheet(instrumentNameCell, amountCell, typeCell, labelCell
     };
 }
 
-function buy(options) {
+function sendPrivateRequest(url) {
     let tokenData = pullDataFrom(tokenUrl).result;
+    return sendRequest(url, tokenData);
+}
+
+function getBalance() {
+    let accountSummaryUrl = "https://www.deribit.com/api/v2/private/get_account_summary?currency=BTC";
+    let accountSummary = sendPrivateRequest(accountSummaryUrl).result;
+    return {balance: accountSummary.balance, available_withdrawal_funds: accountSummary.available_withdrawal_funds, margin_balance: accountSummary.margin_balance};
+}
+
+function buy(options) {
     let buyUrl = getBuyUrl(options);
-    sendRequest(buyUrl, tokenData);
+    sendPrivateRequest(buyUrl);
 }
 
 function sell(options) {
-    let tokenData = pullDataFrom(tokenUrl).result;
     let sellUrl = getSellUrl(options);
-    sendRequest(sellUrl, tokenData);
+    sendPrivateRequest(sellUrl);
 }
 
 function getSellUrl(options) {
@@ -251,7 +260,7 @@ function sendRequest(url, tokenData) {
         }
     };
     var plusResponse = UrlFetchApp.fetch(url, plusOptions);
-    var plusData = Utilities.jsonParse(plusResponse.getContentText());
+    return Utilities.jsonParse(plusResponse.getContentText());
 }
 
 function binanceSpotWallet() {

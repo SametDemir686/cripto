@@ -19,7 +19,7 @@ function sendMaxLossToTelegram() {
     for (let intersection of intersections) {
         let exitPrice = intersection.x;
         let maxLoss = calcPnlTotalFuture(exitPrice, position1, 0);
-        sendTextToTelegramWithoutNotification(chats.runWithTelegram, 'Max Loss: ' + maxLoss);
+        sendTextToTelegramWithoutNotification(chats.runWithTelegram, "Stop Point: " + exitPrice.toFixed(0) + "\n" + 'Stop Loss: ' + maxLoss.toFixed(0));
     }
 }
 
