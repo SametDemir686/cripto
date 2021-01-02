@@ -9,6 +9,20 @@ function closePositionAuto() {
     }
 }
 
+function getDate(instrumentName) {
+    return instrumentName.split('-')[1];
+}
+
+function sendMaxLossToTelegram() {
+    let position1 = getPosition1();
+    let intersections = getExitIntersections(position1.indexBtcDeribit, position1.callRange, position1.callStrike, position1.callOptionPrice, position1.putRange, position1.putStrike, position1.putOptionPrice, -10);
+    for (let intersection of intersections) {
+        let exitPrice = intersection.x;
+        let maxLoss = calcPnlTotalFuture(exitPrice, position1, 0);
+        sendTextToTelegramWithoutNotification(chats.runWithTelegram, 'Max Loss: ' + maxLoss);
+    }
+}
+
 function createT() {
     createTrigger('closePositionAuto');
 }

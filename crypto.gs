@@ -495,7 +495,7 @@ function getBestValuesBySheetName(sheetName) {
 function calculateMaxLoss() {
     let timeDelay = getDataFrom('Trade!B10');
     let position1 = getPosition1();
-    let intersections = getExitIntersections(position1.indexBtcDeribit, position1.callRange, position1.callStrike, position1.callOptionPrice, position1.putRange, position1.putStrike, position1.putOptionPrice);
+    let intersections = getExitIntersections(position1.indexBtcDeribit, position1.callRange, position1.callStrike, position1.callOptionPrice, position1.putRange, position1.putStrike, position1.putOptionPrice, 0);
     let i = 25;
     for (let intersection of intersections) {
         let exitPrice = intersection.x;
@@ -630,10 +630,9 @@ function clearTable() {
     SpreadsheetApp.getActiveSheet().getRange(tablePnlTotalFutureColumn + tableRowStartIndex + ":" + tablePnlTotalFutureColumn + (clear.length + tableRowStartIndex - 1)).setValues(clear);
 }
 
-function getExitIntersections(indexBtcDeribit, callRange, callStrike, callOptionPrice, putRange, putStrike, putOptionPrice) {
+function getExitIntersections(indexBtcDeribit, callRange, callStrike, callOptionPrice, putRange, putStrike, putOptionPrice, y) {
     let pnlTotals = getPnlTotals(indexBtcDeribit, -100000, 100000, putRange, putStrike, putOptionPrice, callRange, callStrike, callOptionPrice, 0, 0, 0, 0);
     let intersections = [];
-    let y = 0;
     for (let i = 0; i < pnlTotals.length - 1; i++) {
         let p1 = pnlTotals[i];
         let p2 = pnlTotals[i + 1];

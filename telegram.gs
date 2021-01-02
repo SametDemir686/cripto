@@ -5,6 +5,7 @@ function updatePositionsAndSendToTradeEmin() {
 function updatePositionsAndSendToTelegram(chat) {
     updatePositions();
     sendPositionsToTelegram(chat);
+    sendMaxLossToTelegram(chat);
 }
 
 function sendPositionsToTelegram(chat) {
