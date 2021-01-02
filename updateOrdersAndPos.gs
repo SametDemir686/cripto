@@ -21,17 +21,11 @@ function cancelOrders() {
 }
 
 function clearOrders() {
-    SpreadsheetApp.getActive().getSheetByName('Trade').getRange('G86:J105').clear({
-        contentsOnly: true,
-        skipFilteredRows: false
-    });
+    clear('G86:J105');
 }
 
 function clearPositions() {
-    SpreadsheetApp.getActive().getSheetByName('Trade').getRange('B86:E104').clear({
-        contentsOnly: true,
-        skipFilteredRows: false
-    });
+    clear('B86:E104');
 }
 
 function transpose(array) {

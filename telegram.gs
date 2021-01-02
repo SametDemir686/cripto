@@ -202,9 +202,9 @@ function f() {
 
 function sendBalanceToTelegram() {
     let accountSummary = getAccountSummary();
-    let text = "balance: " + accountSummary.balance + "\n" +
-        "available_withdrawal_funds: " + accountSummary.available_withdrawal_funds + "\n" +
-        "margin_balance:" + accountSummary.margin_balance;
+    let text = "Balance: " + accountSummary.balance.toFixed(0) + "\n" +
+        "Available Withdrawal Funds: " + accountSummary.available_withdrawal_funds.toFixed(0) + "\n" +
+        "Margin Balance:" + accountSummary.margin_balance.toFixed(0);
     sendTextToTelegramWithoutNotification(chats.runWithTelegram, text);
 }
 

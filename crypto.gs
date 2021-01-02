@@ -492,10 +492,18 @@ function getBestValuesBySheetName(sheetName) {
     writeDataTo(sheetName + statusCell, "Done in " + elapsedTime + " seconds");
 }
 
+function clear(range) {
+    SpreadsheetApp.getActive().getSheetByName('Trade').getRange(range).clear({
+        contentsOnly: true,
+        skipFilteredRows: false
+    });
+}
+
 function calculateMaxLoss() {
     let timeDelay = getDataFrom('Trade!B10');
     let position1 = getPosition1();
     let intersections = getExitIntersections(position1.indexBtcDeribit, position1.callRange, position1.callStrike, position1.callOptionPrice, position1.putRange, position1.putStrike, position1.putOptionPrice, -10);
+    clear('I25:J26');
     let i = 25;
     for (let intersection of intersections) {
         let exitPrice = intersection.x;

@@ -1,11 +1,6 @@
-function clear() {
-    let sheet = SpreadsheetApp.getActive().getSheetByName('Instruments')
-    let lastRow = sheet.getLastRow();
-    let clear = [];
-    for (let i = 2; i <= lastRow; i++) {
-        clear.push([""]);
-    }
-    SpreadsheetApp.getActiveSheet().getRange("Instruments!A2:A" + (clear.length + 1)).setValues(clear);
+function clearInstruments() {
+    let lastRow = SpreadsheetApp.getActive().getSheetByName('Instruments').getLastRow();
+    SpreadsheetApp.getActiveSheet().getRange("Instruments!A2:A" + lastRow).clear();
 }
 
 function write(instrumentNames) {
@@ -17,7 +12,7 @@ function write(instrumentNames) {
 }
 
 function pullInstrumentsDeribit() {
-    clear();
+    clearInstruments();
     let instrumentNames = pullInstrumentNames();
     write(instrumentNames);
     var today = new Date();
