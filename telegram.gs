@@ -200,9 +200,12 @@ function f() {
     sendMessageWithKeyboard(chats.runWithTelegram, "Option date you want?", getUniqueIntrumentNames());
 }
 
-function sendBalanceTelegram() {
-    let balance = getBalance();
-    sendTextToTelegramWithoutNotification(chats.runWithTelegram, balance);
+function sendBalanceToTelegram() {
+    let accountSummary = getAccountSummary();
+    let text = "balance: " + accountSummary.balance + "\n" +
+        "available_withdrawal_funds: " + accountSummary.available_withdrawal_funds + "\n" +
+        "margin_balance:" + accountSummary.margin_balance;
+    sendTextToTelegramWithoutNotification(chats.runWithTelegram, text);
 }
 
 function runWithTelegram() {

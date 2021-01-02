@@ -39,7 +39,7 @@ function doPost(e) {
                     runWithTelegram();
                     break;
                 case "/BALANCE":
-                    sendBalanceTelegram();
+                    sendBalanceToTelegram();
                     break;
                 case "/BTC":
                     let btcPriceNow = pullIndexPriceDeribit();

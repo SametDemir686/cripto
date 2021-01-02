@@ -202,10 +202,15 @@ function sendPrivateRequest(url) {
     return sendRequest(url, tokenData);
 }
 
-function getBalance() {
+function getAccountSummary() {
     let accountSummaryUrl = "https://www.deribit.com/api/v2/private/get_account_summary?currency=BTC";
     let accountSummary = sendPrivateRequest(accountSummaryUrl).result;
-    return {balance: accountSummary.balance, available_withdrawal_funds: accountSummary.available_withdrawal_funds, margin_balance: accountSummary.margin_balance};
+    let indexPriceDeribit = pullIndexPriceDeribit();
+    return {
+        balance: accountSummary.balance * indexPriceDeribit,
+        available_withdrawal_funds: accountSummary.available_withdrawal_funds * indexPriceDeribit,
+        margin_balance: accountSummary.margin_balance * indexPriceDeribit
+    };
 }
 
 function buy(options) {
