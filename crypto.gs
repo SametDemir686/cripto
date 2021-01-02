@@ -38,8 +38,6 @@ function calculateExpiresIn(timeDelay_HourBased, instrumentDateString) {
     return endStart / noOfMillisecondsInADay;
 }
 
-console.log(calculateExpiresIn(0, "20DEC20") * 24);
-
 function calculateProfitLoss(result) {
     let exitPrice = getDataFrom('Trade!B21');
     return calculatePnlTotal(exitPrice,
@@ -442,10 +440,9 @@ function getBestValuesBySheetName(sheetName) {
         writeBestValues(sheetName, result);
     }
 
-    SpreadsheetApp.getActiveSheet().getRange(sheetName + "B36:C38").setValues([
-        getMaxMaintenanceMargins(result, indexBtcDeribit, interestRate, timeDelay, getDataFrom('Trade!K27')),
-        getMaxMaintenanceMargins(result, indexBtcDeribit, interestRate, timeDelay, getDataFrom('Trade!L27')),
-        getMaxMaintenanceMargins(result, indexBtcDeribit, interestRate, timeDelay, getDataFrom('Trade!L27'))
+    SpreadsheetApp.getActiveSheet().getRange(sheetName + "B36:C37").setValues([
+        getMaxMaintenanceMargins(result, indexBtcDeribit, interestRate, timeDelay, getDataFrom('Trade!K25')),
+        getMaxMaintenanceMargins(result, indexBtcDeribit, interestRate, timeDelay, getDataFrom('Trade!L25'))
     ]);
 
     //writeResult(sheetName, indexBtcDeribit, exitRangeStart2, exitRangeEnd2, exitRangeIncrement2, result, movePrice, moveStrikePrice, interestRate, expiresInCall, expiresInPut, minReturnPercentage2Cell, maxReturnPercentage2Cell, averageReturnPercentage2Cell, maintenanceMarginMaxCall2Cell, maintenanceMarginMaxPut2Cell);
@@ -496,24 +493,10 @@ function getBestValuesBySheetName(sheetName) {
 }
 
 function calculateMaxLoss() {
-    let pnlTotals = SpreadsheetApp.getActiveSheet().getRange("Position3!AD7:DZ7").getValues()[0];
-    let indexPrices = SpreadsheetApp.getActiveSheet().getRange("Position3!AD11:DZ11").getValues()[0];
-    let timeDelay = getDataFrom('Trade!E12');
-    let intersections = [];
-    for (let i = 0; i < pnlTotals.length - 1; i++) {
-        if (pnlTotals[i] * pnlTotals[i + 1] < 0) {
-            intersections.push(indexPrices[i]);
-        }
-    }
+    let timeDelay = getDataFrom('Trade!B10');
     let position1 = getPosition1();
-
+    let intersections = getExitIntersections(position1.indexBtcDeribit, position1.callRange, position1.callStrike, position1.callOptionPrice, position1.putRange, position1.putStrike, position1.putOptionPrice);
     let i = 25;
-    if(intersections.length === 0) {
-        writeDataTo('Trade!I' + i, 0);
-        writeDataTo('Trade!J' + i, 0);
-        return;
-    }
-
     for (let exitPrice of intersections) {
         let maxLoss = calcPnlTotalFuture(exitPrice, position1, timeDelay);
         writeDataTo('Trade!I' + i, exitPrice);
@@ -649,6 +632,7 @@ function clearTable() {
 function getExitIntersections(indexBtcDeribit, callRange, callStrike, callOptionPrice, putRange, putStrike, putOptionPrice) {
     let pnlTotals = getPnlTotals(indexBtcDeribit, -100000, 100000, putRange, putStrike, putOptionPrice, callRange, callStrike, callOptionPrice, 0, 0, 0, 0);
     let intersections = [];
+    let y = 0;
     for (let i = 0; i < pnlTotals.length - 1; i++) {
         let p1 = pnlTotals[i];
         let p2 = pnlTotals[i + 1];
