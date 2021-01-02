@@ -80,12 +80,9 @@ function findLastRow(sheetName, columnName, startIndex) {
 function clearRow(sheetName, startColumn, startRow) {
     let sheet = SpreadsheetApp.getActive().getSheetByName(sheetName);
     let lastRow = sheet.getLastRow();
-    let clear = [];
     if (lastRow <= startRow)
         return;
-    for (let i = 2; i <= lastRow; i++) {
-        clear.push([""]);
-    }
     let startCell = startColumn + startRow;
-    SpreadsheetApp.getActiveSheet().getRange(sheetName + "!" + startCell + ":" + startColumn + (clear.length + 1)).setValues(clear);
+    let lastCell = startColumn + lastRow;
+    clear(startCell + ":" + lastCell);
 }
