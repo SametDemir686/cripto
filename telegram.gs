@@ -113,7 +113,9 @@ function getBestResultToString() {
     for (let i = 0; i < values[0].length; i++) {
         let value = values[0][i];
         let titleValue = titleValues[0][i];
-        text += titleValue + ":"+ value.toFixed(1) + "\n";
+        if (typeof(value) === 'number')
+            value = value.toFixed(1);
+        text += titleValue + ":" + value + "\n";
     }
     return text;
 }
@@ -197,7 +199,7 @@ function sendMessageWithKeyboard(chat, text, keyboard) {
 }
 
 function f() {
-    sendMessageWithKeyboard(chats.runWithTelegram, "Option date you want?", getUniqueIntrumentNames());
+    sendBestResultToTelegram(chats.runWithTelegram);
 }
 
 function sendBalanceToTelegram() {
