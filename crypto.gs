@@ -515,8 +515,8 @@ function calcPnlTotalFuture(exitPrice, position, timeDelay) {
     let put_IV = parseFloat(pullPut_IV(position.putInstrumentName));
     let callPreFuture = calculateCallPreFuture(exitPrice, position.callStrike, expiresInCall, 0, call_IV);
     let putPreFuture = calculatePutPreFuture(exitPrice, position.putStrike, expiresInPut, 0, put_IV);
-    let pnlCallFuture = (callPreFuture - position.callOptionPrice * position.indexBtcDeribit) * position.callRange;
-    let pnlPutFuture = (putPreFuture - position.putOptionPrice * position.indexBtcDeribit) * position.putRange;
+    let pnlCallFuture = (callPreFuture - position.callOptionPrice) * position.callRange;
+    let pnlPutFuture = (putPreFuture - position.putOptionPrice) * position.putRange;
     return pnlCallFuture + pnlPutFuture;
 }
 
