@@ -20,6 +20,12 @@ function cancelOrders() {
     updateOrders();
 }
 
+function closePerpetuals() {
+    let tokenData = pullDataFrom(tokenUrl).result;
+    let cancelUrl = getServerAddress() + '/api/v2/private/close_position?instrument_name=BTC-PERPETUAL&type=market';
+    sendRequest(cancelUrl, tokenData);
+}
+
 function clearOrders() {
     clear('G86:J105');
 }

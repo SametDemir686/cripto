@@ -32,7 +32,8 @@ function openPosition() {
         runIfCellNotEmpty(openBuyPut2InstrumentNameCell, openBuyPut2);
         runIfCellNotEmpty(openSellCall2InstrumentNameCell, openSellCall2);
         runIfCellNotEmpty(openSellPut2InstrumentNameCell, openSellPut2);
-        createTrigger('closePositionAuto');
+        createTrigger('optionStopLossController');
+        setTersPozisyondaMiyiz('FALSE');
     }
     updateOrdersAndPositions();
 }
@@ -48,7 +49,8 @@ function closePosition() {
         runIfCellNotEmpty(closeSellCall2InstrumentNameCell, closeSellCall2);
         runIfCellNotEmpty(closeSellPut2InstrumentNameCell, closeSellPut2);
         sendTextToTelegramWithNotification(chats.runWithTelegram, 'Loss: ' + calcPnlTotalFuture(pullIndexPriceDeribit(), getPosition1(), 0));
-        deleteTrigger('closePositionAuto');
+        deleteTrigger('optionStopLossController');
+        setTersPozisyondaMiyiz('FALSE');
     }
     updateOrdersAndPositions();
 }

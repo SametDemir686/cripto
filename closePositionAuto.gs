@@ -13,14 +13,50 @@ function getMaxProfit(position) {
     return -position.putOptionPrice * position.putRange - position.callOptionPrice * position.callRange;
 }
 
+function buyPerpetuals() {
+    if (isTestMode())
+        sellPerpetual(10, 20000);
+}
+
 function buyPerpetual(amount, stopPrice) {
     buy({
         instrumentName: "BTC-PERPETUAL",
         amount: amount,
         type: "market",
         timeInForce: "good_til_cancelled",
+    });
+    sell({
+        instrumentName: "BTC-PERPETUAL",
+        amount: amount,
+        type: "stop_market",
+        trigger: "index_price",
+        timeInForce: "good_til_cancelled",
         stopPrice: stopPrice,
     });
+}
+
+function isInstrumentExpired(instrumentName) {
+    return calculateExpiresIn(0, getDate(instrumentName)) < 0;
+}
+
+function isPositionExpired(position) {
+    if (isPositionCall(position)) {
+        return isInstrumentExpired(position.callInstrumentName);
+    } else {
+        return isInstrumentExpired(position.putInstrumentName);
+    }
+}
+
+function isPositionCall(position) {
+    return position.callRange !== 0;
+}
+
+function getTersPozisyondaMiyiz() {
+    return getDataFrom('girme!A1');
+}
+
+function setTersPozisyondaMiyiz(value) {
+    writeDataTo('girme!A1', value);
 }
 
 function optionStopLossController() {
@@ -28,10 +64,50 @@ function optionStopLossController() {
     let profit = calculateCurrentPnlTotals(indexPrice);
     let position = getPosition1();
     let maxProfit = getMaxProfit(position);
-    if (profit < maxProfit / 2) {
-        let amount = position.putRange + position.callRange;
-        let stopPrice = 3/4*maxProfit;
-        buyPerpetual(amount, stopPrice);
+    let tersPozisyondaMiyiz = getTersPozisyondaMiyiz() === 'TRUE';
+    if (isPositionExpired(position)) {
+        closePerpetuals();
+        deleteTrigger('optionStopLossController');
+        return;
+    }
+    if (isPositionCall(position)) {
+        let amount = (Math.round(position.callRange * indexPrice / 10) * 10);
+        if (profit < maxProfit / 2 && !tersPozisyondaMiyiz) {
+            buy({
+                instrumentName: "BTC-PERPETUAL",
+                amount: amount,
+                type: "market",
+                timeInForce: "good_til_cancelled",
+            });
+            setTersPozisyondaMiyiz('TRUE');
+        } else if (profit > maxProfit / 4 * 3 && tersPozisyondaMiyiz) {
+            sell({
+                instrumentName: "BTC-PERPETUAL",
+                amount: amount,
+                type: "market",
+                timeInForce: "good_til_cancelled",
+            });
+            setTersPozisyondaMiyiz('FALSE');
+        }
+    } else {
+        let amount = (Math.round(position.putRange * indexPrice / 10) * 10);
+        if (profit < maxProfit / 2 && !tersPozisyondaMiyiz) {
+            sell({
+                instrumentName: "BTC-PERPETUAL",
+                amount: amount,
+                type: "market",
+                timeInForce: "good_til_cancelled",
+            });
+            setTersPozisyondaMiyiz('TRUE');
+        } else if (profit > maxProfit / 4 * 3 && tersPozisyondaMiyiz) {
+            buy({
+                instrumentName: "BTC-PERPETUAL",
+                amount: amount,
+                type: "market",
+                timeInForce: "good_til_cancelled",
+            });
+            setTersPozisyondaMiyiz('FALSE');
+        }
     }
 }
 
