@@ -1,11 +1,37 @@
 function closePositionAuto() {
     let indexPrice = pullIndexPriceDeribit();
     let totalPnls = calculateCurrentPnlTotals(indexPrice);
-    if (totalPnls <= -10) {
+    if (totalPnls <= -100) {
         sendTextToTelegramWithNotification(chats.runWithTelegram, "Danger is coming!! We are closing the position");
         closePosition();
         sendTextToTelegramWithNotification(chats.runWithTelegram, "Position is closed! You are safe now");
         updatePositionsAndSendToTelegram(chats.runWithTelegram);
+    }
+}
+
+function getMaxProfit(position) {
+    return -position.putOptionPrice * position.putRange - position.callOptionPrice * position.callRange;
+}
+
+function buyPerpetual(amount, stopPrice) {
+    buy({
+        instrumentName: "BTC-PERPETUAL",
+        amount: amount,
+        type: "market",
+        timeInForce: "good_til_cancelled",
+        stopPrice: stopPrice,
+    });
+}
+
+function optionStopLossController() {
+    let indexPrice = pullIndexPriceDeribit();
+    let profit = calculateCurrentPnlTotals(indexPrice);
+    let position = getPosition1();
+    let maxProfit = getMaxProfit(position);
+    if (profit < maxProfit / 2) {
+        let amount = position.putRange + position.callRange;
+        let stopPrice = 3/4*maxProfit;
+        buyPerpetual(amount, stopPrice);
     }
 }
 
